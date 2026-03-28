@@ -46,6 +46,15 @@ function koi_ria_admin_menus(): void {
         'koi-ria-cron',
         'koi_ria_cron_page'
     );
+
+    add_submenu_page(
+        'koi-ria-import',
+        '広告設定',
+        '広告設定',
+        'manage_options',
+        'koi-ria-ads',
+        'koi_ria_ads_page'
+    );
 }
 
 // 管理画面通知
@@ -319,6 +328,134 @@ function koi_ria_cron_page(): void {
         ?>
         <?php endif; ?>
     </div>
+    <?php
+}
+
+/**
+ * 広告設定ページ
+ */
+function koi_ria_ads_page(): void {
+    if (isset($_POST['koi_ria_ads_nonce']) && wp_verify_nonce($_POST['koi_ria_ads_nonce'], 'koi_ria_save_ads')) {
+        // AdSense設定
+        update_option('koi_ria_adsense_client_id', sanitize_text_field($_POST['adsense_client_id'] ?? ''));
+        update_option('koi_ria_adsense_slot_top', sanitize_text_field($_POST['adsense_slot_top'] ?? ''));
+        update_option('koi_ria_adsense_slot_article', sanitize_text_field($_POST['adsense_slot_article'] ?? ''));
+        update_option('koi_ria_adsense_slot_sidebar', sanitize_text_field($_POST['adsense_slot_sidebar'] ?? ''));
+
+        // アフィリエイトバナー設定
+        $banners = [];
+        $names   = $_POST['affiliate_name'] ?? [];
+        $urls    = $_POST['affiliate_url'] ?? [];
+        $ctas    = $_POST['affiliate_cta'] ?? [];
+        $colors  = $_POST['affiliate_color'] ?? [];
+
+        for ($i = 0; $i < count($names); $i++) {
+            $name = sanitize_text_field($names[$i] ?? '');
+            $url  = esc_url_raw($urls[$i] ?? '');
+            if ($name && $url) {
+                $banners[] = [
+                    'name'  => $name,
+                    'url'   => $url,
+                    'cta'   => sanitize_text_field($ctas[$i] ?? ''),
+                    'color' => sanitize_text_field($colors[$i] ?? ''),
+                ];
+            }
+        }
+        update_option('koi_ria_affiliate_banners', $banners);
+
+        echo '<div class="notice notice-success"><p>広告設定を保存しました。</p></div>';
+    }
+
+    $adsense_client  = get_option('koi_ria_adsense_client_id', '');
+    $slot_top        = get_option('koi_ria_adsense_slot_top', '');
+    $slot_article    = get_option('koi_ria_adsense_slot_article', '');
+    $slot_sidebar    = get_option('koi_ria_adsense_slot_sidebar', '');
+    $banners         = get_option('koi_ria_affiliate_banners', []);
+
+    // デフォルトバナー
+    if (empty($banners)) {
+        $banners = [
+            ['name' => 'ABEMAプレミアム', 'url' => '', 'cta' => '2週間無料でお試し', 'color' => 'linear-gradient(135deg, #00B900, #00D900)'],
+            ['name' => 'Netflix', 'url' => '', 'cta' => '今すぐ視聴する', 'color' => 'linear-gradient(135deg, #E50914, #B20710)'],
+            ['name' => 'Amazonプライム', 'url' => '', 'cta' => '30日間無料体験', 'color' => 'linear-gradient(135deg, #00A8E1, #0077B5)'],
+        ];
+    }
+    ?>
+    <div class="wrap">
+        <h1>広告設定</h1>
+        <form method="post">
+            <?php wp_nonce_field('koi_ria_save_ads', 'koi_ria_ads_nonce'); ?>
+
+            <h2 class="title">Google AdSense</h2>
+            <table class="form-table">
+                <tr>
+                    <th><label for="adsense_client_id">パブリッシャーID</label></th>
+                    <td>
+                        <input type="text" id="adsense_client_id" name="adsense_client_id" value="<?php echo esc_attr($adsense_client); ?>" class="regular-text" placeholder="ca-pub-XXXXXXXXXXXXXXXX">
+                        <p class="description">AdSenseのパブリッシャーID（例: ca-pub-1234567890123456）</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="adsense_slot_top">トップページ広告スロット</label></th>
+                    <td>
+                        <input type="text" id="adsense_slot_top" name="adsense_slot_top" value="<?php echo esc_attr($slot_top); ?>" class="regular-text" placeholder="1234567890">
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="adsense_slot_article">記事内広告スロット</label></th>
+                    <td>
+                        <input type="text" id="adsense_slot_article" name="adsense_slot_article" value="<?php echo esc_attr($slot_article); ?>" class="regular-text" placeholder="1234567890">
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="adsense_slot_sidebar">サイドバー広告スロット</label></th>
+                    <td>
+                        <input type="text" id="adsense_slot_sidebar" name="adsense_slot_sidebar" value="<?php echo esc_attr($slot_sidebar); ?>" class="regular-text" placeholder="1234567890">
+                    </td>
+                </tr>
+            </table>
+
+            <h2 class="title">アフィリエイトバナー</h2>
+            <p class="description">トップページ下部やサイドバーに表示するアフィリエイトバナーを設定します。</p>
+
+            <table class="widefat striped" style="max-width:900px; margin-top:10px;" id="affiliate-banners">
+                <thead>
+                    <tr>
+                        <th>サービス名</th>
+                        <th>URL</th>
+                        <th>CTAテキスト</th>
+                        <th>背景グラデーション</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($banners as $i => $banner) : ?>
+                    <tr>
+                        <td><input type="text" name="affiliate_name[]" value="<?php echo esc_attr($banner['name']); ?>" class="regular-text"></td>
+                        <td><input type="url" name="affiliate_url[]" value="<?php echo esc_attr($banner['url']); ?>" class="regular-text" placeholder="https://..."></td>
+                        <td><input type="text" name="affiliate_cta[]" value="<?php echo esc_attr($banner['cta']); ?>" class="regular-text"></td>
+                        <td><input type="text" name="affiliate_color[]" value="<?php echo esc_attr($banner['color']); ?>" class="regular-text" placeholder="linear-gradient(135deg, #xxx, #yyy)"></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+            <p>
+                <button type="button" class="button" onclick="addBannerRow()">+ バナーを追加</button>
+            </p>
+
+            <?php submit_button('広告設定を保存'); ?>
+        </form>
+    </div>
+    <script>
+    function addBannerRow() {
+        var tbody = document.querySelector('#affiliate-banners tbody');
+        var row = document.createElement('tr');
+        row.innerHTML = '<td><input type="text" name="affiliate_name[]" class="regular-text"></td>' +
+            '<td><input type="url" name="affiliate_url[]" class="regular-text" placeholder="https://..."></td>' +
+            '<td><input type="text" name="affiliate_cta[]" class="regular-text"></td>' +
+            '<td><input type="text" name="affiliate_color[]" class="regular-text" placeholder="linear-gradient(135deg, #xxx, #yyy)"></td>';
+        tbody.appendChild(row);
+    }
+    </script>
     <?php
 }
 

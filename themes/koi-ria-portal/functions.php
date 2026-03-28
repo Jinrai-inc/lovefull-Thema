@@ -73,6 +73,32 @@ add_action('wp_enqueue_scripts', function () {
 });
 
 /**
+ * Preconnect / DNS Prefetch（パフォーマンス最適化）
+ */
+add_action('wp_head', function () {
+    // Google Fonts
+    echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
+    echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
+    // YouTube embeds
+    echo '<link rel="dns-prefetch" href="//www.youtube.com">' . "\n";
+    echo '<link rel="dns-prefetch" href="//i.ytimg.com">' . "\n";
+    // Instagram CDN
+    echo '<link rel="dns-prefetch" href="//scontent.cdninstagram.com">' . "\n";
+    // Facebook Graph API
+    echo '<link rel="dns-prefetch" href="//graph.facebook.com">' . "\n";
+}, 0);
+
+/**
+ * AdSenseスクリプト読み込み
+ */
+add_action('wp_head', function () {
+    $adsense_client = get_option('koi_ria_adsense_client_id', '');
+    if ($adsense_client) {
+        echo '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' . esc_attr($adsense_client) . '" crossorigin="anonymous"></script>' . "\n";
+    }
+}, 1);
+
+/**
  * インクルードファイル読み込み
  */
 $koi_ria_includes = [
@@ -84,6 +110,7 @@ $koi_ria_includes = [
     'inc/cron-instagram.php',
     'inc/csv-importer.php',
     'inc/structured-data.php',
+    'inc/ogp-meta.php',
     'inc/admin-menu.php',
 ];
 
@@ -93,6 +120,28 @@ foreach ($koi_ria_includes as $file) {
         require_once $filepath;
     }
 }
+
+/**
+ * wp_get_attachment_image に loading="lazy" をデフォルト設定
+ * WordPress 5.5+ はデフォルト対応済みだが、
+ * カスタムテンプレート内の the_post_thumbnail にも確実に適用
+ */
+add_filter('wp_get_attachment_image_attributes', function (array $attr, WP_Post $attachment): array {
+    if (!isset($attr['loading'])) {
+        $attr['loading'] = 'lazy';
+    }
+    return $attr;
+}, 10, 2);
+
+/**
+ * Emoji スクリプト無効化（パフォーマンス最適化）
+ */
+add_action('init', function () {
+    remove_action('wp_head', 'print_emoji_detection_script', 7);
+    remove_action('wp_print_styles', 'print_emoji_styles');
+    remove_action('admin_print_scripts', 'print_emoji_detection_script');
+    remove_action('admin_print_styles', 'print_emoji_styles');
+});
 
 /**
  * フォロワー数の短縮表示（例: 12.3K, 1.5M）

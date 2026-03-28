@@ -225,7 +225,7 @@ $related_posts = get_posts([
                     <div style="text-align: center; min-width: 70px;">
                         <div class="ig-avatar" style="margin: 0 auto; padding: 2px; <?php echo $m_gender === 'f' ? 'background: linear-gradient(45deg, #FF3B6F, #FF8BA7);' : 'background: linear-gradient(45deg, #3B82F6, #A855F7);'; ?>">
                             <?php if ($m_avatar) : ?>
-                                <img src="<?php echo esc_url($m_avatar); ?>" alt="" class="ig-avatar__img" style="width: 50px; height: 50px;">
+                                <img src="<?php echo esc_url($m_avatar); ?>" alt="" class="ig-avatar__img" style="width: 50px; height: 50px;" loading="lazy">
                             <?php else : ?>
                                 <div class="ig-avatar__img" style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;background:#f0f0f0;">&#x1F464;</div>
                             <?php endif; ?>

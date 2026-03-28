@@ -1,0 +1,95 @@
+<?php
+/**
+ * 恋リアポータル テーマ functions
+ *
+ * @package KoiRiaPortal
+ */
+
+defined('ABSPATH') || exit;
+
+define('KOI_RIA_VERSION', '1.0.0');
+define('KOI_RIA_DIR', get_template_directory());
+define('KOI_RIA_URI', get_template_directory_uri());
+
+/**
+ * テーマセットアップ
+ */
+add_action('after_setup_theme', function () {
+    add_theme_support('title-tag');
+    add_theme_support('post-thumbnails');
+    add_theme_support('html5', [
+        'search-form',
+        'comment-form',
+        'comment-list',
+        'gallery',
+        'caption',
+        'style',
+        'script',
+    ]);
+
+    register_nav_menus([
+        'primary'      => 'ヘッダーナビ',
+        'footer'       => 'フッターナビ',
+        'mobile_bottom' => 'モバイルボトムナビ',
+    ]);
+
+    // サムネイルサイズ
+    add_image_size('cast-avatar', 120, 120, true);
+    add_image_size('show-card', 260, 160, true);
+    add_image_size('hero-thumb', 800, 450, true);
+});
+
+/**
+ * スタイル・スクリプト読み込み
+ */
+add_action('wp_enqueue_scripts', function () {
+    // Google Fonts
+    wp_enqueue_style(
+        'koi-ria-google-fonts',
+        'https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap',
+        [],
+        null
+    );
+
+    // テーマCSS
+    wp_enqueue_style('koi-ria-base', KOI_RIA_URI . '/assets/css/base.css', [], KOI_RIA_VERSION);
+    wp_enqueue_style('koi-ria-components', KOI_RIA_URI . '/assets/css/components.css', ['koi-ria-base'], KOI_RIA_VERSION);
+    wp_enqueue_style('koi-ria-layout', KOI_RIA_URI . '/assets/css/layout.css', ['koi-ria-base'], KOI_RIA_VERSION);
+    wp_enqueue_style('koi-ria-pages', KOI_RIA_URI . '/assets/css/pages.css', ['koi-ria-layout'], KOI_RIA_VERSION);
+    wp_enqueue_style('koi-ria-style', get_stylesheet_uri(), ['koi-ria-pages'], KOI_RIA_VERSION);
+
+    // テーマJS
+    wp_enqueue_script('koi-ria-app', KOI_RIA_URI . '/assets/js/app.js', [], KOI_RIA_VERSION, true);
+    wp_enqueue_script('koi-ria-column-slider', KOI_RIA_URI . '/assets/js/column-slider.js', [], KOI_RIA_VERSION, true);
+    wp_enqueue_script('koi-ria-cast-accordion', KOI_RIA_URI . '/assets/js/cast-accordion.js', [], KOI_RIA_VERSION, true);
+    wp_enqueue_script('koi-ria-poll-vote', KOI_RIA_URI . '/assets/js/poll-vote.js', [], KOI_RIA_VERSION, true);
+
+    // Ajax用のローカライズ
+    wp_localize_script('koi-ria-poll-vote', 'koiRia', [
+        'ajaxUrl'  => rest_url('koi-ria/v1/'),
+        'nonce'    => wp_create_nonce('wp_rest'),
+        'siteUrl'  => home_url('/'),
+    ]);
+});
+
+/**
+ * インクルードファイル読み込み
+ */
+$koi_ria_includes = [
+    'inc/cpt-register.php',
+    'inc/acf-fields.php',
+    'inc/rest-api.php',
+    'inc/cron-youtube.php',
+    'inc/cron-news.php',
+    'inc/cron-instagram.php',
+    'inc/csv-importer.php',
+    'inc/structured-data.php',
+    'inc/admin-menu.php',
+];
+
+foreach ($koi_ria_includes as $file) {
+    $filepath = KOI_RIA_DIR . '/' . $file;
+    if (file_exists($filepath)) {
+        require_once $filepath;
+    }
+}

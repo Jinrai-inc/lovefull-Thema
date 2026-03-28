@@ -1,0 +1,289 @@
+/* ============================================
+   layout.css — グリッド、フレックス、スペーシング
+   ============================================ */
+
+/* --- サイトヘッダー --- */
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(250, 250, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height);
+    padding: 0 var(--space-md);
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+}
+
+/* --- ロゴ --- */
+.site-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-weight: 700;
+    font-size: 1.125rem;
+}
+
+.site-logo__icon {
+    font-size: 1.5rem;
+}
+
+.site-logo__text {
+    background: var(--color-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* --- ハンバーガー --- */
+.hamburger {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 24px;
+    padding: 4px 0;
+    background: none;
+    border: none;
+}
+
+.hamburger__line {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--color-text);
+    border-radius: 1px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.hamburger.is-open .hamburger__line:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger.is-open .hamburger__line:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.is-open .hamburger__line:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* --- グローバルナビ --- */
+.global-nav {
+    display: none;
+    background: var(--color-card);
+    border-top: 1px solid #E5E7EB;
+    padding: var(--space-md);
+}
+
+.global-nav.is-open {
+    display: block;
+}
+
+.global-nav__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.global-nav__list li a {
+    display: block;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.global-nav__list li a:hover {
+    background-color: var(--color-bg);
+}
+
+/* --- メインコンテンツ --- */
+.site-main {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+/* --- セクション --- */
+.section {
+    padding: var(--space-lg) 0;
+}
+
+.section + .section {
+    padding-top: 0;
+}
+
+/* --- 横スクロールコンテナ --- */
+.scroll-x {
+    display: flex;
+    overflow-x: auto;
+    gap: var(--space-md);
+    padding: 0 var(--space-md) var(--space-sm);
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.scroll-x::-webkit-scrollbar {
+    display: none;
+}
+
+.scroll-x > * {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+}
+
+/* --- 2カラムグリッド --- */
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+    padding: 0 var(--space-md);
+}
+
+/* --- 3カラムグリッド --- */
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+    padding: 0 var(--space-md);
+}
+
+/* --- フッター --- */
+.site-footer {
+    background: var(--color-text);
+    color: #fff;
+    padding: var(--space-2xl) var(--space-md);
+    text-align: center;
+}
+
+.site-footer__inner {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+}
+
+.site-footer__logo {
+    margin-bottom: var(--space-lg);
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+.site-footer__logo .site-logo__text {
+    -webkit-text-fill-color: #fff;
+    background: none;
+}
+
+.footer-nav__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.footer-nav__list a {
+    font-size: 0.875rem;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.footer-nav__list a:hover {
+    opacity: 1;
+}
+
+.site-footer__links {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.site-footer__links a {
+    font-size: 0.75rem;
+    opacity: 0.6;
+}
+
+.site-footer__copy {
+    font-size: 0.6875rem;
+    opacity: 0.5;
+    margin: 0;
+}
+
+/* --- モバイルボトムナビ --- */
+.mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: var(--bottom-nav-height);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.mobile-bottom-nav__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.625rem;
+    color: var(--color-text-sub);
+    transition: color 0.2s ease;
+    padding: var(--space-xs);
+}
+
+.mobile-bottom-nav__item.is-active {
+    color: var(--color-primary);
+}
+
+.mobile-bottom-nav__icon {
+    font-size: 1.25rem;
+}
+
+.mobile-bottom-nav__label {
+    font-weight: 500;
+}
+
+@media (min-width: 769px) {
+    .mobile-bottom-nav {
+        display: none;
+    }
+
+    .hamburger {
+        display: none;
+    }
+
+    .global-nav {
+        display: block;
+        background: none;
+        border: none;
+        padding: 0;
+    }
+
+    .global-nav__list {
+        flex-direction: row;
+        gap: var(--space-lg);
+    }
+
+    .site-header__inner {
+        gap: var(--space-xl);
+    }
+
+    .grid-2 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

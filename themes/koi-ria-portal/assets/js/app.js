@@ -1,11 +1,13 @@
 /**
- * メインJS — カルーセル、ハンバーガーメニュー
+ * メインJS — カルーセル、ハンバーガーメニュー、タブ、フィルター
  *
  * @package KoiRiaPortal
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // =============================================
     // ハンバーガーメニュー
+    // =============================================
     const menuToggle = document.getElementById('menuToggle');
     const globalNav = document.getElementById('globalNav');
     if (menuToggle && globalNav) {
@@ -16,7 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // =============================================
     // ヒーローカルーセル
+    // =============================================
     const heroTrack = document.getElementById('heroTrack');
     const heroDots = document.getElementById('heroDots');
     if (heroTrack && heroDots) {
@@ -91,27 +95,116 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { passive: true });
     }
 
-    // プラットフォームフィルター
+    // =============================================
+    // プラットフォームフィルター（番組一覧 & 出演者DB）
+    // =============================================
     document.querySelectorAll('.pill-filters').forEach(container => {
         const pills = container.querySelectorAll('.pill-filter');
+
+        // シーズン選択フィルター（相関図）— data-season-id がある場合
+        const hasSeasonFilter = [...pills].some(p => p.dataset.seasonId);
+        if (hasSeasonFilter) {
+            pills.forEach(pill => {
+                pill.addEventListener('click', () => {
+                    pills.forEach(p => p.classList.remove('is-active'));
+                    pill.classList.add('is-active');
+                    const seasonId = pill.dataset.seasonId;
+                    document.querySelectorAll('.correlation-season').forEach(el => {
+                        el.style.display = el.dataset.seasonId === seasonId ? '' : 'none';
+                    });
+                });
+            });
+            return;
+        }
+
+        // プラットフォームフィルター
         pills.forEach(pill => {
+            if (!pill.dataset.platform) return;
             pill.addEventListener('click', () => {
                 pills.forEach(p => p.classList.remove('is-active'));
                 pill.classList.add('is-active');
 
                 const platform = pill.dataset.platform;
-                const parent = container.closest('.section') || container.parentElement;
-                const items = parent.querySelectorAll('[data-platform]');
+                const section = container.closest('section') || container.closest('.section') || container.parentElement;
 
-                items.forEach(item => {
-                    if (item.classList.contains('pill-filter')) return;
+                // 番組カード（show-card、grid内）
+                section.querySelectorAll('.show-card[data-platform]').forEach(card => {
                     if (platform === 'all') {
-                        item.style.display = '';
+                        card.style.display = '';
                     } else {
-                        item.style.display = item.dataset.platform === platform ? '' : 'none';
+                        card.style.display = card.dataset.platform === platform ? '' : 'none';
+                    }
+                });
+
+                // アコーディオン（出演者DB — data-platform属性を持つ.accordion）
+                section.querySelectorAll('.accordion[data-platform]').forEach(acc => {
+                    if (platform === 'all') {
+                        acc.style.display = '';
+                    } else if (platform === 'other') {
+                        const p = acc.dataset.platform;
+                        acc.style.display = ['ABEMA', 'Netflix', 'Prime Video'].includes(p) ? 'none' : '';
+                    } else {
+                        acc.style.display = acc.dataset.platform === platform ? '' : 'none';
                     }
                 });
             });
+        });
+    });
+
+    // =============================================
+    // 番組詳細タブ
+    // =============================================
+    document.querySelectorAll('.show-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabName = tab.dataset.tab;
+            if (!tabName) return;
+
+            // タブボタン切替
+            document.querySelectorAll('.show-tab').forEach(t => t.classList.remove('is-active'));
+            tab.classList.add('is-active');
+
+            // タブコンテンツ切替
+            document.querySelectorAll('.show-tab-content').forEach(content => {
+                content.classList.remove('is-active');
+                content.style.display = 'none';
+            });
+
+            const target = document.getElementById('tab-' + tabName);
+            if (target) {
+                target.classList.add('is-active');
+                target.style.display = '';
+            }
+        });
+    });
+
+    // =============================================
+    // YouTube動画カードのクリック再生（番組詳細タブ内）
+    // =============================================
+    document.querySelectorAll('.card[data-video-id]').forEach(card => {
+        card.addEventListener('click', () => {
+            const videoId = card.dataset.videoId;
+            if (!videoId) return;
+            const thumb = card.querySelector('.card__thumb, [style*="background"]');
+            if (thumb && thumb.parentElement) {
+                thumb.parentElement.innerHTML = `<iframe
+                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0"
+                    style="width:100%;aspect-ratio:16/9;border:none;border-radius:var(--radius-lg) var(--radius-lg) 0 0;"
+                    allow="autoplay; encrypted-media"
+                    allowfullscreen></iframe>`;
+            }
+        });
+    });
+
+    // =============================================
+    // スムーズスクロール（アンカーリンク）
+    // =============================================
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const target = document.querySelector(link.getAttribute('href'));
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         });
     });
 });

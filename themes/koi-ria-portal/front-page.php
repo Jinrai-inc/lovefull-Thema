@@ -93,27 +93,7 @@ if ($breaking) :
 </section>
 
 <?php // 5-9. 話題の出演者（ストーリーズ型横スクロール） ?>
-<section class="section">
-    <div class="section-header">
-        <h2>&#x1F525; 話題の出演者</h2>
-        <a href="<?php echo esc_url(get_post_type_archive_link('cast')); ?>" class="section-header__more">もっと見る →</a>
-    </div>
-    <div class="scroll-x">
-        <?php
-        $popular_cast = get_posts([
-            'post_type'      => 'cast',
-            'posts_per_page' => 10,
-            'meta_key'       => 'followers_count',
-            'orderby'        => 'meta_value_num',
-            'order'          => 'DESC',
-        ]);
-        foreach ($popular_cast as $cast) :
-            $args = ['cast' => $cast];
-            get_template_part('template-parts/cast-card', null, $args);
-        endforeach;
-        ?>
-    </div>
-</section>
+<?php get_template_part('template-parts/stories-cast'); ?>
 
 <?php // 5-10. 最新ニュース ?>
 <section class="section">

@@ -572,3 +572,162 @@
     color: var(--color-text-sub);
     font-size: 0.875rem;
 }
+
+/* --- 番組詳細タブ --- */
+.show-tabs {
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.show-tabs::-webkit-scrollbar { display: none; }
+
+.show-tab {
+    flex-shrink: 0;
+    padding: 12px 20px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-text-sub);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+    white-space: nowrap;
+}
+
+.show-tab.is-active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+    font-weight: 700;
+}
+
+.show-tab:hover {
+    color: var(--color-text);
+}
+
+.show-tab-content {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- 相関図ライン --- */
+.relation-line {
+    transition: background-color 0.2s ease;
+}
+.relation-line:hover {
+    background-color: rgba(168, 85, 247, 0.03);
+}
+
+/* --- 出演者プロフィール: 同シーズンメンバー --- */
+.cast-card:hover .ig-avatar {
+    transform: scale(1.05);
+    transition: transform 0.2s ease;
+}
+
+/* --- エントリーコンテンツ（記事本文） --- */
+.entry-content h2 {
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-sm);
+    border-bottom: 2px solid var(--color-primary);
+    font-size: 1.125rem;
+}
+
+.entry-content h3 {
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-sm);
+    font-size: 1rem;
+}
+
+.entry-content ul,
+.entry-content ol {
+    padding-left: 1.5em;
+    margin-bottom: var(--space-md);
+}
+
+.entry-content ul li {
+    list-style: disc;
+    margin-bottom: var(--space-xs);
+}
+
+.entry-content ol li {
+    list-style: decimal;
+    margin-bottom: var(--space-xs);
+}
+
+.entry-content blockquote {
+    border-left: 4px solid var(--color-primary);
+    padding: var(--space-md);
+    margin: var(--space-md) 0;
+    background: rgba(168, 85, 247, 0.05);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.entry-content a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.entry-content img {
+    border-radius: var(--radius-md);
+    margin: var(--space-md) 0;
+}
+
+.entry-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--space-md) 0;
+    font-size: 0.875rem;
+}
+
+.entry-content th,
+.entry-content td {
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid #E5E7EB;
+    text-align: left;
+}
+
+.entry-content th {
+    background: var(--color-bg);
+    font-weight: 700;
+}
+
+/* --- ページネーション --- */
+.nav-links {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-sm);
+}
+
+.nav-links a,
+.nav-links span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background 0.2s ease;
+}
+
+.nav-links a {
+    background: var(--color-card);
+    box-shadow: var(--shadow-sm);
+}
+
+.nav-links a:hover {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.nav-links .current {
+    background: var(--color-gradient);
+    color: #fff;
+}

@@ -93,3 +93,16 @@ foreach ($koi_ria_includes as $file) {
         require_once $filepath;
     }
 }
+
+/**
+ * フォロワー数の短縮表示（例: 12.3K, 1.5M）
+ */
+function koi_ria_format_number(int $num): string {
+    if ($num >= 1000000) {
+        return round($num / 1000000, 1) . 'M';
+    }
+    if ($num >= 1000) {
+        return round($num / 1000, 1) . 'K';
+    }
+    return (string) $num;
+}

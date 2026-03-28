@@ -18,18 +18,29 @@ $youtube_url      = get_field('youtube_url') ?: '';
 $followers_count  = get_field('followers_count') ?: 0;
 $tiktok_followers = get_field('tiktok_followers') ?: 0;
 $role             = get_field('role') ?: '';
+$gender           = get_field('gender') ?: '';
 $age              = get_field('age') ?: '';
 $from_area        = get_field('from_area') ?: '';
 $cast_status      = get_field('cast_status') ?: '';
 $profile_image    = get_field('profile_image');
 $ig_cache         = get_post_meta($cast_id, 'ig_profile_cache', true);
 
-// 番組名取得
+// 番組情報取得
 $show_name = '';
+$show_post = null;
 if ($show_id) {
     $show_post = is_array($show_id) ? get_post($show_id[0]) : get_post($show_id);
     if ($show_post) {
         $show_name = get_field('short_name', $show_post->ID) ?: $show_post->post_title;
+    }
+}
+
+// シーズン名
+$season_name = '';
+if ($season_id) {
+    $season_post = is_array($season_id) ? get_post($season_id[0]) : get_post($season_id);
+    if ($season_post) {
+        $season_name = get_field('season_name', $season_post->ID) ?: $season_post->post_title;
     }
 }
 
@@ -40,9 +51,28 @@ if ($profile_image && isset($profile_image['url'])) {
 } elseif ($ig_cache) {
     $avatar_url = $ig_cache;
 }
+
+// 同シーズンの相関図データ
+$relations = [];
+if ($season_id) {
+    $s_id = is_array($season_id) ? $season_id[0] : $season_id;
+    $relations = get_posts([
+        'post_type'      => 'relation',
+        'posts_per_page' => -1,
+        'meta_query'     => [
+            'relation' => 'AND',
+            ['key' => 'season', 'value' => $s_id, 'compare' => '='],
+            [
+                'relation' => 'OR',
+                ['key' => 'from_cast', 'value' => $cast_id, 'compare' => '='],
+                ['key' => 'to_cast', 'value' => $cast_id, 'compare' => '='],
+            ],
+        ],
+    ]);
+}
 ?>
 
-<?php // 7-1. ヘッダー ?>
+<?php // 7-1. プロフィールヘッダー ?>
 <section class="cast-profile-header" style="position: relative;">
     <a href="javascript:history.back();" class="cast-profile-header__back">&larr;</a>
 
@@ -57,19 +87,45 @@ if ($profile_image && isset($profile_image['url'])) {
     <h1 class="cast-profile-header__name"><?php echo esc_html($display_name); ?></h1>
 
     <p class="cast-profile-header__meta">
-        <?php if ($show_name) echo esc_html($show_name); ?>
+        <?php if ($show_name) : ?>
+            <a href="<?php echo esc_url(get_permalink($show_post)); ?>" style="color: #fff; text-decoration: underline; text-underline-offset: 2px;"><?php echo esc_html($show_name); ?></a>
+        <?php endif; ?>
+        <?php if ($season_name) echo ' / ' . esc_html($season_name); ?>
         <?php if ($role) echo ' / ' . esc_html($role); ?>
-        <?php if ($age) echo ' / ' . esc_html($age) . '歳'; ?>
-        <?php if ($from_area) echo ' / ' . esc_html($from_area); ?>
     </p>
 
-    <?php if ($followers_count) : ?>
-        <p class="cast-profile-header__followers">
-            IG: <?php echo esc_html(number_format($followers_count)); ?> followers
-            <?php if ($tiktok_followers) : ?>
-                &nbsp;|&nbsp; TikTok: <?php echo esc_html(number_format($tiktok_followers)); ?>
-            <?php endif; ?>
-        </p>
+    <?php // プロフィール詳細 ?>
+    <div style="display: flex; justify-content: center; gap: var(--space-lg); margin-top: var(--space-md);">
+        <?php if ($age) : ?>
+        <div style="text-align: center;">
+            <div style="font-size: 1.25rem; font-weight: 700;"><?php echo esc_html($age); ?></div>
+            <div style="font-size: 0.625rem; opacity: 0.8;">歳</div>
+        </div>
+        <?php endif; ?>
+        <?php if ($from_area) : ?>
+        <div style="text-align: center;">
+            <div style="font-size: 0.875rem; font-weight: 700;"><?php echo esc_html($from_area); ?></div>
+            <div style="font-size: 0.625rem; opacity: 0.8;">出身</div>
+        </div>
+        <?php endif; ?>
+        <?php if ($followers_count) : ?>
+        <div style="text-align: center;">
+            <div style="font-size: 1.25rem; font-weight: 700;"><?php echo esc_html(koi_ria_format_number($followers_count)); ?></div>
+            <div style="font-size: 0.625rem; opacity: 0.8;">IG followers</div>
+        </div>
+        <?php endif; ?>
+        <?php if ($tiktok_followers) : ?>
+        <div style="text-align: center;">
+            <div style="font-size: 1.25rem; font-weight: 700;"><?php echo esc_html(koi_ria_format_number($tiktok_followers)); ?></div>
+            <div style="font-size: 0.625rem; opacity: 0.8;">TikTok</div>
+        </div>
+        <?php endif; ?>
+    </div>
+
+    <?php if ($cast_status) : ?>
+    <div style="margin-top: var(--space-sm);">
+        <span class="badge <?php echo $cast_status === '出演中' ? 'badge--active' : ($cast_status === 'リタイア' ? 'badge--ended' : 'badge--unknown'); ?>"><?php echo esc_html($cast_status); ?></span>
+    </div>
     <?php endif; ?>
 </section>
 
@@ -85,21 +141,66 @@ if ($profile_image && isset($profile_image['url'])) {
     </div>
 </section>
 
-<?php // 7-3. Instagram最新投稿グリッド（Phase1: プレースホルダー） ?>
+<?php // 相関図（この出演者に関連するリレーション） ?>
+<?php if ($relations) : ?>
+<section class="section">
+    <div class="section-header">
+        <h2>&#x1F495; 相関図</h2>
+    </div>
+    <div style="background: var(--color-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); margin: 0 var(--space-md); padding: var(--space-md); overflow: hidden;">
+        <?php foreach ($relations as $rel) :
+            $from_id = get_field('from_cast', $rel->ID);
+            $to_id   = get_field('to_cast', $rel->ID);
+            $r_type  = get_field('relation_type', $rel->ID) ?: '';
+            $r_label = get_field('relation_label', $rel->ID) ?: '';
+
+            // 相手の名前を特定
+            $other_id = null;
+            if ((is_array($from_id) ? $from_id[0] : $from_id) == $cast_id) {
+                $other_id = is_array($to_id) ? $to_id[0] : $to_id;
+            } else {
+                $other_id = is_array($from_id) ? $from_id[0] : $from_id;
+            }
+            $other_post = $other_id ? get_post($other_id) : null;
+            $other_name = $other_post ? (get_field('display_name', $other_post->ID) ?: $other_post->post_title) : '？';
+
+            $rel_icon = match($r_type) {
+                'love'     => '💗',
+                'rival'    => '⚡',
+                'couple'   => '💑',
+                'interest' => '👀',
+                default    => '❓',
+            };
+        ?>
+        <a href="<?php echo $other_post ? esc_url(get_permalink($other_post)) : '#'; ?>" class="couple-item" style="border-color: #F3F4F6;">
+            <span class="couple-item__icon"><?php echo $rel_icon; ?></span>
+            <div class="couple-item__info">
+                <div class="couple-item__names"><?php echo esc_html($other_name); ?></div>
+                <?php if ($r_label) : ?>
+                    <div class="couple-item__show"><?php echo esc_html($r_label); ?></div>
+                <?php endif; ?>
+            </div>
+        </a>
+        <?php endforeach; ?>
+    </div>
+</section>
+<?php endif; ?>
+
+<?php // 7-3. Instagram最新投稿グリッド ?>
 <?php if ($ig_username) : ?>
 <section class="section">
     <div class="section-header">
         <h2>Instagram</h2>
         <a href="https://instagram.com/<?php echo esc_attr($ig_username); ?>" class="section-header__more" target="_blank" rel="noopener">@<?php echo esc_html($ig_username); ?> →</a>
     </div>
-    <div class="grid-3">
-        <?php // Phase2で Instagram Graph API から自動取得予定 ?>
-        <div style="aspect-ratio:1;background:#f0f0f0;border-radius:var(--radius-sm);"></div>
-        <div style="aspect-ratio:1;background:#f0f0f0;border-radius:var(--radius-sm);"></div>
-        <div style="aspect-ratio:1;background:#f0f0f0;border-radius:var(--radius-sm);"></div>
-        <div style="aspect-ratio:1;background:#f0f0f0;border-radius:var(--radius-sm);"></div>
-        <div style="aspect-ratio:1;background:#f0f0f0;border-radius:var(--radius-sm);"></div>
-        <div style="aspect-ratio:1;background:#f0f0f0;border-radius:var(--radius-sm);"></div>
+    <div class="grid-3" id="igGrid" data-ig-user="<?php echo esc_attr($ig_username); ?>">
+        <?php // Instagram Graph API or oEmbed で取得（Phase4で自動化）
+        // 現段階ではプレースホルダー + リンク
+        for ($i = 0; $i < 6; $i++) : ?>
+        <a href="https://instagram.com/<?php echo esc_attr($ig_username); ?>" target="_blank" rel="noopener" style="aspect-ratio:1; background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: #ccc; font-size: 1.5rem; transition: opacity 0.2s;">
+            &#x1F4F7;
+        </a>
+        <?php endfor; ?>
     </div>
 </section>
 <?php endif; ?>
@@ -112,36 +213,67 @@ if ($profile_image && isset($profile_image['url'])) {
         <a href="https://tiktok.com/@<?php echo esc_attr($tiktok_username); ?>" class="section-header__more" target="_blank" rel="noopener">@<?php echo esc_html($tiktok_username); ?> →</a>
     </div>
     <div class="scroll-x">
-        <?php // Phase2で TikTok oEmbed から取得予定 ?>
-        <div style="min-width:150px;aspect-ratio:9/16;background:#f0f0f0;border-radius:var(--radius-md);"></div>
-        <div style="min-width:150px;aspect-ratio:9/16;background:#f0f0f0;border-radius:var(--radius-md);"></div>
-        <div style="min-width:150px;aspect-ratio:9/16;background:#f0f0f0;border-radius:var(--radius-md);"></div>
+        <?php for ($i = 0; $i < 3; $i++) : ?>
+        <a href="https://tiktok.com/@<?php echo esc_attr($tiktok_username); ?>" target="_blank" rel="noopener" style="min-width:130px; aspect-ratio:9/16; background: linear-gradient(180deg, #000 0%, #25F4EE 100%); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-decoration: none; opacity: 0.3;">
+            <span style="font-size: 2rem;">&#x266B;</span>
+            <small style="margin-top: var(--space-xs); font-size: 0.625rem;">TikTok</small>
+        </a>
+        <?php endfor; ?>
     </div>
 </section>
 <?php endif; ?>
 
 <?php // 7-5. 関連記事 ?>
+<?php
+$related = get_posts([
+    'post_type'      => 'post',
+    'posts_per_page' => 3,
+    'tag'            => sanitize_title($display_name),
+]);
+if ($related) :
+?>
 <section class="section">
     <div class="section-header">
-        <h2>関連記事</h2>
+        <h2>&#x1F4F0; 関連記事</h2>
     </div>
     <?php
-    $related = get_posts([
-        'post_type'      => 'post',
-        'posts_per_page' => 3,
-        'tag'            => sanitize_title($display_name),
-    ]);
-    if ($related) :
-        foreach ($related as $post) :
-            setup_postdata($post);
-            get_template_part('template-parts/news-card', null, ['post' => $post]);
-        endforeach;
-        wp_reset_postdata();
-    else :
+    foreach ($related as $post) :
+        setup_postdata($post);
+        get_template_part('template-parts/news-card', null, ['post' => $post]);
+    endforeach;
+    wp_reset_postdata();
     ?>
-        <p style="padding: 0 var(--space-md); color: var(--color-text-sub); font-size: 0.875rem;">関連記事はまだありません</p>
-    <?php endif; ?>
 </section>
+<?php endif; ?>
+
+<?php // 同シーズンの他メンバー ?>
+<?php
+$s_id = is_array($season_id) ? ($season_id[0] ?? 0) : ($season_id ?: 0);
+if ($s_id) :
+    $same_season_members = get_posts([
+        'post_type'      => 'cast',
+        'posts_per_page' => 10,
+        'post__not_in'   => [$cast_id],
+        'meta_query'     => [
+            ['key' => 'season', 'value' => $s_id, 'compare' => '='],
+        ],
+    ]);
+    if ($same_season_members) :
+?>
+<section class="section">
+    <div class="section-header">
+        <h2>&#x1F465; 同じシーズンのメンバー</h2>
+    </div>
+    <div class="scroll-x">
+        <?php foreach ($same_season_members as $cast) :
+            get_template_part('template-parts/cast-card', null, ['cast' => $cast]);
+        endforeach; ?>
+    </div>
+</section>
+<?php
+    endif;
+endif;
+?>
 
 <?php
 get_footer();

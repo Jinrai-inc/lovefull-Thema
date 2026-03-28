@@ -286,4 +286,55 @@
     .grid-2 {
         grid-template-columns: repeat(3, 1fr);
     }
+
+    .grid-3 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    /* PC: カード幅調整 */
+    .show-card {
+        min-width: 160px;
+    }
+
+    .cast-card {
+        min-width: 140px;
+    }
+
+    .schedule-card {
+        min-width: 110px;
+    }
+
+    /* PC: コラムスライダー */
+    .column-slide {
+        min-width: 45%;
+    }
+    .column-slide--featured {
+        min-width: 50%;
+    }
+
+    /* PC: 投票カード */
+    .poll-card {
+        max-width: 560px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* PC: ニュースカードグリッド化 */
+    .news-card__thumb {
+        width: 100px;
+        height: 100px;
+    }
+
+    /* PC: 番組詳細ヘッダー */
+    .show-detail-header {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* PC: 出演者プロフィールヘッダー */
+    .cast-profile-header {
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        max-width: 600px;
+        margin: 0 auto;
+    }
 }

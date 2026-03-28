@@ -217,6 +217,61 @@
     height: 90px;
 }
 
+/* --- ストーリーズ型出演者 --- */
+.stories-scroll {
+    gap: var(--space-md);
+}
+
+.stories-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 72px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.stories-item:active .ig-avatar {
+    transform: scale(0.95);
+}
+
+.stories-item .ig-avatar {
+    transition: transform 0.2s ease;
+}
+
+.stories-item__name {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--color-text);
+    max-width: 72px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.stories-item__sns {
+    display: flex;
+    gap: 3px;
+}
+
+.stories-item__sns-icon {
+    font-size: 0.5rem;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: #fff;
+    line-height: 1.3;
+}
+
+.stories-item__sns-icon--ig {
+    background: linear-gradient(45deg, #833AB4, #E1306C);
+}
+
+.stories-item__sns-icon--tiktok {
+    background: #000;
+}
+
 /* --- 検索バー --- */
 .search-bar {
     position: relative;

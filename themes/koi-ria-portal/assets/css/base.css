@@ -51,6 +51,51 @@
     --content-max-width: 768px;
 }
 
+/* --- スキップリンク（アクセシビリティ） --- */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    z-index: 100000;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-primary);
+    color: #fff;
+    font-size: 0.875rem;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+}
+.skip-link:focus {
+    position: fixed;
+    top: var(--space-sm);
+    left: var(--space-sm);
+    width: auto;
+    height: auto;
+    z-index: 100001;
+}
+
+.screen-reader-text {
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    height: 1px;
+    width: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    word-wrap: normal !important;
+}
+.screen-reader-text:focus {
+    clip: auto !important;
+    clip-path: none;
+    display: block;
+    height: auto;
+    width: auto;
+    z-index: 100001;
+}
+
 /* --- リセット --- */
 *,
 *::before,

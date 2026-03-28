@@ -9,7 +9,7 @@ defined('ABSPATH') || exit;
 ?>
 </main>
 
-<footer class="site-footer">
+<footer class="site-footer" role="contentinfo">
     <div class="site-footer__inner">
         <div class="site-footer__logo">
             <span class="site-logo__icon">&#x1F496;</span>
@@ -28,8 +28,29 @@ defined('ABSPATH') || exit;
         </nav>
 
         <div class="site-footer__links">
-            <a href="<?php echo esc_url(get_privacy_policy_url()); ?>">プライバシーポリシー</a>
-            <a href="<?php echo esc_url(home_url('/contact')); ?>">お問い合わせ</a>
+            <?php
+            $legal_pages = [
+                'company'  => '運営会社',
+                'terms'    => '利用規約',
+                'privacy-policy' => 'プライバシーポリシー',
+                'tokushoho' => '特定商取引法に基づく表記',
+                'contact'  => 'お問い合わせ',
+            ];
+            foreach ($legal_pages as $slug => $label) :
+                $page = get_page_by_path($slug);
+                if ($page) :
+            ?>
+                <a href="<?php echo esc_url(get_permalink($page)); ?>"><?php echo esc_html($label); ?></a>
+            <?php
+                endif;
+            endforeach;
+
+            // フォールバック: プライバシーポリシーURL（WordPress設定）
+            $privacy_url = get_privacy_policy_url();
+            if ($privacy_url && !get_page_by_path('privacy-policy')) :
+            ?>
+                <a href="<?php echo esc_url($privacy_url); ?>">プライバシーポリシー</a>
+            <?php endif; ?>
         </div>
 
         <p class="site-footer__copy">

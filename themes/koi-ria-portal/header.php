@@ -19,7 +19,9 @@ defined('ABSPATH') || exit;
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
 
-<header class="site-header">
+<a class="skip-link screen-reader-text" href="#content">コンテンツへスキップ</a>
+
+<header class="site-header" role="banner">
     <div class="site-header__inner">
         <a href="<?php echo esc_url(home_url('/')); ?>" class="site-logo">
             <span class="site-logo__icon">&#x1F496;</span>
@@ -45,4 +47,4 @@ defined('ABSPATH') || exit;
     </nav>
 </header>
 
-<main class="site-main">
+<main class="site-main" id="content" role="main">

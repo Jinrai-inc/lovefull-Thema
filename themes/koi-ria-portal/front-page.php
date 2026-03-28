@@ -13,9 +13,10 @@ get_header();
 
 <?php // 5-2. 検索バー ?>
 <section class="section">
-    <form class="search-bar" action="<?php echo esc_url(home_url('/')); ?>" method="get" role="search">
+    <form class="search-bar" action="<?php echo esc_url(home_url('/')); ?>" method="get" role="search" aria-label="サイト内検索">
+        <label for="top-search" class="screen-reader-text">検索キーワード</label>
         <span class="search-bar__icon">&#x1F50D;</span>
-        <input type="search" class="search-bar__input" name="s" placeholder="番組名・出演者を検索…" value="<?php echo get_search_query(); ?>">
+        <input type="search" class="search-bar__input" id="top-search" name="s" placeholder="番組名・出演者を検索…" value="<?php echo get_search_query(); ?>">
     </form>
 </section>
 

@@ -89,23 +89,23 @@ $related_posts = get_posts([
 </section>
 
 <?php // タブナビゲーション ?>
-<div class="show-tabs" style="position: sticky; top: var(--header-height); z-index: 50; background: var(--color-bg); border-bottom: 1px solid #E5E7EB;">
-    <div class="scroll-x" style="gap: 0; padding: 0;">
-        <button class="show-tab is-active" data-tab="members">&#x1F465; メンバー</button>
+<nav class="show-tabs" style="position: sticky; top: var(--header-height); z-index: 50; background: var(--color-bg); border-bottom: 1px solid #E5E7EB;" aria-label="番組情報タブ">
+    <div class="scroll-x" style="gap: 0; padding: 0;" role="tablist">
+        <button class="show-tab is-active" data-tab="members" role="tab" aria-selected="true" aria-controls="tab-members" id="tab-btn-members">&#x1F465; メンバー</button>
         <?php if ($seasons) : ?>
-        <button class="show-tab" data-tab="chart">&#x1F495; 相関図</button>
+        <button class="show-tab" data-tab="chart" role="tab" aria-selected="false" aria-controls="tab-chart" id="tab-btn-chart">&#x1F495; 相関図</button>
         <?php endif; ?>
         <?php if ($videos) : ?>
-        <button class="show-tab" data-tab="videos">&#x25B6; 動画</button>
+        <button class="show-tab" data-tab="videos" role="tab" aria-selected="false" aria-controls="tab-videos" id="tab-btn-videos">&#x25B6; 動画</button>
         <?php endif; ?>
         <?php if ($related_posts) : ?>
-        <button class="show-tab" data-tab="articles">&#x1F4F0; 記事</button>
+        <button class="show-tab" data-tab="articles" role="tab" aria-selected="false" aria-controls="tab-articles" id="tab-btn-articles">&#x1F4F0; 記事</button>
         <?php endif; ?>
     </div>
-</div>
+</nav>
 
 <?php // タブ: メンバー（シーズンアコーディオン） ?>
-<div class="show-tab-content is-active" id="tab-members">
+<div class="show-tab-content is-active" id="tab-members" role="tabpanel" aria-labelledby="tab-btn-members">
     <section class="section">
         <?php if ($seasons) :
             foreach ($seasons as $season) :
@@ -178,7 +178,7 @@ $related_posts = get_posts([
 
 <?php // タブ: 相関図 ?>
 <?php if ($seasons) : ?>
-<div class="show-tab-content" id="tab-chart" style="display: none;">
+<div class="show-tab-content" id="tab-chart" role="tabpanel" aria-labelledby="tab-btn-chart" style="display: none;">
     <section class="section">
         <?php // シーズン選択 ?>
         <div class="pill-filters" style="margin-bottom: var(--space-md);">
@@ -299,7 +299,7 @@ $related_posts = get_posts([
 
 <?php // タブ: YouTube動画 ?>
 <?php if ($videos) : ?>
-<div class="show-tab-content" id="tab-videos" style="display: none;">
+<div class="show-tab-content" id="tab-videos" role="tabpanel" aria-labelledby="tab-btn-videos" style="display: none;">
     <section class="section">
         <div style="padding: 0 var(--space-md); display: flex; flex-direction: column; gap: var(--space-md);">
             <?php foreach ($videos as $video) :
@@ -329,7 +329,7 @@ $related_posts = get_posts([
 
 <?php // タブ: 関連記事 ?>
 <?php if ($related_posts) : ?>
-<div class="show-tab-content" id="tab-articles" style="display: none;">
+<div class="show-tab-content" id="tab-articles" role="tabpanel" aria-labelledby="tab-btn-articles" style="display: none;">
     <section class="section">
         <?php foreach ($related_posts as $post) :
             setup_postdata($post);

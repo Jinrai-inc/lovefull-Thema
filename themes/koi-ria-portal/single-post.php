@@ -31,7 +31,11 @@ while (have_posts()) :
         <h1 style="margin-top: var(--space-sm); font-size: 1.25rem;"><?php the_title(); ?></h1>
 
         <p style="color: var(--color-text-sub); font-size: 0.75rem; margin-top: var(--space-xs);">
-            <?php echo get_the_date('Y.m.d'); ?> &nbsp;|&nbsp; <?php echo esc_html(ceil(mb_strlen(strip_tags(get_the_content())) / 600)); ?>分で読める
+            <time datetime="<?php echo esc_attr(get_the_date('c')); ?>"><?php echo get_the_date('Y.m.d'); ?></time>
+            <?php if (get_the_date('c') !== get_the_modified_date('c')) : ?>
+                <span>(更新: <time datetime="<?php echo esc_attr(get_the_modified_date('c')); ?>"><?php echo get_the_modified_date('Y.m.d'); ?></time>)</span>
+            <?php endif; ?>
+            &nbsp;|&nbsp; <?php echo esc_html(ceil(mb_strlen(strip_tags(get_the_content())) / 600)); ?>分で読める
         </p>
 
         <?php if (has_post_thumbnail()) : ?>

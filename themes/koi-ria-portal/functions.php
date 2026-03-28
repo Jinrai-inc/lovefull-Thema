@@ -111,6 +111,7 @@ $koi_ria_includes = [
     'inc/csv-importer.php',
     'inc/structured-data.php',
     'inc/ogp-meta.php',
+    'inc/seo-helpers.php',
     'inc/admin-menu.php',
 ];
 
@@ -120,28 +121,6 @@ foreach ($koi_ria_includes as $file) {
         require_once $filepath;
     }
 }
-
-/**
- * wp_get_attachment_image に loading="lazy" をデフォルト設定
- * WordPress 5.5+ はデフォルト対応済みだが、
- * カスタムテンプレート内の the_post_thumbnail にも確実に適用
- */
-add_filter('wp_get_attachment_image_attributes', function (array $attr, WP_Post $attachment): array {
-    if (!isset($attr['loading'])) {
-        $attr['loading'] = 'lazy';
-    }
-    return $attr;
-}, 10, 2);
-
-/**
- * Emoji スクリプト無効化（パフォーマンス最適化）
- */
-add_action('init', function () {
-    remove_action('wp_head', 'print_emoji_detection_script', 7);
-    remove_action('wp_print_styles', 'print_emoji_styles');
-    remove_action('admin_print_scripts', 'print_emoji_detection_script');
-    remove_action('admin_print_styles', 'print_emoji_styles');
-});
 
 /**
  * フォロワー数の短縮表示（例: 12.3K, 1.5M）

@@ -13,9 +13,10 @@ get_header();
         <h1>&#x1F50D; 「<?php echo esc_html(get_search_query()); ?>」の検索結果</h1>
     </div>
 
-    <form class="search-bar" style="margin-bottom: var(--space-lg);" action="<?php echo esc_url(home_url('/')); ?>" method="get">
+    <form class="search-bar" style="margin-bottom: var(--space-lg);" action="<?php echo esc_url(home_url('/')); ?>" method="get" role="search" aria-label="サイト内検索">
+        <label for="search-input" class="screen-reader-text">検索キーワード</label>
         <span class="search-bar__icon">&#x1F50D;</span>
-        <input type="search" class="search-bar__input" name="s" value="<?php echo get_search_query(); ?>" placeholder="番組名・出演者を検索…">
+        <input type="search" class="search-bar__input" id="search-input" name="s" value="<?php echo get_search_query(); ?>" placeholder="番組名・出演者を検索…">
     </form>
 
     <?php if (have_posts()) : ?>

@@ -159,9 +159,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const tabName = tab.dataset.tab;
             if (!tabName) return;
 
-            // タブボタン切替
-            document.querySelectorAll('.show-tab').forEach(t => t.classList.remove('is-active'));
+            // タブボタン切替（ARIA対応）
+            document.querySelectorAll('.show-tab').forEach(t => {
+                t.classList.remove('is-active');
+                t.setAttribute('aria-selected', 'false');
+            });
             tab.classList.add('is-active');
+            tab.setAttribute('aria-selected', 'true');
 
             // タブコンテンツ切替
             document.querySelectorAll('.show-tab-content').forEach(content => {

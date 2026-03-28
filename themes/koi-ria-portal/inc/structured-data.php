@@ -44,12 +44,29 @@ add_action('wp_head', function (): void {
         '@type'    => 'Organization',
         '@id'      => home_url('/#organization'),
         'name'     => get_bloginfo('name'),
+        'legalName' => '株式会社仁頼',
+        'alternateName' => ['Jinrai Co., Ltd.', '恋リアポータル'],
         'url'      => home_url('/'),
         'logo'     => [
             '@type' => 'ImageObject',
             'url'   => koi_ria_get_site_logo_url(),
         ],
         'description' => get_bloginfo('description'),
+        'foundingDate' => '2022-09',
+        'address'      => [
+            '@type'           => 'PostalAddress',
+            'addressCountry'  => 'JP',
+            'postalCode'      => '221-0001',
+            'addressRegion'   => '神奈川県',
+            'addressLocality' => '横浜市神奈川区',
+            'streetAddress'   => '西寺尾4丁目6番6-3号',
+        ],
+        'parentOrganization' => [
+            '@type'    => 'Organization',
+            'name'     => '株式会社仁頼',
+            'url'      => 'https://jinrai.co.jp',
+            'legalName' => '株式会社仁頼',
+        ],
     ];
 
     $social_urls = koi_ria_get_site_social_urls();

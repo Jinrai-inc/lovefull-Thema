@@ -112,6 +112,7 @@ $koi_ria_includes = [
     'inc/structured-data.php',
     'inc/ogp-meta.php',
     'inc/seo-helpers.php',
+    'inc/legal-pages.php',
     'inc/admin-menu.php',
 ];
 

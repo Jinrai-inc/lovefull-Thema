@@ -202,13 +202,15 @@
 .site-footer__links {
     display: flex;
     justify-content: center;
-    gap: var(--space-lg);
+    flex-wrap: wrap;
+    gap: var(--space-sm) var(--space-md);
     margin-bottom: var(--space-lg);
 }
 
 .site-footer__links a {
     font-size: 0.75rem;
     opacity: 0.6;
+    white-space: nowrap;
 }
 
 .site-footer__copy {

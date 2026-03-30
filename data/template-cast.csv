@@ -1,5 +1,5 @@
-﻿show_slug,season_name,name,display_name,ig_username,tiktok_username,x_username,youtube_url,role,gender,age,from_area,cast_status
-kyou-suki,グアム編,山田あいり,あいり,airi_yamada,,airi_y,,女子メンバー,f,17,東京都,出演中
-kyou-suki,グアム編,佐藤たくや,たくや,takuya_sato,takuya_tk,,,男子メンバー,m,18,大阪府,出演中
-kyou-suki,グアム編,鈴木みお,みお,mio_suzuki,,,,女子メンバー,f,16,神奈川県,出演中
-bachelor-japan,Season 6,田中一郎,田中一郎,tanaka_ichiro,,,,バチェラー,m,35,東京都,出演中
+﻿show_slug,season_name,name,display_name,ig_username,tiktok_username,x_username,youtube_url,role,gender,age,from_area,height,cast_status,is_continuation,note
+kyou-suki,グアム編,山田あいり,あいり,airi_yamada,,airi_y,,女子メンバー,f,17,東京都,160,出演中,FALSE,Popteen専属モデル
+kyou-suki,グアム編,佐藤たくや,たくや,takuya_sato,takuya_tk,,,男子メンバー,m,18,大阪府,175,出演中,FALSE,男子高生ミスターコン受賞
+kyou-suki,グアム編,鈴木みお,みお,mio_suzuki,,,,女子メンバー,f,16,神奈川県,155,出演中,TRUE,前シーズンから継続
+bachelor-japan,Season 6,田中一郎,田中一郎,tanaka_ichiro,,,,バチェラー,m,35,東京都,180,出演中,FALSE,IT企業CEO

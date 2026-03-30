@@ -25,19 +25,31 @@ function koi_ria_upsert_show(array $row, string $mode = 'upsert'): array {
         return ['status' => 'skipped', 'message' => "{$row['title']} は既に存在"];
     }
 
+    $description = isset($row['description']) ? sanitize_text_field($row['description']) : '';
+
     if ($existing) {
         $post_id = $existing->ID;
-        wp_update_post(['ID' => $post_id, 'post_title' => $row['title'] ?? $existing->post_title]);
+        $update_data = ['ID' => $post_id, 'post_title' => $row['title'] ?? $existing->post_title];
+        if ($description !== '') {
+            $update_data['post_content'] = $description;
+        }
+        wp_update_post($update_data);
     } else {
         $post_id = wp_insert_post([
-            'post_type'   => 'show',
-            'post_title'  => $row['title'] ?? '',
-            'post_status' => 'publish',
-            'post_name'   => $slug,
+            'post_type'    => 'show',
+            'post_title'   => $row['title'] ?? '',
+            'post_content' => $description,
+            'post_status'  => 'publish',
+            'post_name'    => $slug,
         ]);
         if (is_wp_error($post_id)) {
             return ['status' => 'error', 'message' => $post_id->get_error_message()];
         }
+    }
+
+    // Also save description as post meta for ACF compatibility
+    if ($description !== '') {
+        update_field('description', $description, $post_id);
     }
 
     $fields = ['short_name', 'platform', 'platform_color', 'emoji', 'youtube_channel_id', 'affiliate_url', 'show_status', 'genre', 'target', 'priority'];
@@ -90,6 +102,22 @@ function koi_ria_upsert_season(array $row, string $mode = 'upsert'): array {
     foreach ($fields as $field) {
         if (isset($row[$field]) && $row[$field] !== '') {
             update_field($field, $row[$field], $post_id);
+        }
+    }
+
+    // Handle start_date (YYYY-MM-DD format, empty OK)
+    if (isset($row['start_date'])) {
+        $start_date = trim($row['start_date']);
+        if ($start_date === '' || preg_match('/^\d{4}-\d{2}-\d{2}$/', $start_date)) {
+            update_field('start_date', $start_date, $post_id);
+        }
+    }
+
+    // Handle end_date (YYYY-MM-DD format, empty OK)
+    if (isset($row['end_date'])) {
+        $end_date = trim($row['end_date']);
+        if ($end_date === '' || preg_match('/^\d{4}-\d{2}-\d{2}$/', $end_date)) {
+            update_field('end_date', $end_date, $post_id);
         }
     }
 
@@ -157,6 +185,26 @@ function koi_ria_upsert_cast(array $row, string $mode = 'upsert'): array {
         if (isset($row[$field]) && $row[$field] !== '') {
             update_field($field, $row[$field], $post_id);
         }
+    }
+
+    // Handle height (numeric, empty OK)
+    if (isset($row['height']) && $row['height'] !== '') {
+        $height = intval($row['height']);
+        if ($height > 0) {
+            update_field('height', $height, $post_id);
+        }
+    }
+
+    // Handle is_continuation (TRUE/FALSE → '1'/'0')
+    if (isset($row['is_continuation'])) {
+        $val = strtoupper(trim($row['is_continuation']));
+        $is_continuation = ($val === 'TRUE' || $val === '1') ? '1' : '0';
+        update_field('is_continuation', $is_continuation, $post_id);
+    }
+
+    // Handle note (text, empty OK)
+    if (isset($row['note']) && $row['note'] !== '') {
+        update_field('note', sanitize_text_field($row['note']), $post_id);
     }
 
     return ['status' => $existing ? 'updated' : 'created'];
@@ -249,6 +297,14 @@ function koi_ria_upsert_relation(array $row, string $mode = 'upsert'): array {
         update_field('relation_label', $row['label'], $post_id);
     }
 
+    // Handle as_of_episode (numeric, empty OK)
+    if (isset($row['as_of_episode']) && $row['as_of_episode'] !== '') {
+        $episode = intval($row['as_of_episode']);
+        if ($episode > 0) {
+            update_field('as_of_episode', $episode, $post_id);
+        }
+    }
+
     return ['status' => $existing ? 'updated' : 'created'];
 }
 
@@ -307,6 +363,21 @@ function koi_ria_upsert_youtube_video(array $row, string $mode = 'upsert'): arra
     // Auto-generate thumbnail if not provided
     if (!get_field('thumbnail_url', $post_id)) {
         update_field('thumbnail_url', 'https://img.youtube.com/vi/' . $video_id . '/maxresdefault.jpg', $post_id);
+    }
+
+    // Handle show_slug → look up show post by slug, save as relation meta
+    if (isset($row['show_slug']) && $row['show_slug'] !== '') {
+        $show = get_page_by_path($row['show_slug'], OBJECT, 'show');
+        if ($show) {
+            update_field('show', $show->ID, $post_id);
+        }
+    }
+
+    // Handle is_pinned (TRUE/FALSE → '1'/'0')
+    if (isset($row['is_pinned'])) {
+        $val = strtoupper(trim($row['is_pinned']));
+        $is_pinned = ($val === 'TRUE' || $val === '1') ? '1' : '0';
+        update_field('is_pinned', $is_pinned, $post_id);
     }
 
     return ['status' => $existing ? 'updated' : 'created'];

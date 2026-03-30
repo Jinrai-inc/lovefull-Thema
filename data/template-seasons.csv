@@ -1,8 +1,8 @@
-﻿show_slug,season_name,year,badge,order
-kyou-suki,グアム編,2026,ON AIR,1
-kyou-suki,テグ編,2025,,2
-kyou-suki,沖縄編,2025,,3
-bachelor-japan,Season 6,2025,NEW,1
-bachelor-japan,Season 5,2024,,2
-love-transit,Season 3,2026,ON AIR,1
-love-transit,Season 2,2025,,2
+﻿show_slug,season_name,year,badge,order,start_date,end_date
+kyou-suki,グアム編,2026,ON AIR,1,2026-01-12,
+kyou-suki,テグ編,2025,,2,2025-11-07,2025-12-22
+kyou-suki,沖縄編,2025,,3,2025-07-14,2025-09-01
+bachelor-japan,Season 6,2025,NEW,1,2025-04-01,
+bachelor-japan,Season 5,2024,,2,2024-06-01,2024-08-15
+love-transit,Season 3,2026,ON AIR,1,2026-02-01,
+love-transit,Season 2,2025,,2,2025-05-01,2025-07-20

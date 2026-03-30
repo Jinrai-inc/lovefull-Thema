@@ -1,3 +1,3 @@
-﻿url,title,channel_name
-https://www.youtube.com/watch?v=dQw4w9WgXcQ,【今日好き】第1話 初めましての出会い,今日好き公式
-https://youtu.be/abc123defgh,【バチェラー】衝撃のローズセレモニー,バチェラー・ジャパン
+﻿url,title,channel_name,show_slug,is_pinned
+https://www.youtube.com/watch?v=dQw4w9WgXcQ,【今日好き】第1話 初めましての出会い,今日好き公式,kyou-suki,TRUE
+https://youtu.be/abc123defgh,【バチェラー】衝撃のローズセレモニー,バチェラー・ジャパン,bachelor-japan,FALSE

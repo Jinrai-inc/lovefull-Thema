@@ -243,6 +243,7 @@ $template_base = get_template_directory_uri() . '/data/';
                     <tr><td><code>genre</code></td><td class="optional">任意</td><td>ジャンル</td><td>青春恋愛</td></tr>
                     <tr><td><code>target</code></td><td class="optional">任意</td><td>ターゲット層</td><td>中高生</td></tr>
                     <tr><td><code>priority</code></td><td class="optional">任意</td><td>表示優先度（数値、小さい方が優先）</td><td>1</td></tr>
+                    <tr><td><code>description</code></td><td class="optional">任意</td><td>番組の説明文（post_contentおよびメタに保存）</td><td>現役高校生たちが...</td></tr>
                 </tbody>
             </table>
 
@@ -255,6 +256,8 @@ $template_base = get_template_directory_uri() . '/data/';
                     <tr><td><code>year</code></td><td class="optional">任意</td><td>放送年</td><td>2026</td></tr>
                     <tr><td><code>badge</code></td><td class="optional">任意</td><td>バッジラベル</td><td>ON AIR / NEW</td></tr>
                     <tr><td><code>order</code></td><td class="optional">任意</td><td>表示順（数値）</td><td>1</td></tr>
+                    <tr><td><code>start_date</code></td><td class="optional">任意</td><td>放送・配信開始日（YYYY-MM-DD形式）</td><td>2026-01-12</td></tr>
+                    <tr><td><code>end_date</code></td><td class="optional">任意</td><td>放送・配信終了日（YYYY-MM-DD形式、空欄＝放送中）</td><td>2025-12-22</td></tr>
                 </tbody>
             </table>
 
@@ -274,7 +277,10 @@ $template_base = get_template_directory_uri() . '/data/';
                     <tr><td><code>gender</code></td><td class="optional">任意</td><td>性別（m/f）</td><td>f</td></tr>
                     <tr><td><code>age</code></td><td class="optional">任意</td><td>年齢（数値）</td><td>17</td></tr>
                     <tr><td><code>from_area</code></td><td class="optional">任意</td><td>出身地</td><td>東京都</td></tr>
-                    <tr><td><code>cast_status</code></td><td class="optional">任意</td><td>出演状態</td><td>出演中 / 卒業</td></tr>
+                    <tr><td><code>cast_status</code></td><td class="optional">任意</td><td>出演状態</td><td>出演中 / 卒業 / 完走 / リタイア</td></tr>
+                    <tr><td><code>height</code></td><td class="optional">任意</td><td>身長（cm、数値）</td><td>160</td></tr>
+                    <tr><td><code>is_continuation</code></td><td class="optional">任意</td><td>継続メンバーか（TRUE/FALSE）</td><td>TRUE</td></tr>
+                    <tr><td><code>note</code></td><td class="optional">任意</td><td>備考（最大200文字）</td><td>Popteen専属モデル</td></tr>
                 </tbody>
             </table>
 
@@ -288,6 +294,7 @@ $template_base = get_template_directory_uri() . '/data/';
                     <tr><td><code>to_name</code></td><td class="required">必須</td><td>関係先の出演者名（display_name）</td><td>たくや</td></tr>
                     <tr><td><code>type</code></td><td class="optional">任意</td><td>関係タイプ</td><td>love / interest / rival</td></tr>
                     <tr><td><code>label</code></td><td class="optional">任意</td><td>関係のラベル</td><td>両思い / 片思い</td></tr>
+                    <tr><td><code>as_of_episode</code></td><td class="optional">任意</td><td>この関係が確認された話数（数値）</td><td>3</td></tr>
                 </tbody>
             </table>
 
@@ -300,6 +307,8 @@ $template_base = get_template_directory_uri() . '/data/';
                     <tr><td><code>title</code></td><td class="optional">任意</td><td>動画タイトル</td><td>【今日好き】第1話</td></tr>
                     <tr><td><code>channel_name</code></td><td class="optional">任意</td><td>チャンネル名</td><td>今日好き公式</td></tr>
                     <tr><td><code>thumbnail_url</code></td><td class="optional">任意</td><td>サムネイルURL（省略時は自動生成）</td><td>https://img.youtube.com/vi/.../hqdefault.jpg</td></tr>
+                    <tr><td><code>show_slug</code></td><td class="optional">任意</td><td>紐づく番組のスラッグ</td><td>kyou-suki</td></tr>
+                    <tr><td><code>is_pinned</code></td><td class="optional">任意</td><td>トップにピン留め（TRUE/FALSE）</td><td>TRUE</td></tr>
                 </tbody>
             </table>
         </div>

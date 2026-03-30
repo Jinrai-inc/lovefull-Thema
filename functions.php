@@ -432,4 +432,20 @@ function koi_ria_format_number(int $num): string {
     return (string) $num;
 }
 
+/**
+ * プラットフォーム名からブランドカラーを返す
+ */
+function koi_ria_get_platform_color($platform) {
+    $colors = [
+        'ABEMA'       => '#00B900',
+        'Netflix'     => '#E50914',
+        'Prime Video' => '#00A8E1',
+        'U-NEXT'      => '#FF3D00',
+        'Hulu'        => '#1CE783',
+        'Disney+'     => '#0057FF',
+        'TVer'        => '#0ABAB5',
+    ];
+    return $colors[$platform] ?? '#6B7280';
+}
+
 // 閲覧数カウンター・GA連携は inc/popular-posts.php に移動

@@ -1,6 +1,6 @@
-﻿slug,title,short_name,platform,youtube_channel_id,affiliate_url,show_status,genre,target,priority
-kyou-suki,今日、好きになりました。,今日好き,ABEMA,UCxxxxxxxxxx,,放送中,青春恋愛,中高生,1
-terrace-house,テラスハウス,テラハ,Netflix,UCyyyyyyyyyy,,過去作,シェアハウス恋愛,20-30代,5
-bachelor-japan,バチェラー・ジャパン,バチェラー,Prime Video,UCzzzzzzzzzz,,配信中,婚活リアリティ,20-40代,3
-ainori,あいのり,あいのり,Netflix,,,過去作,旅恋愛,全年齢,8
-love-transit,ラブ トランジット,ラブトラ,Prime Video,,,配信中,元カレ元カノ,20-30代,4
+﻿slug,title,short_name,platform,youtube_channel_id,affiliate_url,show_status,genre,target,priority,description
+kyou-suki,今日、好きになりました。,今日好き,ABEMA,UCxxxxxxxxxx,,放送中,青春恋愛,中高生,1,現役高校生たちが2泊3日の修学旅行で本気の恋に挑む青春恋愛リアリティショー
+terrace-house,テラスハウス,テラハ,Netflix,UCyyyyyyyyyy,,過去作,シェアハウス恋愛,20-30代,5,見知らぬ男女6人がひとつ屋根の下で共同生活する恋愛リアリティショー
+bachelor-japan,バチェラー・ジャパン,バチェラー,Prime Video,UCzzzzzzzzzz,,配信中,婚活リアリティ,20-40代,3,1人のバチェラーが25人の女性から運命の相手を選ぶ婚活リアリティショー
+ainori,あいのり,あいのり,Netflix,,,過去作,旅恋愛,全年齢,8,ラブワゴンに乗って世界を旅しながら恋を探すバラエティ番組
+love-transit,ラブ トランジット,ラブトラ,Prime Video,,,配信中,元カレ元カノ,20-30代,4,元カレ・元カノが再会し復縁か新しい恋かを選ぶリアリティショー

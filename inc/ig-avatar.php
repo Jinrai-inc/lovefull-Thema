@@ -119,17 +119,9 @@ function koi_ria_download_avatar_image(string $url, string $ig_username) {
     }
 
     $body = wp_remote_retrieve_body($response);
-    $content_type = wp_remote_retrieve_header($response, 'content-type');
 
-    // ZIP/圧縮ファイルを除外
-    if ($content_type && (
-        strpos($content_type, 'zip') !== false ||
-        strpos($content_type, 'octet-stream') !== false ||
-        strpos($content_type, 'gzip') !== false
-    )) {
-        error_log('[KoiRia] Avatar returned non-image content-type for @' . $ig_username . ': ' . $content_type);
-        return false;
-    }
+    // gzip圧縮されたデータを自動解凍
+    $body = koi_ria_maybe_decompress($body);
 
     // 画像データの検証
     if (strlen($body) < 1024) {
@@ -138,16 +130,9 @@ function koi_ria_download_avatar_image(string $url, string $ig_username) {
     }
 
     // 画像ヘッダーチェック（JPEG/PNG/GIF/WebP）
-    $magic = substr($body, 0, 4);
-    $is_image = (
-        substr($body, 0, 2) === "\xFF\xD8" ||         // JPEG
-        substr($body, 0, 8) === "\x89PNG\r\n\x1A\n" || // PNG
-        substr($body, 0, 4) === "GIF8" ||               // GIF
-        substr($body, 0, 4) === "RIFF"                  // WebP
-    );
-
-    if (!$is_image) {
-        error_log('[KoiRia] Avatar data is not a valid image for @' . $ig_username . ' (magic: ' . bin2hex($magic) . ')');
+    if (!koi_ria_is_valid_image($body)) {
+        $magic = substr($body, 0, 4);
+        error_log('[KoiRia] Avatar data is not a valid image for @' . $ig_username . ' (magic: ' . bin2hex($magic) . ', size: ' . strlen($body) . ')');
         return false;
     }
 
@@ -206,4 +191,73 @@ function koi_ria_ig_avatar(string $ig_username, int $size = 80, string $class = 
        . 'width="' . intval($size) . '" height="' . intval($size) . '" '
        . 'class="' . esc_attr($class) . '" loading="lazy" '
        . 'onerror="this.src=\'' . $fallback . '\'" />';
+}
+
+/**
+ * 圧縮データを検出して自動解凍する
+ *
+ * gzip / ZIP でラップされた画像データを展開して画像本体を返す。
+ * 既に画像データならそのまま返す。
+ */
+function koi_ria_maybe_decompress(string $data): string {
+    if (strlen($data) < 4) {
+        return $data;
+    }
+
+    // 既に有効な画像ならそのまま返す
+    if (koi_ria_is_valid_image($data)) {
+        return $data;
+    }
+
+    // gzip (magic: 1f 8b)
+    if (substr($data, 0, 2) === "\x1F\x8B" && function_exists('gzdecode')) {
+        $decoded = @gzdecode($data);
+        if ($decoded !== false && koi_ria_is_valid_image($decoded)) {
+            return $decoded;
+        }
+    }
+
+    // zlib / deflate (magic: 78 01, 78 9c, 78 da)
+    $zlib_byte = ord($data[0]);
+    if ($zlib_byte === 0x78 && function_exists('gzuncompress')) {
+        $decoded = @gzuncompress($data);
+        if ($decoded !== false && koi_ria_is_valid_image($decoded)) {
+            return $decoded;
+        }
+    }
+
+    // PKzip (magic: PK\x03\x04) — ZIPアーカイブ内の最初のファイルを展開
+    if (substr($data, 0, 4) === "PK\x03\x04" && class_exists('ZipArchive')) {
+        $tmp = wp_tempnam('avatar_zip_');
+        file_put_contents($tmp, $data);
+
+        $zip = new ZipArchive();
+        if ($zip->open($tmp) === true && $zip->numFiles > 0) {
+            $contents = $zip->getFromIndex(0);
+            $zip->close();
+            @unlink($tmp);
+            if ($contents !== false && koi_ria_is_valid_image($contents)) {
+                return $contents;
+            }
+        } else {
+            @unlink($tmp);
+        }
+    }
+
+    return $data;
+}
+
+/**
+ * バイナリデータが有効な画像かチェック
+ */
+function koi_ria_is_valid_image(string $data): bool {
+    if (strlen($data) < 4) {
+        return false;
+    }
+    return (
+        substr($data, 0, 2) === "\xFF\xD8" ||         // JPEG
+        substr($data, 0, 8) === "\x89PNG\r\n\x1A\n" || // PNG
+        substr($data, 0, 4) === "GIF8" ||               // GIF
+        substr($data, 0, 4) === "RIFF"                  // WebP
+    );
 }

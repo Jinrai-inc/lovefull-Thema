@@ -113,27 +113,35 @@ function koi_ria_resolve_post_id_from_path(string $path): int {
  * または連想配列など複数形式で返す可能性がある。
  */
 function koi_ria_parse_ga_rows($data): array {
-    // データが直接イテレート可能な配列/オブジェクトリスト（Site Kit の主形式）
-    if (is_array($data)) {
-        // rows キー配下
-        if (isset($data['rows'])) {
-            $rows = $data['rows'];
-            if (is_array($rows) || $rows instanceof \Traversable) {
+    // オブジェクトの場合は配列に変換
+    if (is_object($data)) {
+        if (method_exists($data, 'getRows')) {
+            $rows = $data->getRows();
+            if ($rows) {
                 return is_array($rows) ? $rows : iterator_to_array($rows);
             }
         }
+        $data = json_decode(wp_json_encode($data), true);
+    }
 
-        // data.rows
-        if (isset($data['data']['rows'])) {
-            $rows = $data['data']['rows'];
-            return is_array($rows) ? $rows : iterator_to_array($rows);
-        }
+    if (!is_array($data)) {
+        return [];
+    }
 
-        // 直接配列（数値キー）
-        $first_key = array_key_first($data);
-        if (is_int($first_key)) {
-            return $data;
-        }
+    // rows キー配下
+    if (isset($data['rows']) && is_array($data['rows'])) {
+        return $data['rows'];
+    }
+
+    // data.rows
+    if (isset($data['data']['rows']) && is_array($data['data']['rows'])) {
+        return $data['data']['rows'];
+    }
+
+    // 直接配列（数値キー）
+    $first_key = array_key_first($data);
+    if (is_int($first_key)) {
+        return $data;
     }
 
     return [];

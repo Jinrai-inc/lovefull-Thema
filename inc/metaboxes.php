@@ -268,48 +268,139 @@ function koi_ria_cast_metabox_cb(\WP_Post $post): void {
 
 function koi_ria_youtube_video_metabox_cb(\WP_Post $post): void {
     wp_nonce_field('koi_ria_youtube_video_nonce_action', 'koi_ria_youtube_video_nonce');
-    echo '<table class="form-table">';
 
-    // URL ヘルパー (保存しない、UI のみ)
-    echo '<tr>';
-    echo '<th><label for="koi_ria_video_url">YouTube URL（ヘルパー）</label></th>';
-    echo '<td>';
-    echo '<input type="text" id="koi_ria_video_url" class="regular-text" placeholder="https://www.youtube.com/watch?v=...">';
-    echo '<p class="description">URLを貼り付けると、下の動画IDが自動入力されます。</p>';
-    echo '<div id="koi_ria_video_preview" style="margin-top:8px;"></div>';
-    echo '</td></tr>';
+    $current_video_id = get_post_meta($post->ID, 'video_id', true);
+    ?>
+    <div style="background:#f9f9f9;border:1px solid #ddd;border-radius:6px;padding:16px 20px;margin-bottom:16px;">
+        <h4 style="margin:0 0 8px;font-size:14px;">📹 かんたん動画登録</h4>
+        <p style="margin:0 0 12px;color:#666;font-size:13px;">YouTubeの動画URLを貼り付けるだけで登録できます。</p>
 
-    koi_ria_text_field($post->ID, 'video_id', '動画ID', 'YouTube動画の11文字のID');
-    koi_ria_text_field($post->ID, 'channel_name', 'チャンネル名');
+        <div style="display:flex;gap:8px;align-items:center;">
+            <input type="text" id="koi_ria_video_url" class="regular-text" style="flex:1;"
+                placeholder="https://www.youtube.com/watch?v=... または https://youtu.be/..."
+                <?php if ($current_video_id) : ?>
+                value="https://www.youtube.com/watch?v=<?php echo esc_attr($current_video_id); ?>"
+                <?php endif; ?>>
+            <button type="button" id="koi_ria_extract_btn" class="button button-primary">動画を読み込む</button>
+        </div>
+
+        <div id="koi_ria_url_status" style="margin-top:8px;font-size:13px;"></div>
+
+        <!-- プレビュー -->
+        <div id="koi_ria_video_preview" style="margin-top:12px;">
+            <?php if ($current_video_id) : ?>
+            <iframe width="400" height="225" src="https://www.youtube.com/embed/<?php echo esc_attr($current_video_id); ?>" frameborder="0" allowfullscreen style="border-radius:6px;max-width:100%;"></iframe>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <table class="form-table">
+    <?php
+    koi_ria_text_field($post->ID, 'video_id', '動画ID', '上のURLから自動入力されます。直接入力も可能（11文字の英数字）');
+    koi_ria_text_field($post->ID, 'channel_name', 'チャンネル名', '動画のチャンネル名（任意）');
 
     koi_ria_select_field($post->ID, 'platform', 'プラットフォーム', [
-        ''        => '-- 選択 --',
-        'ABEMA'   => 'ABEMA',
-        'Netflix' => 'Netflix',
-        'その他'  => 'その他',
+        ''            => '-- 選択 --',
+        'ABEMA'       => 'ABEMA',
+        'Netflix'     => 'Netflix',
+        'Prime Video' => 'Prime Video',
+        'その他'      => 'その他',
     ]);
 
-    koi_ria_text_field($post->ID, 'thumbnail_url', 'サムネイルURL', 'YouTube APIから自動取得', 'url');
+    koi_ria_text_field($post->ID, 'thumbnail_url', 'サムネイルURL', 'URLから自動設定されます。空欄の場合はYouTubeデフォルトを使用', 'url');
     koi_ria_text_field($post->ID, 'published_at', '公開日', '', 'datetime-local');
-    koi_ria_checkbox_field($post->ID, 'is_pinned', 'ピン留め', 'ヒーロー固定表示用');
-    koi_ria_checkbox_field($post->ID, 'is_auto', '自動取得', 'API自動取得かどうか');
+    koi_ria_checkbox_field($post->ID, 'is_pinned', 'トップにピン留め', 'ONにするとトップページの先頭に固定表示されます');
+    koi_ria_checkbox_field($post->ID, 'is_auto', '自動取得', 'APIで自動取得された動画');
 
     echo '</table>';
 
-    // YouTube URL => video_id 自動抽出 JS
+    // YouTube URL 自動抽出 JS
     ?>
     <script>
-    document.getElementById('koi_ria_video_url')?.addEventListener('input', function() {
-        var url = this.value;
-        var match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
-        if (match) {
-            document.getElementById('koi_ria_video_id').value = match[1];
-            var preview = document.getElementById('koi_ria_video_preview');
-            if (preview) {
-                preview.innerHTML = '<iframe width="320" height="180" src="https://www.youtube.com/embed/' + match[1] + '" frameborder="0" allowfullscreen></iframe>';
+    (function() {
+        var urlInput = document.getElementById('koi_ria_video_url');
+        var extractBtn = document.getElementById('koi_ria_extract_btn');
+        var statusEl = document.getElementById('koi_ria_url_status');
+        var previewEl = document.getElementById('koi_ria_video_preview');
+        var videoIdInput = document.getElementById('koi_ria_video_id');
+        var thumbnailInput = document.getElementById('koi_ria_thumbnail_url');
+        var titleInput = document.getElementById('title') || document.querySelector('input[name="post_title"]');
+
+        function extractVideoId(url) {
+            if (!url) return null;
+            var patterns = [
+                /(?:youtube\.com\/watch\?.*v=)([a-zA-Z0-9_-]{11})/,
+                /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+                /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+                /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+                /^([a-zA-Z0-9_-]{11})$/
+            ];
+            for (var i = 0; i < patterns.length; i++) {
+                var match = url.trim().match(patterns[i]);
+                if (match) return match[1];
+            }
+            return null;
+        }
+
+        function loadVideo() {
+            var url = urlInput.value;
+            var videoId = extractVideoId(url);
+
+            if (!videoId) {
+                statusEl.innerHTML = '<span style="color:#d63638;">❌ 有効なYouTube URLではありません。例: https://www.youtube.com/watch?v=xxxxxxxxxxx</span>';
+                previewEl.innerHTML = '';
+                return;
+            }
+
+            // 動画IDをセット
+            videoIdInput.value = videoId;
+
+            // サムネイルURLを自動設定
+            if (thumbnailInput && !thumbnailInput.value) {
+                thumbnailInput.value = 'https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg';
+            }
+
+            // ステータス表示
+            statusEl.innerHTML = '<span style="color:#00a32a;">✅ 動画ID: <strong>' + videoId + '</strong> を読み込みました</span>';
+
+            // プレビュー表示
+            previewEl.innerHTML = '<iframe width="400" height="225" src="https://www.youtube.com/embed/' + videoId + '" frameborder="0" allowfullscreen style="border-radius:6px;max-width:100%;"></iframe>';
+
+            // タイトルが空なら oEmbed APIで自動取得を試みる
+            if (titleInput && (!titleInput.value || titleInput.value === '自動下書き')) {
+                fetch('https://noembed.com/embed?url=https://www.youtube.com/watch?v=' + videoId)
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        if (data.title) {
+                            titleInput.value = data.title;
+                            // Gutenbergの場合はinputイベントを発火
+                            titleInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        }
+                        if (data.author_name) {
+                            var chInput = document.getElementById('koi_ria_channel_name');
+                            if (chInput && !chInput.value) {
+                                chInput.value = data.author_name;
+                            }
+                        }
+                    })
+                    .catch(function() { /* oEmbed取得失敗は無視 */ });
             }
         }
-    });
+
+        if (extractBtn) {
+            extractBtn.addEventListener('click', loadVideo);
+        }
+
+        // URLフィールドでEnterキーまたはペースト時にも自動実行
+        if (urlInput) {
+            urlInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') { e.preventDefault(); loadVideo(); }
+            });
+            urlInput.addEventListener('paste', function() {
+                setTimeout(loadVideo, 100);
+            });
+        }
+    })();
     </script>
     <?php
 }

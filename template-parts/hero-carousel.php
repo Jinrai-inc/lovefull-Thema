@@ -29,7 +29,11 @@ $seen_channels  = [];
 
 foreach ($all_videos as $video) {
     $video_id = get_field('video_id', $video->ID) ?: '';
-    if (!$video_id) continue;
+
+    // 動画IDのバリデーション: 11文字の英数字・ハイフン・アンダースコア
+    if (!$video_id || !preg_match('/^[a-zA-Z0-9_-]{11}$/', $video_id)) {
+        continue;
+    }
 
     $is_pinned    = get_field('is_pinned', $video->ID);
     $channel_name = get_field('channel_name', $video->ID) ?: '';

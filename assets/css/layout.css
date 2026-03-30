@@ -25,6 +25,106 @@
     opacity: 0.5;
 }
 
+/* --- ヘッダーナビ（クイックリンクバー） --- */
+.header-nav {
+    position: sticky;
+    top: var(--header-height);
+    z-index: 99;
+    background: rgba(255, 255, 255, 0.90);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+    overflow: visible;
+}
+
+/* ナビ下部のグラデーションシマーライン */
+.header-nav::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #FF6B9D, #C084FC, #FF6B9D, transparent);
+    opacity: 0.3;
+}
+
+.header-nav__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    height: var(--header-nav-height);
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    padding: 0 var(--space-md);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    white-space: nowrap;
+}
+
+.header-nav__inner::-webkit-scrollbar {
+    display: none;
+}
+
+.header-nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--color-text-sub);
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+    text-decoration: none;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.header-nav__link:hover {
+    background: var(--color-primary-pale);
+    color: var(--color-primary);
+}
+
+.header-nav__icon {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.header-nav__icon svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* アクティブ状態 */
+.home .header-nav__link--home,
+.post-type-archive-show .header-nav__link--show,
+.single-show .header-nav__link--show,
+.post-type-archive-cast .header-nav__link--cast,
+.single-cast .header-nav__link--cast,
+.category-column .header-nav__link--column,
+.category-news .header-nav__link--news,
+.page-template-page-shindan .header-nav__link--shindan {
+    background: var(--color-gradient);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(232, 97, 154, 0.25);
+}
+
+.home .header-nav__link--home svg,
+.post-type-archive-show .header-nav__link--show svg,
+.single-show .header-nav__link--show svg,
+.post-type-archive-cast .header-nav__link--cast svg,
+.single-cast .header-nav__link--cast svg,
+.category-column .header-nav__link--column svg,
+.category-news .header-nav__link--news svg,
+.page-template-page-shindan .header-nav__link--shindan svg {
+    color: #fff;
+}
+
 .site-header__inner {
     display: flex;
     align-items: center;
@@ -354,6 +454,19 @@
         display: none;
     }
 
+    /* PC: ヘッダーナビ */
+    .header-nav__inner {
+        justify-content: center;
+        gap: var(--space-md);
+        overflow-x: visible;
+    }
+
+    .header-nav__link {
+        font-size: 0.8rem;
+        padding: 5px 14px;
+        gap: 4px;
+    }
+
     .global-nav {
         display: block;
         background: none;
@@ -388,7 +501,7 @@
     }
 
     .schedule-card {
-        min-width: 110px;
+        min-width: 130px;
     }
 
     /* PC: コラムスライダー */

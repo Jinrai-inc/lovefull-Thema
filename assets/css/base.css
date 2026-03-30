@@ -53,6 +53,7 @@
 
     /* レイアウト */
     --header-height: 56px;
+    --header-nav-height: 40px;
     --bottom-nav-height: 64px;
     --content-max-width: 768px;
 }

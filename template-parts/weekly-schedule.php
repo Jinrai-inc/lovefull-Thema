@@ -50,6 +50,17 @@ if (empty($schedule_data)) {
 if (empty($schedule_data)) {
     return;
 }
+
+// Platform emoji fallback map
+$platform_emoji = [
+    'ABEMA'       => "\u{1F4FA}",
+    'Netflix'     => "\u{1F3AC}",
+    'Prime Video' => "\u{1F4E6}",
+    'U-NEXT'      => "\u{1F3A5}",
+    'Hulu'        => "\u{1F30A}",
+    'Disney+'     => "\u{2728}",
+    'TVer'        => "\u{1F4F1}",
+];
 ?>
 
 <section class="section section--schedule">
@@ -64,27 +75,57 @@ if (empty($schedule_data)) {
             $platform  = $entry['platform'] ?? '';
             $show_id   = $entry['show_id'] ?? 0;
             $is_today  = ($i === $today_index);
+            $platform_color = $platform ? koi_ria_get_platform_color($platform) : '#E8619A';
+            $has_thumbnail = $show_id && has_post_thumbnail($show_id);
+            $emoji = $platform_emoji[$platform] ?? "\u{1F4FA}";
+            $card_tag = $show_id ? 'a' : 'div';
+            $card_href = $show_id ? ' href="' . esc_url(get_permalink($show_id)) . '"' : '';
         ?>
-        <div class="schedule-card <?php echo $is_today ? 'is-today' : ''; ?>">
-            <div class="schedule-card__day"><?php echo esc_html($day); ?></div>
+        <<?php echo $card_tag; ?><?php echo $card_href; ?>
+            class="schedule-card <?php echo $is_today ? 'is-today' : ''; ?>"
+            style="--platform-color: <?php echo esc_attr($platform_color); ?>;">
+
+            <?php if ($is_today && $show_name) : ?>
+                <span class="schedule-card__onair">
+                    <span class="schedule-card__onair-dot"></span>ON AIR
+                </span>
+            <?php endif; ?>
+
+            <div class="schedule-card__day-label">
+                <span class="schedule-card__day-kanji"><?php echo esc_html($day); ?></span>
+                <span class="schedule-card__day-suffix">曜日</span>
+            </div>
+
             <?php if ($time) : ?>
                 <div class="schedule-card__time"><?php echo esc_html($time); ?></div>
             <?php else : ?>
-                <div class="schedule-card__time" style="opacity: 0.4;">—</div>
+                <div class="schedule-card__time schedule-card__time--empty">--:--</div>
             <?php endif; ?>
+
             <?php if ($show_name) : ?>
-                <?php if ($show_id) : ?>
-                    <a href="<?php echo esc_url(get_permalink($show_id)); ?>" class="schedule-card__show"><?php echo esc_html($show_name); ?></a>
-                <?php else : ?>
-                    <div class="schedule-card__show"><?php echo esc_html($show_name); ?></div>
-                <?php endif; ?>
-                <?php if ($platform && !$is_today) : ?>
-                    <span class="badge badge--<?php echo esc_attr(sanitize_title($platform)); ?>" style="margin-top: 4px; font-size: 0.5rem;"><?php echo esc_html($platform); ?></span>
+                <div class="schedule-card__thumb">
+                    <?php if ($has_thumbnail) : ?>
+                        <?php echo get_the_post_thumbnail($show_id, 'thumbnail', ['class' => 'schedule-card__img', 'loading' => 'lazy']); ?>
+                    <?php else : ?>
+                        <span class="schedule-card__emoji"><?php echo $emoji; ?></span>
+                    <?php endif; ?>
+                </div>
+
+                <div class="schedule-card__show"><?php echo esc_html($show_name); ?></div>
+
+                <?php if ($platform) : ?>
+                    <span class="schedule-card__platform" style="--platform-color: <?php echo esc_attr($platform_color); ?>;">
+                        <?php echo esc_html($platform); ?>
+                    </span>
                 <?php endif; ?>
             <?php else : ?>
-                <div class="schedule-card__show" style="opacity: 0.4;">—</div>
+                <div class="schedule-card__thumb">
+                    <span class="schedule-card__emoji" style="opacity: 0.3;">&#x1F4FA;</span>
+                </div>
+                <div class="schedule-card__show schedule-card__show--empty">---</div>
             <?php endif; ?>
-        </div>
+
+        </<?php echo $card_tag; ?>>
         <?php endforeach; ?>
     </div>
 </section>

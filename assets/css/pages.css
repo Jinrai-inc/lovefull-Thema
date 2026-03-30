@@ -550,10 +550,16 @@
 }
 
 /* --- 放送スケジュール --- */
+.section--schedule .scroll-x {
+    display: flex;
+    gap: var(--space-sm);
+}
+
 .schedule-card {
     --platform-color: #E8619A;
     position: relative;
-    min-width: 120px;
+    flex: 0 0 calc((100% - 6 * var(--space-sm)) / 7);
+    min-width: 100px;
     padding: var(--space-md) var(--space-sm);
     padding-top: 20px;
     background: var(--color-card);

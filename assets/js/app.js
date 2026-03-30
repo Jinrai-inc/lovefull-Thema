@@ -15,6 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const isOpen = menuToggle.classList.toggle('is-open');
             globalNav.classList.toggle('is-open');
             menuToggle.setAttribute('aria-expanded', isOpen);
+            // SVGアイコン切り替え
+            const menuIcon = menuToggle.querySelector('.hamburger__icon--menu');
+            const closeIcon = menuToggle.querySelector('.hamburger__icon--close');
+            if (menuIcon) menuIcon.style.display = isOpen ? 'none' : '';
+            if (closeIcon) closeIcon.style.display = isOpen ? '' : 'none';
         });
     }
 

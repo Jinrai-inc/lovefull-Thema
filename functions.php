@@ -96,6 +96,16 @@ add_action('after_setup_theme', function () {
         'mobile_bottom' => 'モバイルボトムナビ',
     ]);
 
+    // カスタムロゴ
+    add_theme_support('custom-logo', [
+        'height'               => 60,
+        'width'                => 200,
+        'flex-height'          => true,
+        'flex-width'           => true,
+        'header-text'          => ['site-title', 'site-description'],
+        'unlink-homepage-logo' => false,
+    ]);
+
     // サムネイルサイズ
     add_image_size('cast-avatar', 120, 120, true);
     add_image_size('show-card', 260, 160, true);
@@ -170,6 +180,7 @@ add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('koi-ria-components', KOI_RIA_URI . '/assets/css/components.css', ['koi-ria-base'], KOI_RIA_VERSION);
     wp_enqueue_style('koi-ria-layout', KOI_RIA_URI . '/assets/css/layout.css', ['koi-ria-base'], KOI_RIA_VERSION);
     wp_enqueue_style('koi-ria-pages', KOI_RIA_URI . '/assets/css/pages.css', ['koi-ria-layout'], KOI_RIA_VERSION);
+    wp_enqueue_style('koi-ria-editor-blocks', KOI_RIA_URI . '/assets/css/editor-blocks.css', ['koi-ria-base'], KOI_RIA_VERSION);
     wp_enqueue_style('koi-ria-style', get_stylesheet_uri(), ['koi-ria-pages'], KOI_RIA_VERSION);
 
     // テーマJS
@@ -195,6 +206,18 @@ add_action('wp_enqueue_scripts', function () {
     if (is_page_template('page-shindan.php')) {
         wp_enqueue_script('koi-ria-shindan', KOI_RIA_URI . '/assets/js/shindan.js', [], KOI_RIA_VERSION, true);
     }
+});
+
+/**
+ * ブロックエディター用スタイル読み込み
+ */
+add_action('enqueue_block_editor_assets', function () {
+    wp_enqueue_style(
+        'koi-ria-editor-blocks',
+        KOI_RIA_URI . '/assets/css/editor-blocks.css',
+        [],
+        KOI_RIA_VERSION
+    );
 });
 
 /**
@@ -386,6 +409,7 @@ $koi_ria_includes = [
     'inc/legal-pages.php',
     'inc/admin-menu.php',
     'inc/popular-posts.php',
+    'inc/block-patterns.php',
 ];
 
 foreach ($koi_ria_includes as $file) {

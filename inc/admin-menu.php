@@ -64,6 +64,15 @@ function koi_ria_admin_menus(): void {
         'koi-ria-ads',
         'koi_ria_ads_page'
     );
+
+    add_submenu_page(
+        'koi-ria-import',
+        '表示設定',
+        '表示設定',
+        'manage_options',
+        'koi-ria-display',
+        'koi_ria_display_page'
+    );
 }
 
 /**
@@ -493,6 +502,98 @@ function koi_ria_ads_page(): void {
         tbody.appendChild(row);
     }
     </script>
+    <?php
+}
+
+/**
+ * 表示設定ページ（フロントページセクション表示・並び順）
+ */
+function koi_ria_display_page(): void {
+    // セクション定義
+    $sections = [
+        'hero_carousel'  => 'YouTubeスライダー',
+        'search_bar'     => '検索バー',
+        'weekly_schedule' => '今週の放送',
+        'breaking_bar'   => '速報バー',
+        'shows'          => '注目の番組',
+        'popular_posts'  => '人気記事トップ3',
+        'couple_tracker' => 'カップルその後',
+        'poll'           => 'みんなの予想',
+        'stories_cast'   => '話題の出演者',
+        'column'         => '恋愛コラム',
+        'news'           => '最新ニュース',
+        'shindan'        => '番組診断バナー',
+        'vod_search'     => 'VOD検索バナー',
+        'affiliate'      => 'アフィリエイトバナー',
+        'adsense'        => 'AdSenseスロット',
+    ];
+
+    // デフォルト設定
+    $defaults = [];
+    $order = 1;
+    foreach ($sections as $key => $label) {
+        $defaults[$key] = [
+            'enabled' => true,
+            'order'   => $order++,
+        ];
+    }
+
+    // 保存処理
+    if (isset($_POST['koi_ria_display_nonce']) && wp_verify_nonce($_POST['koi_ria_display_nonce'], 'koi_ria_save_display')) {
+        $settings = [];
+        foreach ($sections as $key => $label) {
+            $settings[$key] = [
+                'enabled' => !empty($_POST['section_enabled'][$key]),
+                'order'   => intval($_POST['section_order'][$key] ?? $defaults[$key]['order']),
+            ];
+        }
+        update_option('koi_ria_display_settings', $settings);
+        echo '<div class="notice notice-success"><p>表示設定を保存しました。</p></div>';
+    }
+
+    $settings = get_option('koi_ria_display_settings', $defaults);
+    // 新しいセクションが追加された場合のフォールバック
+    foreach ($defaults as $key => $def) {
+        if (!isset($settings[$key])) {
+            $settings[$key] = $def;
+        }
+    }
+    ?>
+    <div class="wrap">
+        <h1>表示設定</h1>
+        <p>フロントページに表示するセクションの表示・非表示と表示順を設定します。</p>
+        <form method="post">
+            <?php wp_nonce_field('koi_ria_save_display', 'koi_ria_display_nonce'); ?>
+
+            <table class="widefat striped" style="max-width: 700px; margin-top: 20px;">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">表示</th>
+                        <th>セクション名</th>
+                        <th style="width: 100px;">表示順</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($sections as $key => $label) :
+                        $enabled = isset($settings[$key]['enabled']) ? $settings[$key]['enabled'] : true;
+                        $ord     = isset($settings[$key]['order']) ? $settings[$key]['order'] : $defaults[$key]['order'];
+                    ?>
+                    <tr>
+                        <td style="text-align: center;">
+                            <input type="checkbox" name="section_enabled[<?php echo esc_attr($key); ?>]" value="1" <?php checked($enabled); ?>>
+                        </td>
+                        <td><strong><?php echo esc_html($label); ?></strong> <code style="font-size: 11px; color: #888;"><?php echo esc_html($key); ?></code></td>
+                        <td>
+                            <input type="number" name="section_order[<?php echo esc_attr($key); ?>]" value="<?php echo esc_attr($ord); ?>" min="1" max="99" style="width: 70px;">
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+
+            <?php submit_button('表示設定を保存'); ?>
+        </form>
+    </div>
     <?php
 }
 

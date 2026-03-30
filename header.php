@@ -22,10 +22,22 @@ defined('ABSPATH') || exit;
 
 <header class="site-header" role="banner">
     <div class="site-header__inner">
-        <a href="<?php echo esc_url(home_url('/')); ?>" class="site-logo">
-            <span class="site-logo__icon"><?php echo koi_ria_icon('heart-filled', 24); ?></span>
-            <span class="site-logo__text">恋リアポータル</span>
-        </a>
+        <?php if (has_custom_logo()) : ?>
+            <a href="<?php echo esc_url(home_url('/')); ?>" class="site-logo">
+                <?php
+                $custom_logo_id = get_theme_mod('custom_logo');
+                echo wp_get_attachment_image($custom_logo_id, 'full', false, [
+                    'class' => 'site-logo__img',
+                    'alt'   => get_bloginfo('name'),
+                ]);
+                ?>
+            </a>
+        <?php else : ?>
+            <a href="<?php echo esc_url(home_url('/')); ?>" class="site-logo">
+                <span class="site-logo__icon"><?php echo koi_ria_icon('heart-filled', 24); ?></span>
+                <span class="site-logo__text"><?php bloginfo('name'); ?></span>
+            </a>
+        <?php endif; ?>
 
         <button class="hamburger" id="menuToggle" aria-label="メニューを開く" aria-expanded="false">
             <span class="hamburger__icon hamburger__icon--menu"><?php echo koi_ria_icon('menu', 24); ?></span>

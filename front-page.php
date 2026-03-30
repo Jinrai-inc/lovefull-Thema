@@ -64,7 +64,7 @@ if ($breaking) :
     </div>
 </section>
 
-<?php // 5-6. 特集コラム（スライダー） ?>
+<?php // 5-6. 人気記事トップ3（閲覧数順） ?>
 <?php get_template_part('template-parts/column-slider'); ?>
 
 <?php // 5-7. カップルその後 ?>

@@ -446,59 +446,90 @@
     margin-top: var(--space-xs);
 }
 
-/* --- コラムスライダー --- */
-.column-slider {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    gap: 12px;
-    padding: 0 var(--space-md) 12px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-}
+/* (旧コラムスライダー → 人気記事ランキングに置換済み) */
 
-.column-slider::-webkit-scrollbar {
-    display: none;
-}
-
-.column-slide {
-    scroll-snap-align: start;
-    min-width: 85%;
-    flex-shrink: 0;
+/* --- 人気記事ランキング --- */
+.section--popular {
+    background: linear-gradient(135deg, #FFF8E8 0%, #FFE8F5 50%, #F0E8FF 100%);
+    padding-top: var(--space-lg);
+    padding-bottom: var(--space-lg);
     border-radius: var(--radius-lg);
+    margin: var(--space-sm) 0;
+}
+
+.popular-ranking {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.popular-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
     background: var(--color-card);
-    box-shadow: var(--shadow-card);
-    overflow: hidden;
-    cursor: pointer;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    text-decoration: none;
+    color: inherit;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     border: 1px solid var(--color-border);
 }
 
-.column-slide:hover {
+.popular-item:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
 }
 
-.column-slide--featured {
-    min-width: 90%;
+.popular-item__rank {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-circle);
+    font-size: 0.875rem;
+    font-weight: 800;
+    color: #fff;
+    background: var(--color-border);
 }
 
-.column-slide--featured .column-thumb {
-    height: 140px;
+.popular-item__rank--1 {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
 }
 
-.column-thumb {
-    height: 100px;
-    background-size: cover;
-    background-position: center;
+.popular-item__rank--2 {
+    background: linear-gradient(135deg, #C0C0C0, #A0A0A0);
+    box-shadow: 0 2px 8px rgba(192, 192, 192, 0.4);
+}
+
+.popular-item__rank--3 {
+    background: linear-gradient(135deg, #CD7F32, #B8860B);
+    box-shadow: 0 2px 8px rgba(205, 127, 50, 0.3);
+}
+
+.popular-item__thumb {
+    flex-shrink: 0;
+    width: 72px;
+    height: 72px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
     background-color: var(--color-primary-light);
 }
 
-.column-body {
-    padding: var(--space-md);
+.popular-item__thumb--empty {
+    display: block;
 }
 
-.column-cat {
+.popular-item__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.popular-item__cat {
     display: inline-block;
     font-size: 0.625rem;
     font-weight: 700;
@@ -506,46 +537,24 @@
     background: rgba(232, 97, 154, 0.08);
     padding: 2px 8px;
     border-radius: var(--radius-pill);
-    margin-bottom: var(--space-xs);
+    margin-bottom: 4px;
 }
 
-.column-body h3 {
+.popular-item__title {
     font-size: 0.875rem;
+    font-weight: 600;
     line-height: 1.4;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    margin-bottom: var(--space-xs);
 }
 
-.column-meta {
+.popular-item__views {
     font-size: 0.6875rem;
     color: var(--color-text-sub);
-}
-
-/* スライダードット */
-.slider-dots {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    padding: var(--space-sm) 0;
-}
-
-.slider-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: var(--radius-circle);
-    background: var(--color-border);
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.slider-dot.active {
-    width: 20px;
-    border-radius: 4px;
-    background: var(--color-gradient);
+    margin-top: 2px;
+    display: block;
 }
 
 /* --- カップルその後 --- */

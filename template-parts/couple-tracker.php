@@ -29,7 +29,7 @@ if (empty($couple_posts)) {
 
     if (empty($couples)) return;
     ?>
-    <section class="section">
+    <section class="section section--couple">
         <div class="section-header">
             <h2><?php echo koi_ria_icon('couple', 22); ?> カップルその後</h2>
         </div>
@@ -82,7 +82,7 @@ if (empty($couple_posts)) {
 
 // 新couple CPTの表示
 ?>
-<section class="section">
+<section class="section section--couple">
     <div class="section-header">
         <h2><?php echo koi_ria_icon('couple', 22); ?> カップルその後</h2>
         <a href="<?php echo esc_url(get_post_type_archive_link('couple')); ?>" class="section-header__more">もっと見る →</a>

@@ -101,9 +101,19 @@ document.addEventListener('DOMContentLoaded', () => {
             goToSlide(current - 1);
         }
 
+        // 動画再生中かどうかを判定
+        function isVideoPlaying() {
+            return userClickedPlay || heroTrack.querySelector('.hero-carousel__slide.is-playing iframe') !== null;
+        }
+
         function startAutoSlide() {
             stopAutoSlide();
-            autoSlideTimer = setInterval(nextSlide, AUTO_SLIDE_INTERVAL);
+            autoSlideTimer = setInterval(function() {
+                // 再生中はスライドしない
+                if (!isVideoPlaying()) {
+                    nextSlide();
+                }
+            }, AUTO_SLIDE_INTERVAL);
         }
 
         function stopAutoSlide() {
@@ -138,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // スライドクリック → 音声付き再生
+        // スライドクリック → 音声付き再生（自動スライド完全停止）
         slides.forEach(function(slide) {
             slide.addEventListener('click', function(e) {
                 // iframe内のクリックは無視（動画操作用）
@@ -150,6 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 userClickedPlay = true;
                 stopAutoSlide();
                 embedVideo(slide, false);
+                // 再生中は自動スライドを再開しない
             });
         });
 

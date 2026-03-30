@@ -52,7 +52,7 @@ if (empty($schedule_data)) {
 }
 ?>
 
-<section class="section">
+<section class="section section--schedule">
     <div class="section-header">
         <h2><?php echo koi_ria_icon('calendar', 22); ?> 今週の放送</h2>
     </div>

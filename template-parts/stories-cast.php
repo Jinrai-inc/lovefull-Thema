@@ -30,7 +30,7 @@ if (empty($popular_cast)) {
 }
 ?>
 
-<section class="section">
+<section class="section section--cast">
     <div class="section-header">
         <h2><?php echo koi_ria_icon('fire', 22); ?> 話題の出演者</h2>
         <a href="<?php echo esc_url(get_post_type_archive_link('cast')); ?>" class="section-header__more">もっと見る →</a>

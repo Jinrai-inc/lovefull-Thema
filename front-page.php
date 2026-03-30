@@ -12,7 +12,7 @@ get_header();
 <?php get_template_part('template-parts/hero-carousel'); ?>
 
 <?php // 5-2. 検索バー ?>
-<section class="section">
+<section class="section section--search">
     <form class="search-bar" action="<?php echo esc_url(home_url('/')); ?>" method="get" role="search" aria-label="サイト内検索">
         <label for="top-search" class="screen-reader-text">検索キーワード</label>
         <span class="search-bar__icon"><?php echo koi_ria_icon('search', 18); ?></span>
@@ -42,7 +42,7 @@ if ($breaking) :
 <?php endif; ?>
 
 <?php // 5-5. 注目の番組 ?>
-<section class="section">
+<section class="section section--shows">
     <div class="section-header">
         <h2><?php echo koi_ria_icon('tv', 22); ?> 注目の番組</h2>
         <a href="<?php echo esc_url(get_post_type_archive_link('show')); ?>" class="section-header__more">もっと見る →</a>
@@ -71,7 +71,7 @@ if ($breaking) :
 <?php get_template_part('template-parts/couple-tracker'); ?>
 
 <?php // 5-8. みんなの予想（投票） ?>
-<section class="section">
+<section class="section section--poll">
     <div class="section-header">
         <h2><?php echo koi_ria_icon('vote', 22); ?> みんなの予想</h2>
         <a href="<?php echo esc_url(get_post_type_archive_link('poll')); ?>" class="section-header__more">もっと見る →</a>
@@ -97,7 +97,7 @@ if ($breaking) :
 <?php get_template_part('template-parts/stories-cast'); ?>
 
 <?php // 5-10. 恋愛コラム ?>
-<section class="section">
+<section class="section section--column">
     <div class="section-header">
         <h2><?php echo koi_ria_icon('column', 22); ?> 恋愛コラム</h2>
         <?php $column_cat = get_category_by_slug('column'); ?>
@@ -132,7 +132,7 @@ if ($breaking) :
 </section>
 
 <?php // 5-11. 最新ニュース ?>
-<section class="section">
+<section class="section section--news">
     <div class="section-header">
         <h2><?php echo koi_ria_icon('news', 22); ?> 最新ニュース</h2>
         <a href="<?php echo esc_url(get_permalink(get_option('page_for_posts'))); ?>" class="section-header__more">もっと見る →</a>
@@ -162,7 +162,7 @@ if ($breaking) :
 $shindan_page = get_page_by_path('shindan');
 if ($shindan_page) :
 ?>
-<section class="section">
+<section class="section section--shindan">
     <a href="<?php echo esc_url(get_permalink($shindan_page)); ?>" class="promo-banner" style="background: var(--color-gradient); color: #fff; display: block; border-radius: var(--radius-lg); padding: var(--space-lg); text-decoration: none; text-align: center; margin: 0 var(--space-md);">
         <span style="font-size: 2rem; display: block;"><?php echo koi_ria_icon('sparkle', 32); ?></span>
         <div style="font-weight: 700; font-size: 1.125rem; margin-top: var(--space-xs);">あなたにぴったりの恋リアは？</div>

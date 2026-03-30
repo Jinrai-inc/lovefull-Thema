@@ -10,7 +10,10 @@
 
 defined('ABSPATH') || exit;
 
-define('KOI_RIA_AVATAR_CACHE_DAYS', 7);
+// デフォルト値。管理画面の設定で上書き可能。
+if (!defined('KOI_RIA_AVATAR_CACHE_DAYS')) {
+    define('KOI_RIA_AVATAR_CACHE_DAYS', (int) get_option('koi_ria_avatar_cache_days', 7));
+}
 
 /**
  * IGアバターのURLを取得する（キャッシュ優先）
@@ -51,6 +54,12 @@ function koi_ria_get_ig_avatar(string $ig_username, int $size = 200): string {
  */
 function koi_ria_fetch_and_cache_avatar(string $ig_username, string $filepath): bool {
     $url = 'https://unavatar.io/instagram/' . urlencode($ig_username);
+
+    // 有料プランのAPIキーがあれば付与
+    $api_key = get_option('koi_ria_unavatar_api_key', '');
+    if ($api_key) {
+        $url = add_query_arg('apiKey', $api_key, $url);
+    }
 
     $response = wp_remote_get($url, [
         'timeout'   => 15,

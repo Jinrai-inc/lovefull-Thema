@@ -123,6 +123,7 @@ function koi_ria_settings_page(): void {
         $avatar_cache_days = intval($_POST['avatar_cache_days'] ?? 7);
         $avatar_cache_days = max(1, min(30, $avatar_cache_days));
         update_option('koi_ria_avatar_cache_days', $avatar_cache_days);
+        update_option('koi_ria_unavatar_api_key', sanitize_text_field($_POST['unavatar_api_key'] ?? ''));
 
         // スライダー表示件数（1〜30、デフォルト10）
         $slider_max = intval($_POST['slider_max_slides'] ?? 10);
@@ -149,7 +150,8 @@ function koi_ria_settings_page(): void {
     }
 
     $youtube_key    = get_option('koi_ria_youtube_api_key', '');
-    $avatar_cache_days = get_option('koi_ria_avatar_cache_days', 7);
+    $avatar_cache_days  = get_option('koi_ria_avatar_cache_days', 7);
+    $unavatar_api_key   = get_option('koi_ria_unavatar_api_key', '');
     $slider_max     = get_option('koi_ria_slider_max_slides', 10);
     $feeds       = get_option('koi_ria_news_feeds', []);
 
@@ -203,6 +205,17 @@ function koi_ria_settings_page(): void {
                         <input type="number" id="avatar_cache_days" name="avatar_cache_days" value="<?php echo esc_attr($avatar_cache_days); ?>" min="1" max="30" step="1" style="width: 80px;">
                         <span> 日（1〜30）</span>
                         <p class="description">unavatar.io経由で取得したプロフィール画像のローカルキャッシュ有効日数。週1回のCronで自動更新されます。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="unavatar_api_key">unavatar.io APIキー</label></th>
+                    <td>
+                        <input type="text" id="unavatar_api_key" name="unavatar_api_key" value="<?php echo esc_attr($unavatar_api_key); ?>" class="regular-text">
+                        <p class="description">
+                            有料プラン（$9/月）のAPIキー。設定するとリクエスト制限が解除されます。<br>
+                            空欄の場合は無料プラン（1日50リクエスト）で動作します。<br>
+                            取得: <a href="https://unavatar.io/#pricing" target="_blank">unavatar.io → Pricing</a>
+                        </p>
                     </td>
                 </tr>
             </table>

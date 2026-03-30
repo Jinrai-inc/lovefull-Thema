@@ -558,8 +558,8 @@
 .schedule-card {
     --platform-color: #E8619A;
     position: relative;
-    flex: 0 0 calc((100% - 6 * var(--space-sm)) / 7);
-    min-width: 100px;
+    flex: 0 0 100px;
+    width: 100px;
     padding: var(--space-md) var(--space-sm);
     padding-top: 20px;
     background: var(--color-card);
@@ -592,6 +592,8 @@
     border-top: 3px solid var(--color-primary);
     box-shadow: 0 0 20px rgba(232, 97, 154, 0.25), 0 4px 24px rgba(192, 132, 252, 0.15);
     animation: schedule-glow 2.5s ease-in-out infinite;
+    flex-basis: 100px;
+    width: 100px;
 }
 
 .schedule-card.is-today:hover {

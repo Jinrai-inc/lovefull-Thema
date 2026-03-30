@@ -214,12 +214,15 @@ function koi_ria_sync_ga_popular_posts(bool $force = false): array {
     $request->set_query_params([
         'startDate'  => gmdate('Y-m-d', strtotime('-28 days')),
         'endDate'    => gmdate('Y-m-d', strtotime('-1 day')),
-        'metrics'    => wp_json_encode([['name' => 'screenPageViews']]),
-        'dimensions' => wp_json_encode([['name' => 'pagePath']]),
-        'orderBys'   => wp_json_encode([
-            ['metric' => ['metricName' => 'screenPageViews'], 'desc' => true],
-        ]),
-        'limit'      => '50',
+        'metrics'    => [['name' => 'screenPageViews']],
+        'dimensions' => [['name' => 'pagePath']],
+        'orderby'    => [
+            [
+                'metric' => ['metricName' => 'screenPageViews'],
+                'desc'   => true,
+            ],
+        ],
+        'limit'      => 50,
     ]);
 
     $result['debug'][] = 'REST API リクエスト送信: /google-site-kit/v1/modules/analytics-4/data/report';

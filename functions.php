@@ -12,13 +12,42 @@ define('KOI_RIA_DIR', get_template_directory());
 define('KOI_RIA_URI', get_template_directory_uri());
 
 /**
- * ACF互換レイヤー — ACF PRO未インストール時のフォールバック
+ * ACF互換レイヤー — ACF未インストール時のフォールバック
  * get_field() / update_field() をpost_metaで代替
+ *
+ * ACF有効化時の "Cannot redeclare" エラーを防止するため、
+ * ACFプラグインの有効化リクエスト中はフォールバック関数を定義しない。
  */
-if (! function_exists('get_field')) {
-    function get_field(string $selector, $post_id = false, bool $format_value = true) {
+$koi_ria_define_acf_fallback = true;
+
+if (is_admin()) {
+    // 単体プラグイン有効化の検出
+    $activating_plugin = isset($_GET['plugin']) ? sanitize_text_field(wp_unslash($_GET['plugin'])) : '';
+    $admin_action      = isset($_GET['action']) ? sanitize_text_field(wp_unslash($_GET['action'])) : '';
+
+    if ($admin_action === 'activate' && strpos($activating_plugin, 'advanced-custom-fields') !== false) {
+        $koi_ria_define_acf_fallback = false;
+    }
+
+    // 一括プラグイン有効化の検出
+    $bulk_action = isset($_POST['action']) ? sanitize_text_field(wp_unslash($_POST['action'])) : '';
+    if ($bulk_action === 'activate-selected' && !empty($_POST['checked'])) {
+        foreach ((array) $_POST['checked'] as $p) {
+            if (strpos($p, 'advanced-custom-fields') !== false) {
+                $koi_ria_define_acf_fallback = false;
+                break;
+            }
+        }
+    }
+}
+
+if ($koi_ria_define_acf_fallback && ! function_exists('get_field')) {
+    function get_field($selector, $post_id = false, $format_value = true) {
         if (!$post_id) {
             $post_id = get_the_ID();
+        }
+        if (is_object($post_id)) {
+            $post_id = $post_id->ID ?? 0;
         }
         if (is_array($post_id)) {
             $post_id = $post_id[0] ?? 0;
@@ -28,17 +57,22 @@ if (! function_exists('get_field')) {
     }
 }
 
-if (! function_exists('update_field')) {
-    function update_field(string $selector, $value, $post_id = false): bool {
+if ($koi_ria_define_acf_fallback && ! function_exists('update_field')) {
+    function update_field($selector, $value, $post_id = false) {
         if (!$post_id) {
             $post_id = get_the_ID();
+        }
+        if (is_object($post_id)) {
+            $post_id = $post_id->ID ?? 0;
         }
         if (is_array($post_id)) {
             $post_id = $post_id[0] ?? 0;
         }
-        return (bool) update_post_meta($post_id, $selector, $value);
+        return update_post_meta($post_id, $selector, $value);
     }
 }
+
+unset($koi_ria_define_acf_fallback);
 
 /**
  * テーマセットアップ

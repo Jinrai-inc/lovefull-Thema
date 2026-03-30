@@ -154,7 +154,15 @@ function koi_ria_fetch_channel_videos(string $channel_id, string $label, string 
 
         $title        = sanitize_text_field($item['snippet']['title'] ?? '');
         $channel_name = sanitize_text_field($item['snippet']['channelTitle'] ?? '');
-        $thumbnail    = esc_url_raw($item['snippet']['thumbnails']['high']['url'] ?? '');
+        // 最高解像度のサムネイルを優先
+        $thumbs    = $item['snippet']['thumbnails'] ?? [];
+        $thumbnail = esc_url_raw(
+            $thumbs['maxres']['url']  ?? $thumbs['standard']['url']
+                                      ?? $thumbs['high']['url']
+                                      ?? $thumbs['medium']['url']
+                                      ?? $thumbs['default']['url']
+                                      ?? ''
+        );
         $published    = sanitize_text_field($item['snippet']['publishedAt'] ?? '');
 
         $post_id = wp_insert_post([

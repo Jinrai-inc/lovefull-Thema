@@ -357,7 +357,7 @@ function koi_ria_youtube_video_metabox_cb(\WP_Post $post): void {
 
             // サムネイルURLを自動設定
             if (thumbnailInput && !thumbnailInput.value) {
-                thumbnailInput.value = 'https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg';
+                thumbnailInput.value = 'https://img.youtube.com/vi/' + videoId + '/maxresdefault.jpg';
             }
 
             // ステータス表示

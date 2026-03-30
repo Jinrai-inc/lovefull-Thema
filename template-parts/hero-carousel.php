@@ -73,12 +73,14 @@ if (empty($slides)) {
 
             // サムネイルが無い場合はYouTubeのデフォルトを使用
             if (!$thumbnail_url && $video_id) {
-                $thumbnail_url = 'https://img.youtube.com/vi/' . $video_id . '/hqdefault.jpg';
+                $thumbnail_url = 'https://img.youtube.com/vi/' . $video_id . '/maxresdefault.jpg';
             }
         ?>
         <div class="hero-carousel__slide" data-video-id="<?php echo esc_attr($video_id); ?>" data-index="<?php echo $i; ?>">
             <?php if ($thumbnail_url) : ?>
-                <img src="<?php echo esc_url($thumbnail_url); ?>" alt="<?php echo esc_attr($video->post_title); ?>" class="hero-carousel__thumb" loading="<?php echo $i === 0 ? 'eager' : 'lazy'; ?>">
+                <img src="<?php echo esc_url($thumbnail_url); ?>" alt="<?php echo esc_attr($video->post_title); ?>" class="hero-carousel__thumb" loading="<?php echo $i === 0 ? 'eager' : 'lazy'; ?>"
+                     onerror="this.onerror=null;this.src=this.src.replace('maxresdefault','sddefault');"
+                >
             <?php else : ?>
                 <div class="hero-carousel__thumb hero-carousel__thumb--placeholder"><?php echo koi_ria_icon('play', 48); ?></div>
             <?php endif; ?>

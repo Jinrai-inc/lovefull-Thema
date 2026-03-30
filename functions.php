@@ -333,7 +333,7 @@ function koi_ria_youtube_url_helper(): void {
             var thumbField = document.querySelector('input[name="acf[field_yt_thumbnail_url]"]')
                           || document.getElementById('koi_ria_thumbnail_url');
             if (thumbField && !thumbField.value) {
-                thumbField.value = 'https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg';
+                thumbField.value = 'https://img.youtube.com/vi/' + videoId + '/maxresdefault.jpg';
                 thumbField.dispatchEvent(new Event('input', {bubbles: true}));
                 thumbField.dispatchEvent(new Event('change', {bubbles: true}));
             }

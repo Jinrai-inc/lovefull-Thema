@@ -306,7 +306,7 @@ function koi_ria_upsert_youtube_video(array $row, string $mode = 'upsert'): arra
     }
     // Auto-generate thumbnail if not provided
     if (!get_field('thumbnail_url', $post_id)) {
-        update_field('thumbnail_url', 'https://img.youtube.com/vi/' . $video_id . '/hqdefault.jpg', $post_id);
+        update_field('thumbnail_url', 'https://img.youtube.com/vi/' . $video_id . '/maxresdefault.jpg', $post_id);
     }
 
     return ['status' => $existing ? 'updated' : 'created'];

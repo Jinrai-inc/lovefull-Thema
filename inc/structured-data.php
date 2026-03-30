@@ -336,7 +336,7 @@ function koi_ria_show_schema(): void {
                 '@type'        => 'VideoObject',
                 'name'         => $video->post_title,
                 'description'  => $video->post_title,
-                'thumbnailUrl' => $thumb ?: "https://i.ytimg.com/vi/{$video_id}/hqdefault.jpg",
+                'thumbnailUrl' => $thumb ?: "https://i.ytimg.com/vi/{$video_id}/maxresdefault.jpg",
                 'contentUrl'   => "https://www.youtube.com/watch?v={$video_id}",
                 'embedUrl'     => "https://www.youtube.com/embed/{$video_id}",
             ];

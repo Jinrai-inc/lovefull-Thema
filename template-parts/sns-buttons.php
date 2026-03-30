@@ -33,6 +33,6 @@ $youtube_url     = $args['youtube_url'] ?? '';
 
 <?php if ($youtube_url) : ?>
 <a href="<?php echo esc_url($youtube_url); ?>" class="btn btn--outline" target="_blank" rel="noopener" style="width: 100%; border-color: #FF0000; color: #FF0000;">
-    YouTube
+    <?php echo koi_ria_icon('youtube', 18); ?> YouTube
 </a>
 <?php endif; ?>

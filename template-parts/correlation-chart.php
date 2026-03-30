@@ -137,7 +137,7 @@ $type_map = [
                     $to_name = $tp ? (get_field('display_name', $tp->ID) ?: $tp->post_title) : '';
                 }
 
-                $info        = $type_map[$r_type] ?? ['icon' => '❓', 'color_class' => 'corr-rel--unknown', 'label' => ''];
+                $info        = $type_map[$r_type] ?? ['icon' => '?', 'color_class' => 'corr-rel--unknown', 'label' => ''];
                 $color_class = $info['color_class'];
                 $icon        = $info['icon'];
             ?>

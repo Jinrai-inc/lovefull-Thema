@@ -2,12 +2,159 @@
    pages.css — ページ固有スタイル
    ============================================ */
 
-/* --- トップページ: ヒーローカルーセル（黒背景） --- */
+/* --- レトロTV フレーム --- */
+.retro-tv {
+    padding: var(--space-lg) var(--space-md) 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.retro-tv__antenna {
+    position: relative;
+    width: 60px;
+    height: 40px;
+    margin-bottom: -4px;
+    z-index: 1;
+}
+
+.retro-tv__antenna-left,
+.retro-tv__antenna-right {
+    position: absolute;
+    bottom: 0;
+    width: 3px;
+    height: 38px;
+    background: linear-gradient(180deg, #F9A8C9, #E8619A);
+    border-radius: 2px;
+}
+
+.retro-tv__antenna-left {
+    left: 12px;
+    transform: rotate(-20deg);
+    transform-origin: bottom center;
+}
+
+.retro-tv__antenna-right {
+    right: 12px;
+    transform: rotate(20deg);
+    transform-origin: bottom center;
+}
+
+.retro-tv__antenna-left::after,
+.retro-tv__antenna-right::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    background: #E8619A;
+    border-radius: var(--radius-circle);
+}
+
+.retro-tv__body {
+    width: 100%;
+    max-width: 720px;
+    background: linear-gradient(160deg, #FFB6D5 0%, #E8619A 40%, #D14D84 100%);
+    border-radius: 20px;
+    padding: 16px 16px 0;
+    box-shadow:
+        0 8px 32px rgba(232, 97, 154, 0.35),
+        inset 0 2px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.retro-tv__body::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    border-radius: 1px;
+}
+
+.retro-tv__screen {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 4px solid #1a1a2e;
+    box-shadow:
+        inset 0 0 20px rgba(0, 0, 0, 0.5),
+        0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.retro-tv__controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 10px 0 12px;
+}
+
+.retro-tv__dial {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-circle);
+    border: 3px solid rgba(255, 255, 255, 0.4);
+    background: linear-gradient(135deg, #D14D84, #B03A6E);
+    box-shadow:
+        inset 0 1px 2px rgba(255, 255, 255, 0.3),
+        0 2px 4px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.retro-tv__dial::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 1px;
+}
+
+.retro-tv__dial--2 {
+    width: 20px;
+    height: 20px;
+}
+
+.retro-tv__speaker {
+    display: flex;
+    gap: 3px;
+    margin-left: 8px;
+}
+
+.retro-tv__speaker span {
+    width: 2px;
+    height: 14px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 1px;
+}
+
+.retro-tv__feet {
+    display: flex;
+    gap: 60%;
+    justify-content: center;
+}
+
+.retro-tv__foot {
+    width: 20px;
+    height: 10px;
+    background: linear-gradient(180deg, #D14D84, #B03A6E);
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* --- トップページ: ヒーローカルーセル（TV内画面） --- */
 .hero-carousel {
     position: relative;
     overflow: hidden;
     background: #0a0a0a;
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 
 .hero-carousel__track {
@@ -230,8 +377,25 @@
     z-index: 10;
 }
 
-/* モバイルでは矢印を常に表示 */
+/* モバイルでは矢印を常に表示 + TV調整 */
 @media (max-width: 768px) {
+    .retro-tv {
+        padding: var(--space-md) var(--space-sm) 0;
+    }
+    .retro-tv__body {
+        padding: 10px 10px 0;
+        border-radius: 16px;
+    }
+    .retro-tv__screen {
+        border-width: 3px;
+        border-radius: 8px;
+    }
+    .retro-tv__antenna { height: 30px; width: 50px; }
+    .retro-tv__antenna-left,
+    .retro-tv__antenna-right { height: 28px; }
+    .retro-tv__dial { width: 20px; height: 20px; }
+    .retro-tv__dial--2 { width: 16px; height: 16px; }
+    .retro-tv__controls { padding: 8px 0 10px; gap: 12px; }
     .hero-carousel__arrow {
         opacity: 1;
         width: 34px;
@@ -254,9 +418,8 @@
 }
 
 .section--search {
-    background: linear-gradient(180deg, #0a0a0a 0%, var(--color-bg) 100%);
+    background: transparent;
     margin-top: 0;
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 
 .section--shows {

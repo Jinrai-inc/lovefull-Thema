@@ -62,7 +62,14 @@ if (empty($slides)) {
 }
 ?>
 
-<section class="hero-carousel" id="heroCarousel">
+<section class="retro-tv" id="heroCarousel">
+    <div class="retro-tv__antenna">
+        <span class="retro-tv__antenna-left"></span>
+        <span class="retro-tv__antenna-right"></span>
+    </div>
+    <div class="retro-tv__body">
+        <div class="retro-tv__screen">
+            <div class="hero-carousel">
     <div class="hero-carousel__track" id="heroTrack">
         <?php foreach ($slides as $i => $video) :
             $video_id      = get_field('video_id', $video->ID) ?: '';
@@ -128,5 +135,19 @@ if (empty($slides)) {
     <!-- スライドカウンター -->
     <div class="hero-carousel__counter" id="heroCounter">
         <span id="heroCounterCurrent">1</span> / <?php echo count($slides); ?>
+    </div>
+            </div><!-- /.hero-carousel -->
+        </div><!-- /.retro-tv__screen -->
+        <div class="retro-tv__controls">
+            <span class="retro-tv__dial retro-tv__dial--1"></span>
+            <span class="retro-tv__dial retro-tv__dial--2"></span>
+            <span class="retro-tv__speaker">
+                <span></span><span></span><span></span><span></span><span></span>
+            </span>
+        </div>
+    </div><!-- /.retro-tv__body -->
+    <div class="retro-tv__feet">
+        <span class="retro-tv__foot"></span>
+        <span class="retro-tv__foot"></span>
     </div>
 </section>

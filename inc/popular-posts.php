@@ -353,7 +353,13 @@ function koi_ria_auto_sync_ga() {
         return;
     }
 
-    koi_ria_sync_ga_popular_posts(false);
+    try {
+        koi_ria_sync_ga_popular_posts(false);
+    } catch (\Throwable $e) {
+        // GA同期でエラーが起きてもサイトを止めない
+        update_option('koi_ria_ga_sync_status', 'error: ' . $e->getMessage());
+        set_transient('koi_ria_ga_sync_lock', 1, HOUR_IN_SECONDS);
+    }
 }
 add_action('admin_init', 'koi_ria_auto_sync_ga');
 

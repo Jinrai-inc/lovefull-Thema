@@ -119,6 +119,41 @@ add_action('init', function() {
 }, 20);
 
 /**
+ * 既存投稿を恋愛コラムカテゴリに自動割り当て（一度だけ実行）
+ * 「未分類」のみに属する投稿をcolumnカテゴリに移動する
+ */
+add_action('admin_init', function () {
+    if (get_option('koi_ria_migrated_columns')) {
+        return;
+    }
+
+    $column_term = get_category_by_slug('column');
+    if (!$column_term) {
+        return;
+    }
+
+    $default_cat_id = (int) get_option('default_category', 1);
+
+    // 未分類カテゴリのみに属する投稿を取得
+    $posts = get_posts([
+        'post_type'      => 'post',
+        'posts_per_page' => -1,
+        'category'       => $default_cat_id,
+        'post_status'    => 'any',
+    ]);
+
+    foreach ($posts as $post) {
+        $cats = wp_get_post_categories($post->ID);
+        // 未分類のみに属する場合、恋愛コラムに変更
+        if (count($cats) === 1 && (int) $cats[0] === $default_cat_id) {
+            wp_set_post_categories($post->ID, [$column_term->term_id]);
+        }
+    }
+
+    update_option('koi_ria_migrated_columns', true);
+});
+
+/**
  * スタイル・スクリプト読み込み
  */
 add_action('wp_enqueue_scripts', function () {

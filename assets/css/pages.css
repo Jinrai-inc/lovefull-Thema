@@ -1053,3 +1053,186 @@
 .shindan-share__btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
 .shindan-share__btn--x { background: #000; }
 .shindan-share__btn--line { background: #00B900; }
+
+/* ============================================
+   記事共通スタイル
+   ============================================ */
+
+/* 戻るリンク */
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8125rem;
+    color: var(--color-text-sub);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+.back-link:hover { color: var(--color-primary); }
+.back-link svg { transform: rotate(180deg); }
+
+/* ============================================
+   ニュース記事テンプレート
+   ============================================ */
+
+.news-article__header {
+    margin-top: var(--space-md);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.news-article__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: var(--space-sm);
+}
+
+.badge--news {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #1a1a2e;
+    color: #fff;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+}
+
+.badge--tag {
+    background: rgba(232, 97, 154, 0.08);
+    color: var(--color-primary);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+.badge--tag:hover { background: rgba(232, 97, 154, 0.16); }
+
+.news-article__title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-top: var(--space-sm);
+}
+
+.news-article__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+    font-size: 0.75rem;
+    color: var(--color-text-sub);
+}
+
+.news-article__meta time {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.news-article__updated { color: var(--color-text-sub); }
+
+.news-article__eyecatch {
+    margin-top: var(--space-md);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.news-article__tags {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+/* ============================================
+   恋愛コラム記事テンプレート
+   ============================================ */
+
+.column-article__header {
+    margin-top: var(--space-md);
+    padding-bottom: var(--space-md);
+    border-bottom: 2px solid var(--color-primary);
+    position: relative;
+}
+
+.column-article__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: var(--space-sm);
+}
+
+.badge--column {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--color-gradient);
+    color: #fff;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+}
+
+.badge--cat {
+    background: rgba(168, 85, 247, 0.1);
+    color: #7C3AED;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+}
+
+.column-article__title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-top: var(--space-sm);
+    background: var(--color-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.column-article__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+    font-size: 0.75rem;
+    color: var(--color-text-sub);
+}
+
+.column-article__meta time,
+.column-article__readtime {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.column-article__updated { color: var(--color-text-sub); }
+
+.column-article__eyecatch {
+    margin-top: var(--space-md);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+}
+
+.column-article__tags {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 2px solid var(--color-primary-light);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}

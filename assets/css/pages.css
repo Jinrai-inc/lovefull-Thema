@@ -739,17 +739,21 @@
     color: var(--color-primary);
 }
 
-/* --- Platform pill --- */
+/* --- Platform tag --- */
 .schedule-card__platform {
-    display: inline-block;
-    font-size: 0.5rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    padding: 1px 8px;
-    border-radius: 10px;
-    background: color-mix(in srgb, var(--platform-color) 10%, transparent);
-    color: var(--platform-color);
-    margin-top: 2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.55rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    background: var(--platform-color);
+    color: #fff;
+    margin-top: 4px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 3px color-mix(in srgb, var(--platform-color) 30%, transparent);
 }
 
 /* (旧コラムスライダー → 人気記事ランキングに置換済み) */

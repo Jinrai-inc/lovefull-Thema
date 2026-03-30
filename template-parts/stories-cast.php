@@ -66,6 +66,13 @@ if (empty($popular_cast)) {
                 <?php endif; ?>
             </div>
             <span class="stories-item__name"><?php echo esc_html($display_name); ?></span>
+            <?php if ($show_name) :
+                $show_post = is_array($show_id) ? get_post($show_id[0]) : get_post($show_id);
+                $show_platform = $show_post ? (get_field('platform', $show_post->ID) ?: '') : '';
+                $show_color = $show_platform ? koi_ria_get_platform_color($show_platform) : '#E8619A';
+            ?>
+                <span class="stories-item__show" style="--show-color: <?php echo esc_attr($show_color); ?>;"><?php echo esc_html($show_name); ?></span>
+            <?php endif; ?>
             <span class="stories-item__sns">
                 <?php if ($ig_username) : ?>
                     <span class="stories-item__sns-icon stories-item__sns-icon--ig" title="Instagram">IG</span>

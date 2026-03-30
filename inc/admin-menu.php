@@ -340,7 +340,9 @@ function koi_ria_cron_page(): void {
                         <?php else : ?>—<?php endif; ?>
                     </td>
                     <td>—</td>
-                    <td>—</td>
+                    <td>
+                        <a href="<?php echo esc_url(admin_url('admin-post.php?action=koi_ria_manual_ig_images&_wpnonce=' . wp_create_nonce('koi_ria_manual_cron'))); ?>" class="button button-secondary">実行</a>
+                    </td>
                 </tr>
             </tbody>
         </table>

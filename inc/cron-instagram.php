@@ -40,7 +40,7 @@ add_filter('cron_schedules', function (array $schedules): array {
 add_action('koi_ria_update_instagram', 'koi_ria_ig_update');
 add_action('koi_ria_update_ig_images', 'koi_ria_ig_update_images');
 
-// 手動実行
+// 手動実行: フォロワー数更新
 add_action('admin_post_koi_ria_manual_instagram', function () {
     if (!current_user_can('manage_options')) {
         wp_die('権限がありません');
@@ -52,6 +52,24 @@ add_action('admin_post_koi_ria_manual_instagram', function () {
     set_transient('koi_ria_admin_notice', [
         'type'    => 'success',
         'message' => "Instagram更新完了: 更新 {$result['updated']}件 / スキップ {$result['skipped']}件 / エラー {$result['errors']}件",
+    ], 30);
+
+    wp_redirect(admin_url('admin.php?page=koi-ria-cron'));
+    exit;
+});
+
+// 手動実行: プロフィール画像一括取得
+add_action('admin_post_koi_ria_manual_ig_images', function () {
+    if (!current_user_can('manage_options')) {
+        wp_die('権限がありません');
+    }
+    check_admin_referer('koi_ria_manual_cron');
+
+    $result = koi_ria_ig_update_images();
+
+    set_transient('koi_ria_admin_notice', [
+        'type'    => 'success',
+        'message' => "IG画像取得完了: 更新 {$result['updated']}件 / スキップ {$result['skipped']}件 / エラー {$result['errors']}件",
     ], 30);
 
     wp_redirect(admin_url('admin.php?page=koi-ria-cron'));
@@ -122,7 +140,7 @@ function koi_ria_ig_update(): array {
         $url = add_query_arg([
             'fields'       => "business_discovery.username({$ig_username}){profile_picture_url,followers_count,media_count}",
             'access_token' => $access_token,
-        ], "https://graph.facebook.com/v19.0/{$ig_user_id}");
+        ], "https://graph.facebook.com/v21.0/{$ig_user_id}");
 
         $response = wp_remote_get($url, ['timeout' => 10]);
         $api_calls++;
@@ -242,7 +260,7 @@ function koi_ria_ig_update_images(): array {
             $url = add_query_arg([
                 'fields'       => "business_discovery.username({$ig_username}){profile_picture_url}",
                 'access_token' => $access_token,
-            ], "https://graph.facebook.com/v19.0/{$ig_user_id}");
+            ], "https://graph.facebook.com/v21.0/{$ig_user_id}");
 
             $response = wp_remote_get($url, ['timeout' => 10]);
             if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200) {

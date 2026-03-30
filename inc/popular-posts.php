@@ -165,30 +165,55 @@ add_action('admin_init', 'koi_ria_sync_ga_popular_posts');
 
 /**
  * 人気記事を取得（GA4 PVデータ優先 → AJAXカウンター → 最新記事）
+ * 優先カテゴリの記事を上位に、それ以外をPV順で埋める。
  *
  * @param int   $count              取得件数
  * @param array $exclude_cat_ids    除外カテゴリID配列
+ * @param int   $priority_cat_id    優先表示カテゴリID（0=なし）
  * @return WP_Post[]
  */
-function koi_ria_get_popular_posts($count = 3, $exclude_cat_ids = []) {
+function koi_ria_get_popular_posts($count = 3, $exclude_cat_ids = [], $priority_cat_id = 0) {
+
+    // 共通: カテゴリ除外フィルタ
+    $filter_excluded = function ($ids) use ($exclude_cat_ids) {
+        if (empty($exclude_cat_ids)) {
+            return $ids;
+        }
+        return array_values(array_filter($ids, function ($id) use ($exclude_cat_ids) {
+            foreach ($exclude_cat_ids as $cat_id) {
+                if (has_category($cat_id, $id)) {
+                    return false;
+                }
+            }
+            return true;
+        }));
+    };
+
+    // 共通: 優先カテゴリを先頭にソート
+    $sort_priority = function ($ids) use ($priority_cat_id) {
+        if (!$priority_cat_id) {
+            return $ids;
+        }
+        $priority = [];
+        $rest     = [];
+        foreach ($ids as $id) {
+            if (has_category($priority_cat_id, $id)) {
+                $priority[] = $id;
+            } else {
+                $rest[] = $id;
+            }
+        }
+        return array_merge($priority, $rest);
+    };
+
     // ① GA同期データ（実PV順）
     $ga_ids = get_option('koi_ria_ga_popular_post_ids', []);
 
     if (!empty($ga_ids)) {
-        // カテゴリフィルタ
-        if (!empty($exclude_cat_ids)) {
-            $ga_ids = array_filter($ga_ids, function ($id) use ($exclude_cat_ids) {
-                foreach ($exclude_cat_ids as $cat_id) {
-                    if (has_category($cat_id, $id)) {
-                        return false;
-                    }
-                }
-                return true;
-            });
-            $ga_ids = array_values($ga_ids);
-        }
-
+        $ga_ids = $filter_excluded($ga_ids);
+        $ga_ids = $sort_priority($ga_ids);
         $ga_ids = array_slice($ga_ids, 0, $count);
+
         if (!empty($ga_ids)) {
             $posts = get_posts([
                 'post_type'      => 'post',
@@ -203,7 +228,48 @@ function koi_ria_get_popular_posts($count = 3, $exclude_cat_ids = []) {
         }
     }
 
-    // ② AJAXカウンター（post_views_count）
+    // ② AJAXカウンター（post_views_count）— 優先カテゴリ + その他
+    if ($priority_cat_id) {
+        $priority_args = [
+            'post_type'      => 'post',
+            'posts_per_page' => $count,
+            'meta_key'       => 'post_views_count',
+            'orderby'        => 'meta_value_num',
+            'order'          => 'DESC',
+            'post_status'    => 'publish',
+            'category'       => $priority_cat_id,
+        ];
+        if (!empty($exclude_cat_ids)) {
+            $priority_args['category__not_in'] = $exclude_cat_ids;
+        }
+        $priority_posts = get_posts($priority_args);
+
+        $remaining = $count - count($priority_posts);
+        $rest_posts = [];
+        if ($remaining > 0) {
+            $exclude_ids = wp_list_pluck($priority_posts, 'ID');
+            $rest_args = [
+                'post_type'      => 'post',
+                'posts_per_page' => $remaining,
+                'meta_key'       => 'post_views_count',
+                'orderby'        => 'meta_value_num',
+                'order'          => 'DESC',
+                'post_status'    => 'publish',
+                'post__not_in'   => $exclude_ids,
+            ];
+            if (!empty($exclude_cat_ids)) {
+                $rest_args['category__not_in'] = $exclude_cat_ids;
+            }
+            $rest_posts = get_posts($rest_args);
+        }
+
+        $merged = array_merge($priority_posts, $rest_posts);
+        if (!empty($merged)) {
+            return $merged;
+        }
+    }
+
+    // 優先カテゴリなしの場合
     $args = [
         'post_type'      => 'post',
         'posts_per_page' => $count,

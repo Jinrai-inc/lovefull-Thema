@@ -2,16 +2,18 @@
 /**
  * 人気記事トップ3（Google Analytics PV数連携）
  * ※恋愛コラム（column カテゴリ）は除外
+ * ※恋愛リアリティーショー（koiria カテゴリ ID:51）を優先表示
  *
  * @package KoiRiaPortal
  */
 
 defined('ABSPATH') || exit;
 
-$column_cat_id  = get_cat_ID('column');
-$exclude_cats   = $column_cat_id ? [$column_cat_id] : [];
-$popular_posts  = function_exists('koi_ria_get_popular_posts')
-    ? koi_ria_get_popular_posts(3, $exclude_cats)
+$column_cat_id   = get_cat_ID('column');
+$koiria_cat_id   = 51; // 恋愛リアリティーショーカテゴリ
+$exclude_cats    = $column_cat_id ? [$column_cat_id] : [];
+$popular_posts   = function_exists('koi_ria_get_popular_posts')
+    ? koi_ria_get_popular_posts(3, $exclude_cats, $koiria_cat_id)
     : [];
 
 if (empty($popular_posts)) {

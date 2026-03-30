@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =============================================
-    // ヒーローカルーセル（黒背景スライダー + 自動再生）
+    // ヒーローカルーセル（YouTube自動再生スライダー）
     // =============================================
     const heroTrack = document.getElementById('heroTrack');
     const heroDots = document.getElementById('heroDots');
@@ -32,24 +32,66 @@ document.addEventListener('DOMContentLoaded', () => {
         const dots = heroDots.querySelectorAll('.hero-carousel__dot');
         let current = 0;
         let autoSlideTimer;
-        const AUTO_SLIDE_INTERVAL = 5000;
+        let userInteracted = false;
+        const AUTO_SLIDE_INTERVAL = 8000;
+
+        // YouTube iframe を作成
+        function embedVideo(slide, autoplay) {
+            const videoId = slide.dataset.videoId;
+            if (!videoId || slide.querySelector('iframe')) return;
+
+            slide.classList.add('is-playing');
+            const iframe = document.createElement('iframe');
+            // mute=1 で自動再生を許可（ブラウザポリシー対応）
+            const params = autoplay
+                ? 'autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1&loop=1'
+                : 'autoplay=1&rel=0&modestbranding=1&playsinline=1';
+            iframe.src = `https://www.youtube.com/embed/${videoId}?${params}`;
+            iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none;z-index:5;';
+            iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
+            iframe.allowFullscreen = true;
+            slide.appendChild(iframe);
+        }
+
+        // スライドからiframeを削除して停止
+        function removeVideo(slide) {
+            const iframe = slide.querySelector('iframe');
+            if (iframe) {
+                iframe.src = '';
+                iframe.remove();
+            }
+            slide.classList.remove('is-playing');
+        }
+
+        // 全スライドの動画を停止
+        function removeAllVideos() {
+            slides.forEach(s => removeVideo(s));
+        }
 
         function goToSlide(index) {
-            // ループ対応
             if (index < 0) index = slides.length - 1;
             if (index >= slides.length) index = 0;
+
+            // 前のスライドの動画を停止
+            if (index !== current) {
+                removeVideo(slides[current]);
+            }
 
             current = index;
             heroTrack.style.transform = `translateX(-${current * 100}%)`;
 
-            // ドット更新
             dots.forEach((dot, i) => {
                 dot.classList.toggle('is-active', i === current);
             });
 
-            // カウンター更新
             if (heroCounter) {
                 heroCounter.textContent = current + 1;
+            }
+
+            // 現在のスライドに自動再生（ミュート）を埋め込む
+            // ユーザーがまだクリックしていない場合のみ自動再生
+            if (!userInteracted) {
+                setTimeout(() => embedVideo(slides[current], true), 300);
             }
         }
 
@@ -73,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // ドットナビ
         dots.forEach(dot => {
             dot.addEventListener('click', () => {
+                userInteracted = false;
                 stopAutoSlide();
                 goToSlide(parseInt(dot.dataset.index, 10));
                 startAutoSlide();
@@ -82,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 矢印ナビ
         if (heroPrev) {
             heroPrev.addEventListener('click', () => {
+                userInteracted = false;
                 stopAutoSlide();
                 prevSlide();
                 startAutoSlide();
@@ -89,29 +133,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (heroNext) {
             heroNext.addEventListener('click', () => {
+                userInteracted = false;
                 stopAutoSlide();
                 nextSlide();
                 startAutoSlide();
             });
         }
 
-        // YouTube iframe 埋め込み再生
+        // クリックで音声付き再生に切り替え
         slides.forEach(slide => {
             slide.addEventListener('click', () => {
                 const videoId = slide.dataset.videoId;
-                if (!videoId || slide.classList.contains('is-playing')) return;
+                if (!videoId) return;
 
+                userInteracted = true;
                 stopAutoSlide();
-                slide.classList.add('is-playing');
 
-                const iframe = document.createElement('iframe');
-                iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
-                iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none;z-index:5;';
-                iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
-                iframe.allowFullscreen = true;
-                slide.appendChild(iframe);
+                // 既存のiframeを削除して音声付きで再埋め込み
+                removeVideo(slide);
+                embedVideo(slide, false);
             });
         });
+
+        // 最初のスライドを自動再生（ミュート）
+        if (slides.length > 0 && slides[0].dataset.videoId) {
+            embedVideo(slides[0], true);
+        }
 
         // 自動スライド開始
         if (slides.length > 1) {
@@ -123,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (carousel) {
             carousel.addEventListener('mouseenter', stopAutoSlide);
             carousel.addEventListener('mouseleave', () => {
-                if (slides.length > 1) startAutoSlide();
+                if (slides.length > 1 && !userInteracted) startAutoSlide();
             });
         }
 
@@ -140,23 +187,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const diffX = touchStartX - e.changedTouches[0].clientX;
             const diffY = touchStartY - e.changedTouches[0].clientY;
 
-            // 水平スワイプのみ反応（縦スクロールと区別）
             if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
+                userInteracted = false;
                 if (diffX > 0) {
                     nextSlide();
                 } else {
                     prevSlide();
                 }
             }
-            if (slides.length > 1) startAutoSlide();
+            if (slides.length > 1 && !userInteracted) startAutoSlide();
         }, { passive: true });
 
         // キーボードナビ（フォーカス時）
         if (carousel) {
             carousel.setAttribute('tabindex', '0');
             carousel.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowLeft') { stopAutoSlide(); prevSlide(); startAutoSlide(); }
-                if (e.key === 'ArrowRight') { stopAutoSlide(); nextSlide(); startAutoSlide(); }
+                if (e.key === 'ArrowLeft') { userInteracted = false; stopAutoSlide(); prevSlide(); startAutoSlide(); }
+                if (e.key === 'ArrowRight') { userInteracted = false; stopAutoSlide(); nextSlide(); startAutoSlide(); }
             });
         }
     }

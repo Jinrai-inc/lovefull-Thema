@@ -218,6 +218,47 @@ function koi_ria_settings_page(): void {
                         </p>
                     </td>
                 </tr>
+                <tr>
+                    <th>アバターテスト</th>
+                    <td>
+                        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+                            <input type="text" id="test_avatar_username" placeholder="Instagramユーザー名" style="width: 200px;">
+                            <button type="button" id="test_avatar_btn" class="button button-secondary">テスト取得</button>
+                        </div>
+                        <div id="test_avatar_result" style="display:none; padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-top: 8px;">
+                        </div>
+                        <p class="description">ユーザー名を入力して「テスト取得」で、unavatar.ioからの取得を個別にテストできます。</p>
+                        <script>
+                        document.getElementById('test_avatar_btn').addEventListener('click', function() {
+                            var username = document.getElementById('test_avatar_username').value.replace(/^@/, '').trim();
+                            if (!username) { alert('ユーザー名を入力してください'); return; }
+                            var btn = this;
+                            var result = document.getElementById('test_avatar_result');
+                            btn.disabled = true;
+                            btn.textContent = '取得中…';
+                            result.style.display = 'block';
+                            result.innerHTML = '取得中…';
+                            var fd = new FormData();
+                            fd.append('action', 'koi_ria_test_avatar');
+                            fd.append('username', username);
+                            fd.append('_ajax_nonce', '<?php echo wp_create_nonce("koi_ria_test_avatar"); ?>');
+                            fetch(ajaxurl, { method: 'POST', body: fd })
+                                .then(function(r) { return r.json(); })
+                                .then(function(data) {
+                                    if (data.success) {
+                                        result.innerHTML = '<span style="color:green;">✓ ' + data.data.message + '</span><br>'
+                                            + '<strong>サイズ:</strong> ' + (data.data.size / 1024).toFixed(1) + ' KB<br>'
+                                            + '<img src="' + data.data.url + '" style="width:80px;height:80px;border-radius:50%;margin-top:8px;">';
+                                    } else {
+                                        result.innerHTML = '<span style="color:red;">✗ ' + data.data + '</span>';
+                                    }
+                                })
+                                .catch(function(e) { result.innerHTML = '<span style="color:red;">通信エラー: ' + e.message + '</span>'; })
+                                .finally(function() { btn.disabled = false; btn.textContent = 'テスト取得'; });
+                        });
+                        </script>
+                    </td>
+                </tr>
             </table>
 
             <h2 class="title">ニュースフィード（RSS）</h2>

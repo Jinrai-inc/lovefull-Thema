@@ -23,8 +23,17 @@ add_filter('cron_schedules', function (array $schedules): array {
 
 // Cronスケジュール登録
 add_action('init', function () {
-    if (!wp_next_scheduled('koi_ria_refresh_all_avatars')) {
-        wp_schedule_event(strtotime('next monday 4:00am'), 'weekly', 'koi_ria_refresh_all_avatars');
+    // 週次→日次に変更: 古いスケジュールがあれば再登録
+    $next = wp_next_scheduled('koi_ria_refresh_all_avatars');
+    if ($next) {
+        $schedule = wp_get_schedule('koi_ria_refresh_all_avatars');
+        if ($schedule !== 'daily') {
+            wp_unschedule_event($next, 'koi_ria_refresh_all_avatars');
+            $next = false;
+        }
+    }
+    if (!$next) {
+        wp_schedule_event(time(), 'daily', 'koi_ria_refresh_all_avatars');
     }
 });
 

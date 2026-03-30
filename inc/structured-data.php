@@ -463,7 +463,6 @@ function koi_ria_cast_schema(): void {
     $blood_type      = get_field('blood_type', $cast_id) ?: '';
     $hobby           = get_field('hobby', $cast_id) ?: '';
     $profile_image   = get_field('profile_image', $cast_id);
-    $ig_cache        = get_post_meta($cast_id, 'ig_profile_cache', true);
     $followers_count = get_field('followers_count', $cast_id) ?: 0;
     $cast_url        = get_permalink();
 
@@ -534,8 +533,8 @@ function koi_ria_cast_schema(): void {
     $image_url = '';
     if ($profile_image && isset($profile_image['url'])) {
         $image_url = $profile_image['url'];
-    } elseif ($ig_cache) {
-        $image_url = $ig_cache;
+    } elseif ($ig_username) {
+        $image_url = koi_ria_get_ig_avatar($ig_username, 200) ?: '';
     }
     if ($image_url) {
         $schema['image'] = [

@@ -113,11 +113,11 @@ if (empty($couple_posts)) {
             $b_avatar = '';
             if ($a_id) {
                 $img = get_field('profile_image', $a_id);
-                $a_avatar = ($img && isset($img['sizes']['cast-avatar'])) ? $img['sizes']['cast-avatar'] : (get_post_meta($a_id, 'ig_profile_cache', true) ?: '');
+                $a_avatar = ($img && isset($img['sizes']['cast-avatar'])) ? $img['sizes']['cast-avatar'] : (koi_ria_get_ig_avatar(get_field('ig_username', $a_id), 200) ?: '');
             }
             if ($b_id) {
                 $img = get_field('profile_image', $b_id);
-                $b_avatar = ($img && isset($img['sizes']['cast-avatar'])) ? $img['sizes']['cast-avatar'] : (get_post_meta($b_id, 'ig_profile_cache', true) ?: '');
+                $b_avatar = ($img && isset($img['sizes']['cast-avatar'])) ? $img['sizes']['cast-avatar'] : (koi_ria_get_ig_avatar(get_field('ig_username', $b_id), 200) ?: '');
             }
 
             $status_class = 'couple-card__status--' . $status;

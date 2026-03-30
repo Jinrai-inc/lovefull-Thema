@@ -15,13 +15,12 @@ $ig_username     = get_field('ig_username', $cast->ID) ?: '';
 $tiktok_username = get_field('tiktok_username', $cast->ID) ?: '';
 $followers_count = get_field('followers_count', $cast->ID) ?: 0;
 $profile_image   = get_field('profile_image', $cast->ID);
-$ig_cache        = get_post_meta($cast->ID, 'ig_profile_cache', true);
 
 $avatar_url = '';
 if ($profile_image && isset($profile_image['url'])) {
     $avatar_url = $profile_image['url'];
-} elseif ($ig_cache) {
-    $avatar_url = $ig_cache;
+} elseif ($ig_username) {
+    $avatar_url = koi_ria_get_ig_avatar($ig_username, 200);
 }
 
 // 番組名取得（推しボタン用）

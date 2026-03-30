@@ -120,8 +120,9 @@ function koi_ria_import_page(): void {
 function koi_ria_settings_page(): void {
     if (isset($_POST['koi_ria_settings_nonce']) && wp_verify_nonce($_POST['koi_ria_settings_nonce'], 'koi_ria_save_settings')) {
         update_option('koi_ria_youtube_api_key', sanitize_text_field($_POST['youtube_api_key'] ?? ''));
-        update_option('koi_ria_ig_access_token', sanitize_text_field($_POST['ig_access_token'] ?? ''));
-        update_option('koi_ria_ig_user_id', sanitize_text_field($_POST['ig_user_id'] ?? ''));
+        $avatar_cache_days = intval($_POST['avatar_cache_days'] ?? 7);
+        $avatar_cache_days = max(1, min(30, $avatar_cache_days));
+        update_option('koi_ria_avatar_cache_days', $avatar_cache_days);
 
         // スライダー表示件数（1〜30、デフォルト10）
         $slider_max = intval($_POST['slider_max_slides'] ?? 10);
@@ -148,8 +149,7 @@ function koi_ria_settings_page(): void {
     }
 
     $youtube_key    = get_option('koi_ria_youtube_api_key', '');
-    $ig_token       = get_option('koi_ria_ig_access_token', '');
-    $ig_user_id     = get_option('koi_ria_ig_user_id', '');
+    $avatar_cache_days = get_option('koi_ria_avatar_cache_days', 7);
     $slider_max     = get_option('koi_ria_slider_max_slides', 10);
     $feeds       = get_option('koi_ria_news_feeds', []);
 
@@ -195,20 +195,14 @@ function koi_ria_settings_page(): void {
                 </tr>
             </table>
 
-            <h2 class="title">Instagram Graph API</h2>
+            <h2 class="title">IGアバター設定（unavatar.io）</h2>
             <table class="form-table">
                 <tr>
-                    <th><label for="ig_access_token">Access Token</label></th>
+                    <th><label for="avatar_cache_days">キャッシュ有効期間</label></th>
                     <td>
-                        <input type="text" id="ig_access_token" name="ig_access_token" value="<?php echo esc_attr($ig_token); ?>" class="regular-text">
-                        <p class="description">Instagram Graph API のアクセストークン（Business Discovery用）</p>
-                    </td>
-                </tr>
-                <tr>
-                    <th><label for="ig_user_id">Business Account ID</label></th>
-                    <td>
-                        <input type="text" id="ig_user_id" name="ig_user_id" value="<?php echo esc_attr($ig_user_id); ?>" class="regular-text">
-                        <p class="description">自サイトのIGビジネスアカウントのユーザーID</p>
+                        <input type="number" id="avatar_cache_days" name="avatar_cache_days" value="<?php echo esc_attr($avatar_cache_days); ?>" min="1" max="30" step="1" style="width: 80px;">
+                        <span> 日（1〜30）</span>
+                        <p class="description">unavatar.io経由で取得したプロフィール画像のローカルキャッシュ有効日数。週1回のCronで自動更新されます。</p>
                     </td>
                 </tr>
             </table>
@@ -239,13 +233,12 @@ function koi_ria_settings_page(): void {
 function koi_ria_cron_page(): void {
     $yt_last    = get_option('koi_ria_youtube_last_run', null);
     $news_last  = get_option('koi_ria_news_last_run', null);
-    $ig_last    = get_option('koi_ria_ig_last_run', null);
-    $ig_img_last = get_option('koi_ria_ig_images_last_run', null);
+    $avatar_last = get_option('koi_ria_avatar_last_run', null);
 
     // Cronの次回実行時刻
-    $yt_next   = wp_next_scheduled('koi_ria_fetch_youtube');
-    $news_next = wp_next_scheduled('koi_ria_fetch_news');
-    $ig_next   = wp_next_scheduled('koi_ria_update_instagram');
+    $yt_next     = wp_next_scheduled('koi_ria_fetch_youtube');
+    $news_next   = wp_next_scheduled('koi_ria_fetch_news');
+    $avatar_next = wp_next_scheduled('koi_ria_refresh_all_avatars');
 
     // ログ取得
     $logs = get_option('koi_ria_cron_log', []);
@@ -305,43 +298,29 @@ function koi_ria_cron_page(): void {
                         <a href="<?php echo esc_url(admin_url('admin-post.php?action=koi_ria_manual_news&_wpnonce=' . wp_create_nonce('koi_ria_manual_cron'))); ?>" class="button button-secondary">実行</a>
                     </td>
                 </tr>
-                <?php // Instagram ?>
+                <?php // IGアバター ?>
                 <tr>
-                    <td><strong>Instagram更新</strong></td>
-                    <td>毎日</td>
-                    <td><?php echo $ig_last ? esc_html($ig_last['time']) : '—'; ?></td>
-                    <td>
-                        <?php if ($ig_last && isset($ig_last['summary'])) :
-                            $s = $ig_last['summary']; ?>
-                            更新: <?php echo intval($s['updated']); ?> /
-                            スキップ: <?php echo intval($s['skipped']); ?> /
-                            エラー: <?php echo intval($s['errors']); ?>
-                            <?php if (isset($ig_last['api_calls'])) : ?>
-                                (API: <?php echo intval($ig_last['api_calls']); ?>回)
-                            <?php endif; ?>
-                        <?php else : ?>—<?php endif; ?>
-                    </td>
-                    <td><?php echo $ig_next ? esc_html(date('Y-m-d H:i', $ig_next)) : '未設定'; ?></td>
-                    <td>
-                        <a href="<?php echo esc_url(admin_url('admin-post.php?action=koi_ria_manual_instagram&_wpnonce=' . wp_create_nonce('koi_ria_manual_cron'))); ?>" class="button button-secondary">実行</a>
-                    </td>
-                </tr>
-                <?php // IG画像 ?>
-                <tr>
-                    <td><strong>IG画像キャッシュ</strong></td>
+                    <td><strong>IGアバター更新</strong><br><small style="color:#666;">unavatar.io経由</small></td>
                     <td>週1回</td>
-                    <td><?php echo $ig_img_last ? esc_html($ig_img_last['time']) : '—'; ?></td>
+                    <td><?php echo $avatar_last ? esc_html($avatar_last['time']) : '—'; ?></td>
                     <td>
-                        <?php if ($ig_img_last && isset($ig_img_last['summary'])) :
-                            $s = $ig_img_last['summary']; ?>
+                        <?php if ($avatar_last && isset($avatar_last['summary'])) :
+                            $s = $avatar_last['summary']; ?>
                             更新: <?php echo intval($s['updated']); ?> /
                             スキップ: <?php echo intval($s['skipped']); ?> /
                             エラー: <?php echo intval($s['errors']); ?>
                         <?php else : ?>—<?php endif; ?>
+                        <?php
+                        // キャッシュ統計
+                        $cache_dir = wp_upload_dir()['basedir'] . '/ig-cache/';
+                        $cached_count = file_exists($cache_dir) ? count(glob($cache_dir . '*.jpg')) : 0;
+                        $total_cast = wp_count_posts('cast')->publish ?? 0;
+                        echo "<br><small>キャッシュ済み: {$cached_count}件 / 全出演者: {$total_cast}件</small>";
+                        ?>
                     </td>
-                    <td>—</td>
+                    <td><?php echo $avatar_next ? esc_html(date('Y-m-d H:i', $avatar_next)) : '未設定'; ?></td>
                     <td>
-                        <a href="<?php echo esc_url(admin_url('admin-post.php?action=koi_ria_manual_ig_images&_wpnonce=' . wp_create_nonce('koi_ria_manual_cron'))); ?>" class="button button-secondary">実行</a>
+                        <a href="<?php echo esc_url(admin_url('admin-post.php?action=koi_ria_manual_avatar_refresh&_wpnonce=' . wp_create_nonce('koi_ria_manual_cron'))); ?>" class="button button-secondary">実行</a>
                     </td>
                 </tr>
             </tbody>

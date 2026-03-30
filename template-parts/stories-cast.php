@@ -41,13 +41,13 @@ if (empty($popular_cast)) {
             $ig_username     = get_field('ig_username', $cast->ID) ?: '';
             $tiktok_username = get_field('tiktok_username', $cast->ID) ?: '';
             $profile_image   = get_field('profile_image', $cast->ID);
-            $ig_cache        = get_post_meta($cast->ID, 'ig_profile_cache', true);
 
+            // アバターURL: 手動アップロード > unavatar.ioキャッシュ > フォールバック
             $avatar_url = '';
             if ($profile_image && isset($profile_image['url'])) {
                 $avatar_url = $profile_image['url'];
-            } elseif ($ig_cache) {
-                $avatar_url = $ig_cache;
+            } elseif ($ig_username) {
+                $avatar_url = koi_ria_get_ig_avatar($ig_username, 200);
             }
 
             $show_id = get_field('show', $cast->ID);

@@ -218,8 +218,8 @@ $related_posts = get_posts([
                     <?php foreach ($season_members as $m) :
                         $m_name = get_field('display_name', $m->ID) ?: $m->post_title;
                         $m_img  = get_field('profile_image', $m->ID);
-                        $m_cache = get_post_meta($m->ID, 'ig_profile_cache', true);
-                        $m_avatar = ($m_img && isset($m_img['url'])) ? $m_img['url'] : ($m_cache ?: '');
+                        $m_ig = get_field('ig_username', $m->ID);
+                        $m_avatar = ($m_img && isset($m_img['url'])) ? $m_img['url'] : (koi_ria_get_ig_avatar($m_ig, 200) ?: '');
                         $m_gender = get_field('gender', $m->ID) ?: '';
                     ?>
                     <div style="text-align: center; min-width: 70px;">

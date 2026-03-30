@@ -23,7 +23,6 @@ $age              = get_field('age') ?: '';
 $from_area        = get_field('from_area') ?: '';
 $cast_status      = get_field('cast_status') ?: '';
 $profile_image    = get_field('profile_image');
-$ig_cache         = get_post_meta($cast_id, 'ig_profile_cache', true);
 
 // 番組情報取得
 $show_name = '';
@@ -48,8 +47,8 @@ if ($season_id) {
 $avatar_url = '';
 if ($profile_image && isset($profile_image['url'])) {
     $avatar_url = $profile_image['url'];
-} elseif ($ig_cache) {
-    $avatar_url = $ig_cache;
+} elseif ($ig_username) {
+    $avatar_url = koi_ria_get_ig_avatar($ig_username, 200);
 }
 
 // 同シーズンの相関図データ

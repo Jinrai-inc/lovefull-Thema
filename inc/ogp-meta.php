@@ -132,9 +132,10 @@ function koi_ria_ogp_meta(): void {
                     $image = $profile_image['url'];
                     $image_alt = $display_name ?: get_the_title();
                 } else {
-                    $ig_cache = get_post_meta($post_id, 'ig_profile_cache', true);
-                    if ($ig_cache) {
-                        $image = $ig_cache;
+                    $ig_username = get_field('ig_username', $post_id);
+                    $ig_avatar = $ig_username ? koi_ria_get_ig_avatar($ig_username, 200) : '';
+                    if ($ig_avatar) {
+                        $image = $ig_avatar;
                         $image_alt = $display_name ?: get_the_title();
                     }
                 }

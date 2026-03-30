@@ -84,8 +84,7 @@ $type_map = [
                 $m_name   = get_field('display_name', $m->ID) ?: $m->post_title;
                 $m_img    = get_field('profile_image', $m->ID);
                 $m_ig     = get_field('ig_username', $m->ID);
-                $m_cache  = get_post_meta($m->ID, 'ig_profile_cache', true);
-                $m_avatar = ($m_img && isset($m_img['url'])) ? $m_img['url'] : ($m_cache ?: '');
+                $m_avatar = ($m_img && isset($m_img['url'])) ? $m_img['url'] : (koi_ria_get_ig_avatar($m_ig, 200) ?: '');
                 $m_gender = get_field('gender', $m->ID) ?: '';
                 $gender_class = ($m_gender === 'f') ? 'corr-avatar--female' : 'corr-avatar--male';
             ?>

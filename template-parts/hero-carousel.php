@@ -54,8 +54,10 @@ foreach ($all_videos as $video) {
 // ピン留め動画を先頭に、その後チャンネル別最新動画
 $slides = array_merge($pinned_videos, $channel_latest);
 
-// 最大10件に制限
-$slides = array_slice($slides, 0, 10);
+// 管理画面で設定した件数に制限（デフォルト10、上限30）
+$slider_max = (int) get_option('koi_ria_slider_max_slides', 10);
+$slider_max = max(1, min(30, $slider_max));
+$slides = array_slice($slides, 0, $slider_max);
 
 if (empty($slides)) {
     return;

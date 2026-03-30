@@ -105,6 +105,11 @@ function koi_ria_settings_page(): void {
         update_option('koi_ria_ig_access_token', sanitize_text_field($_POST['ig_access_token'] ?? ''));
         update_option('koi_ria_ig_user_id', sanitize_text_field($_POST['ig_user_id'] ?? ''));
 
+        // スライダー表示件数（1〜30、デフォルト10）
+        $slider_max = intval($_POST['slider_max_slides'] ?? 10);
+        $slider_max = max(1, min(30, $slider_max));
+        update_option('koi_ria_slider_max_slides', $slider_max);
+
         // ニュースフィード設定
         $feeds_raw = sanitize_textarea_field($_POST['news_feeds'] ?? '');
         $feeds = [];
@@ -124,9 +129,10 @@ function koi_ria_settings_page(): void {
         echo '<div class="notice notice-success"><p>設定を保存しました。</p></div>';
     }
 
-    $youtube_key = get_option('koi_ria_youtube_api_key', '');
-    $ig_token    = get_option('koi_ria_ig_access_token', '');
-    $ig_user_id  = get_option('koi_ria_ig_user_id', '');
+    $youtube_key    = get_option('koi_ria_youtube_api_key', '');
+    $ig_token       = get_option('koi_ria_ig_access_token', '');
+    $ig_user_id     = get_option('koi_ria_ig_user_id', '');
+    $slider_max     = get_option('koi_ria_slider_max_slides', 10);
     $feeds       = get_option('koi_ria_news_feeds', []);
 
     // フィードをテキスト形式に変換
@@ -155,6 +161,18 @@ function koi_ria_settings_page(): void {
                     <td>
                         <input type="text" id="youtube_api_key" name="youtube_api_key" value="<?php echo esc_attr($youtube_key); ?>" class="regular-text">
                         <p class="description">YouTube Data API v3のAPIキー（無料枠: 10,000 units/日）</p>
+                    </td>
+                </tr>
+            </table>
+
+            <h2 class="title">動画スライダー設定</h2>
+            <table class="form-table">
+                <tr>
+                    <th><label for="slider_max_slides">スライダー表示件数</label></th>
+                    <td>
+                        <input type="number" id="slider_max_slides" name="slider_max_slides" value="<?php echo esc_attr($slider_max); ?>" min="1" max="30" step="1" style="width: 80px;">
+                        <span> 件（1〜30）</span>
+                        <p class="description">トップページのYouTube動画スライダーに表示する最大動画数です。チャンネル別最新動画＋ピン留め動画の合計がこの件数に制限されます。</p>
                     </td>
                 </tr>
             </table>

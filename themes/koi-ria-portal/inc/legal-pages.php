@@ -65,6 +65,10 @@ function koi_ria_create_legal_pages(): int {
             if ($slug === 'privacy-policy') {
                 update_option('wp_page_for_privacy_policy', $post_id);
             }
+            // ページテンプレート設定
+            if (isset($data['template'])) {
+                update_post_meta($post_id, '_wp_page_template', $data['template']);
+            }
             $created++;
         }
     }
@@ -473,6 +477,23 @@ HTML,
 <p><strong>運営会社:</strong> 株式会社仁頼<br><strong>所在地:</strong> 〒221-0001 神奈川県横浜市神奈川区西寺尾4丁目6番6-3号</p>
 <!-- /wp:paragraph -->
 HTML,
+        ],
+
+        // ===== 機能ページ =====
+        'shindan' => [
+            'title'    => '番組診断',
+            'template' => 'page-shindan.php',
+            'content'  => '',
+        ],
+        'vod-search' => [
+            'title'    => 'VOD検索',
+            'template' => 'page-vod-search.php',
+            'content'  => '',
+        ],
+        'favorites' => [
+            'title'    => '推しメンバー',
+            'template' => 'page-favorites.php',
+            'content'  => '',
         ],
     ];
 }

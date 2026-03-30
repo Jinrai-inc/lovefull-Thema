@@ -332,6 +332,196 @@ function koi_ria_register_acf_fields(): void {
     ]);
 
     // -------------------------------------------------------
+    // 番組: VOD配信情報（showに追加フィールド）
+    // -------------------------------------------------------
+    acf_add_local_field_group([
+        'key'      => 'group_show_vod',
+        'title'    => 'VOD配信情報',
+        'fields'   => [
+            [
+                'key'     => 'field_show_available_vods',
+                'label'   => '配信VOD',
+                'name'    => 'available_vods',
+                'type'    => 'checkbox',
+                'choices' => [
+                    'ABEMA'        => 'ABEMA',
+                    'Netflix'      => 'Netflix',
+                    'Prime Video'  => 'Prime Video',
+                    'U-NEXT'       => 'U-NEXT',
+                    'Hulu'         => 'Hulu',
+                    'Disney+'      => 'Disney+',
+                    'TVer'         => 'TVer',
+                    'Paravi'       => 'Paravi',
+                ],
+                'layout' => 'horizontal',
+            ],
+            [
+                'key'        => 'field_show_vod_links',
+                'label'      => 'VOD別URL',
+                'name'       => 'vod_links',
+                'type'       => 'repeater',
+                'layout'     => 'table',
+                'sub_fields' => [
+                    [
+                        'key'     => 'field_vod_link_name',
+                        'label'   => 'VOD名',
+                        'name'    => 'vod_name',
+                        'type'    => 'select',
+                        'choices' => [
+                            'ABEMA'        => 'ABEMA',
+                            'Netflix'      => 'Netflix',
+                            'Prime Video'  => 'Prime Video',
+                            'U-NEXT'       => 'U-NEXT',
+                            'Hulu'         => 'Hulu',
+                            'Disney+'      => 'Disney+',
+                            'TVer'         => 'TVer',
+                            'Paravi'       => 'Paravi',
+                        ],
+                    ],
+                    [
+                        'key'   => 'field_vod_link_url',
+                        'label' => 'URL',
+                        'name'  => 'url',
+                        'type'  => 'url',
+                    ],
+                    [
+                        'key'           => 'field_vod_link_is_free',
+                        'label'         => '無料あり',
+                        'name'          => 'is_free',
+                        'type'          => 'true_false',
+                        'default_value' => 0,
+                        'ui'            => 1,
+                    ],
+                ],
+            ],
+        ],
+        'location' => [
+            [
+                ['param' => 'post_type', 'operator' => '==', 'value' => 'show'],
+            ],
+        ],
+        'menu_order' => 1,
+        'position'   => 'normal',
+        'style'      => 'default',
+    ]);
+
+    // -------------------------------------------------------
+    // カップル情報（couple）
+    // -------------------------------------------------------
+    acf_add_local_field_group([
+        'key'      => 'group_couple_info',
+        'title'    => 'カップル情報',
+        'fields'   => [
+            [
+                'key'       => 'field_couple_member_a',
+                'label'     => 'メンバーA',
+                'name'      => 'member_a',
+                'type'      => 'relationship',
+                'post_type' => ['cast'],
+                'max'       => 1,
+                'required'  => 1,
+                'return_format' => 'id',
+            ],
+            [
+                'key'       => 'field_couple_member_b',
+                'label'     => 'メンバーB',
+                'name'      => 'member_b',
+                'type'      => 'relationship',
+                'post_type' => ['cast'],
+                'max'       => 1,
+                'required'  => 1,
+                'return_format' => 'id',
+            ],
+            [
+                'key'       => 'field_couple_show',
+                'label'     => '番組',
+                'name'      => 'show',
+                'type'      => 'relationship',
+                'post_type' => ['show'],
+                'max'       => 1,
+                'required'  => 1,
+                'return_format' => 'id',
+            ],
+            [
+                'key'       => 'field_couple_season',
+                'label'     => 'シーズン',
+                'name'      => 'season',
+                'type'      => 'relationship',
+                'post_type' => ['season'],
+                'max'       => 1,
+                'required'  => 1,
+                'return_format' => 'id',
+            ],
+            [
+                'key'   => 'field_couple_name',
+                'label' => 'カップル名',
+                'name'  => 'couple_name',
+                'type'  => 'text',
+                'instructions' => '例: れんゆな / さとまる',
+            ],
+            [
+                'key'     => 'field_couple_status',
+                'label'   => '現在のステータス',
+                'name'    => 'couple_status',
+                'type'    => 'select',
+                'choices' => [
+                    '交際中' => '交際中',
+                    '破局'   => '破局',
+                    '結婚'   => '結婚',
+                    '不明'   => '不明',
+                ],
+                'default_value' => '不明',
+            ],
+            [
+                'key'        => 'field_couple_timeline',
+                'label'      => 'タイムライン',
+                'name'       => 'timeline',
+                'type'       => 'repeater',
+                'layout'     => 'block',
+                'sub_fields' => [
+                    [
+                        'key'            => 'field_couple_event_date',
+                        'label'          => '日付',
+                        'name'           => 'event_date',
+                        'type'           => 'date_picker',
+                        'display_format' => 'Y.m',
+                        'return_format'  => 'Y-m-d',
+                    ],
+                    [
+                        'key'     => 'field_couple_event_type',
+                        'label'   => 'イベント種別',
+                        'name'    => 'event_type',
+                        'type'    => 'select',
+                        'choices' => [
+                            '成立'     => '成立',
+                            '交際報告' => '交際報告',
+                            '破局報告' => '破局報告',
+                            '結婚報告' => '結婚報告',
+                            '目撃情報' => '目撃情報',
+                            'SNS投稿'  => 'SNS投稿',
+                        ],
+                    ],
+                    [
+                        'key'   => 'field_couple_event_note',
+                        'label' => 'メモ',
+                        'name'  => 'event_note',
+                        'type'  => 'text',
+                        'instructions' => '例: Instagramで匂わせ投稿',
+                    ],
+                ],
+            ],
+        ],
+        'location' => [
+            [
+                ['param' => 'post_type', 'operator' => '==', 'value' => 'couple'],
+            ],
+        ],
+        'menu_order' => 0,
+        'position'   => 'normal',
+        'style'      => 'default',
+    ]);
+
+    // -------------------------------------------------------
     // 相関図（relation）
     // -------------------------------------------------------
     acf_add_local_field_group([
@@ -463,6 +653,120 @@ function koi_ria_register_acf_fields(): void {
         'location' => [
             [
                 ['param' => 'post_type', 'operator' => '==', 'value' => 'poll'],
+            ],
+        ],
+        'menu_order' => 0,
+        'position'   => 'normal',
+        'style'      => 'default',
+    ]);
+
+    // -------------------------------------------------------
+    // カップル（couple）
+    // -------------------------------------------------------
+    acf_add_local_field_group([
+        'key'      => 'group_couple_info',
+        'title'    => 'カップル情報',
+        'fields'   => [
+            [
+                'key'   => 'field_couple_name',
+                'label' => 'カップル名',
+                'name'  => 'couple_name',
+                'type'  => 'text',
+                'instructions' => '例: あいり&たくや',
+            ],
+            [
+                'key'       => 'field_couple_member_a',
+                'label'     => 'メンバーA',
+                'name'      => 'member_a',
+                'type'      => 'relationship',
+                'post_type' => ['cast'],
+                'max'       => 1,
+                'required'  => 1,
+                'return_format' => 'id',
+            ],
+            [
+                'key'       => 'field_couple_member_b',
+                'label'     => 'メンバーB',
+                'name'      => 'member_b',
+                'type'      => 'relationship',
+                'post_type' => ['cast'],
+                'max'       => 1,
+                'required'  => 1,
+                'return_format' => 'id',
+            ],
+            [
+                'key'       => 'field_couple_show',
+                'label'     => '番組',
+                'name'      => 'show',
+                'type'      => 'relationship',
+                'post_type' => ['show'],
+                'max'       => 1,
+                'return_format' => 'id',
+            ],
+            [
+                'key'       => 'field_couple_season',
+                'label'     => 'シーズン',
+                'name'      => 'season',
+                'type'      => 'relationship',
+                'post_type' => ['season'],
+                'max'       => 1,
+                'return_format' => 'id',
+            ],
+            [
+                'key'     => 'field_couple_status',
+                'label'   => 'ステータス',
+                'name'    => 'couple_status',
+                'type'    => 'select',
+                'choices' => [
+                    '交際中' => '交際中',
+                    '破局'   => '破局',
+                    '結婚'   => '結婚',
+                    '不明'   => '不明',
+                ],
+                'default_value' => '不明',
+            ],
+            [
+                'key'        => 'field_couple_timeline',
+                'label'      => 'タイムライン',
+                'name'       => 'timeline',
+                'type'       => 'repeater',
+                'layout'     => 'block',
+                'sub_fields' => [
+                    [
+                        'key'            => 'field_couple_tl_date',
+                        'label'          => '日付',
+                        'name'           => 'date',
+                        'type'           => 'date_picker',
+                        'display_format' => 'Y/m/d',
+                        'return_format'  => 'Y/m/d',
+                    ],
+                    [
+                        'key'     => 'field_couple_tl_event_type',
+                        'label'   => 'イベント種別',
+                        'name'    => 'event_type',
+                        'type'    => 'select',
+                        'choices' => [
+                            '成立'     => '成立',
+                            '交際報告' => '交際報告',
+                            '破局報告' => '破局報告',
+                            '結婚報告' => '結婚報告',
+                            '目撃情報' => '目撃情報',
+                            'SNS投稿'  => 'SNS投稿',
+                        ],
+                    ],
+                    [
+                        'key'   => 'field_couple_tl_event_note',
+                        'label' => 'メモ',
+                        'name'  => 'event_note',
+                        'type'  => 'textarea',
+                        'rows'  => 2,
+                    ],
+                ],
+            ],
+        ],
+        'location' => [
+            [
+                ['param' => 'post_type', 'operator' => '==', 'value' => 'couple'],
             ],
         ],
         'menu_order' => 0,

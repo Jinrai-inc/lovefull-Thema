@@ -246,6 +246,10 @@
     color: var(--color-text-sub);
     transition: color 0.2s ease;
     padding: var(--space-xs);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
 }
 
 .mobile-bottom-nav__item.is-active {
@@ -339,4 +343,62 @@
         max-width: 600px;
         margin: 0 auto;
     }
+}
+
+/* --- モバイルドロワーメニュー --- */
+.mobile-drawer__overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 200;
+}
+.mobile-drawer__panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 201;
+    background: var(--color-card);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    max-height: 70vh;
+    overflow-y: auto;
+    padding-bottom: env(safe-area-inset-bottom);
+    animation: drawerSlideUp 0.25s ease-out;
+}
+@keyframes drawerSlideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+.mobile-drawer__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) var(--space-lg);
+    font-weight: 700;
+    font-size: 1rem;
+    border-bottom: 1px solid #E5E7EB;
+}
+.mobile-drawer__close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-text-sub);
+    padding: var(--space-xs);
+}
+.mobile-drawer__nav {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-sm) 0;
+}
+.mobile-drawer__nav a {
+    display: block;
+    padding: var(--space-md) var(--space-lg);
+    font-size: 0.9375rem;
+    color: var(--color-text);
+    text-decoration: none;
+    transition: background 0.15s;
+}
+.mobile-drawer__nav a:hover {
+    background: rgba(168,85,247,0.04);
 }

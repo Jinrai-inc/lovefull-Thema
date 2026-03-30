@@ -323,3 +323,168 @@
     color: var(--color-primary);
     font-weight: 500;
 }
+
+/* --- カップルカード --- */
+.couple-card {
+    background: var(--color-card);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    text-decoration: none;
+    color: var(--color-text);
+    display: block;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.couple-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.couple-card__avatars {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.couple-card__heart {
+    font-size: 1.5rem;
+    color: var(--color-accent);
+}
+
+.couple-card__name {
+    font-weight: 700;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.couple-card__show {
+    font-size: 0.75rem;
+    color: var(--color-text-sub);
+    text-align: center;
+    margin-top: var(--space-xs);
+}
+
+.couple-card__status {
+    display: inline-block;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: var(--radius-full, 9999px);
+    margin-top: var(--space-sm);
+}
+
+.couple-card__status--交際中 { background: rgba(16,185,129,0.1); color: #10B981; }
+.couple-card__status--破局 { background: rgba(239,68,68,0.1); color: #EF4444; }
+.couple-card__status--結婚 { background: rgba(212,160,23,0.1); color: #D4A017; }
+.couple-card__status--不明 { background: rgba(156,163,175,0.1); color: #9CA3AF; }
+
+.couple-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    padding: 0 var(--space-md);
+}
+
+@media (min-width: 480px) {
+    .couple-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* --- カップルタイムライン --- */
+.couple-timeline {
+    position: relative;
+    padding-left: 20px;
+    border-left: 2px solid #E5E7EB;
+    margin: var(--space-lg) 0;
+}
+
+.timeline-event {
+    position: relative;
+    padding: 8px 0 16px 16px;
+}
+
+.timeline-event::before {
+    content: '';
+    position: absolute;
+    left: -25px;
+    top: 12px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FF3B6F, #A855F7);
+}
+
+.timeline-event[data-type="破局報告"]::before { background: #EF4444; }
+.timeline-event[data-type="結婚報告"]::before { background: #F59E0B; }
+.timeline-event[data-type="成立"]::before { background: #10B981; }
+
+.timeline-event__date {
+    font-size: 0.75rem;
+    color: var(--color-text-sub);
+}
+
+.timeline-event__type {
+    font-weight: 700;
+    font-size: 0.875rem;
+}
+
+.timeline-event__note {
+    font-size: 0.8125rem;
+    color: var(--color-text-sub);
+    margin-top: 2px;
+}
+
+/* --- カップル詳細ページ --- */
+.couple-header {
+    text-align: center;
+    padding: var(--space-xl) var(--space-md);
+}
+
+.couple-header__avatars {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+}
+
+.couple-header__heart {
+    font-size: 2rem;
+    color: var(--color-accent);
+}
+
+/* --- 推しボタン --- */
+.fav-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; z-index: 10; transition: transform 0.2s; }
+.fav-btn:hover { transform: scale(1.15); }
+.fav-btn .fav-heart.active { display: none; color: #FF3B6F; }
+.fav-btn .fav-heart { display: inline; color: #9CA3AF; }
+.fav-btn.is-fav .fav-heart { display: none; }
+.fav-btn.is-fav .fav-heart.active { display: inline; }
+
+/* 推しボタン — プロフィールヘッダー用（大きめ・relative配置） */
+.cast-profile-header .fav-btn { position: static; width: 40px; height: 40px; font-size: 1.25rem; }
+
+/* --- 推しページ --- */
+.favorites-empty { text-align: center; padding: var(--space-xl) var(--space-md); color: var(--color-text-sub); }
+.favorites-empty__icon { font-size: 3rem; margin-bottom: var(--space-md); }
+.favorites-grid { display: flex; flex-wrap: wrap; gap: var(--space-md); padding: 0 var(--space-md); }
+.favorites-feed { padding: var(--space-md); }
+
+/* --- VOD比較表 --- */
+.vod-compare { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+.vod-compare th, .vod-compare td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E5E7EB; }
+.vod-compare th { font-weight: 700; color: #fff; font-size: 0.75rem; }
+.vod-compare td:first-child { font-weight: 500; text-align: left; white-space: nowrap; color: var(--color-text-sub); }
+.vod-compare__cta { display: inline-block; margin-top: 8px; padding: 6px 16px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 700; color: #fff; text-decoration: none; }
+.vod-compare__cta:hover { opacity: 0.85; }
+
+/* --- VOD検索結果カード --- */
+.vod-result-card { background: var(--color-card); border-radius: var(--radius-lg); padding: var(--space-md); margin-bottom: var(--space-md); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.vod-result-card__title { font-size: 1rem; font-weight: 700; margin-bottom: var(--space-sm); }
+.vod-badges { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-bottom: var(--space-sm); }
+
+/* --- VOD記事下自動挿入 --- */
+.vod-auto-insert { background: linear-gradient(135deg, rgba(168,85,247,0.05), rgba(255,59,111,0.05)); border-radius: var(--radius-lg); padding: var(--space-lg); margin-top: var(--space-xl); }
+.vod-auto-insert__title { font-weight: 700; margin-bottom: var(--space-sm); }
+.vod-auto-insert__links { display: flex; flex-wrap: wrap; gap: var(--space-sm); }

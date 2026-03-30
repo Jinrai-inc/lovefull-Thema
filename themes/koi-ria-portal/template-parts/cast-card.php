@@ -23,9 +23,25 @@ if ($profile_image && isset($profile_image['url'])) {
 } elseif ($ig_cache) {
     $avatar_url = $ig_cache;
 }
+
+// 番組名取得（推しボタン用）
+$_show_id   = get_field('show', $cast->ID);
+$_show_title = '';
+if ($_show_id) {
+    $_show_post = is_array($_show_id) ? get_post($_show_id[0]) : get_post($_show_id);
+    if ($_show_post) {
+        $_show_title = get_field('short_name', $_show_post->ID) ?: $_show_post->post_title;
+    }
+}
 ?>
 
-<a href="<?php echo esc_url(get_permalink($cast)); ?>" class="cast-card">
+<a href="<?php echo esc_url(get_permalink($cast)); ?>" class="cast-card" style="position: relative;">
+    <?php get_template_part('template-parts/fav-button', null, [
+        'cast_id'    => $cast->ID,
+        'name'       => $display_name,
+        'ig'         => $ig_username,
+        'show_title' => $_show_title,
+    ]); ?>
     <div class="ig-avatar" style="margin: 0 auto;">
         <?php if ($avatar_url) : ?>
             <img src="<?php echo esc_url($avatar_url); ?>" alt="<?php echo esc_attr($display_name); ?>" class="ig-avatar__img" loading="lazy">

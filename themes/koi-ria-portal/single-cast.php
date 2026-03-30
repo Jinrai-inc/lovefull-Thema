@@ -84,7 +84,15 @@ if ($season_id) {
         <?php endif; ?>
     </div>
 
-    <h1 class="cast-profile-header__name"><?php echo esc_html($display_name); ?></h1>
+    <div style="display: flex; align-items: center; justify-content: center; gap: var(--space-sm);">
+        <h1 class="cast-profile-header__name" style="margin: 0;"><?php echo esc_html($display_name); ?></h1>
+        <?php get_template_part('template-parts/fav-button', null, [
+            'cast_id'    => $cast_id,
+            'name'       => $display_name,
+            'ig'         => $ig_username,
+            'show_title' => $show_name,
+        ]); ?>
+    </div>
 
     <p class="cast-profile-header__meta">
         <?php if ($show_name) : ?>

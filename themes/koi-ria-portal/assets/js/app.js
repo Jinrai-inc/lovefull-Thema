@@ -200,6 +200,46 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // =============================================
+    // カップルフィルター（ステータス・番組）
+    // =============================================
+    const coupleGrid = document.getElementById('coupleGrid');
+    if (coupleGrid) {
+        const coupleCards = coupleGrid.querySelectorAll('.couple-card');
+        let activeStatus = 'all';
+        let activeShowId = 'all';
+
+        function filterCouples() {
+            coupleCards.forEach(card => {
+                const cardStatus = card.dataset.status || '';
+                const cardShowId = card.dataset.showId || '';
+                const matchStatus = activeStatus === 'all' || cardStatus === activeStatus;
+                const matchShow = activeShowId === 'all' || cardShowId === activeShowId;
+                card.style.display = (matchStatus && matchShow) ? '' : 'none';
+            });
+        }
+
+        // Status filter pills
+        document.querySelectorAll('.pill-filter[data-status]').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.pill-filter[data-status]').forEach(p => p.classList.remove('is-active'));
+                pill.classList.add('is-active');
+                activeStatus = pill.dataset.status;
+                filterCouples();
+            });
+        });
+
+        // Show filter pills
+        document.querySelectorAll('.pill-filter[data-show-id]').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.pill-filter[data-show-id]').forEach(p => p.classList.remove('is-active'));
+                pill.classList.add('is-active');
+                activeShowId = pill.dataset.showId;
+                filterCouples();
+            });
+        });
+    }
+
+    // =============================================
     // スムーズスクロール（アンカーリンク）
     // =============================================
     document.querySelectorAll('a[href^="#"]').forEach(link => {
@@ -211,4 +251,38 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // =============================================
+    // モバイルドロワーメニュー
+    // =============================================
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+    const mobileDrawerOverlay = document.getElementById('mobileDrawerOverlay');
+    const mobileDrawerClose = document.getElementById('mobileDrawerClose');
+
+    function openDrawer() {
+        if (mobileDrawer) {
+            mobileDrawer.style.display = '';
+            mobileMenuBtn?.setAttribute('aria-expanded', 'true');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeDrawer() {
+        if (mobileDrawer) {
+            mobileDrawer.style.display = 'none';
+            mobileMenuBtn?.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+        }
+    }
+
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', openDrawer);
+    }
+    if (mobileDrawerOverlay) {
+        mobileDrawerOverlay.addEventListener('click', closeDrawer);
+    }
+    if (mobileDrawerClose) {
+        mobileDrawerClose.addEventListener('click', closeDrawer);
+    }
 });

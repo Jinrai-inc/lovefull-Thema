@@ -920,7 +920,7 @@ function koi_ria_get_site_logo_url(): string {
         $url = wp_get_attachment_image_url($custom_logo_id, 'full');
         if ($url) return $url;
     }
-    return KOI_RIA_URI . '/assets/images/ogp-default.png';
+    return KOI_RIA_URI . '/assets/img/ogp-default.png';
 }
 
 /**

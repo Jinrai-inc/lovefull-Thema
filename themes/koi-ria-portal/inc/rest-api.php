@@ -23,6 +23,20 @@ function koi_ria_register_rest_routes(): void {
         'callback'            => 'koi_ria_rest_cast_search',
         'permission_callback' => '__return_true',
     ]);
+
+    // VOD検索API
+    register_rest_route('koi-ria/v1', '/vod-search', [
+        'methods'             => 'GET',
+        'callback'            => 'koi_ria_rest_vod_search',
+        'permission_callback' => '__return_true',
+    ]);
+
+    // 推しフィードAPI
+    register_rest_route('koi-ria/v1', '/favorites-feed', [
+        'methods'             => 'GET',
+        'callback'            => 'koi_ria_rest_favorites_feed',
+        'permission_callback' => '__return_true',
+    ]);
 }
 
 /**
@@ -118,6 +132,130 @@ function koi_ria_rest_cast_search(WP_REST_Request $request): WP_REST_Response {
             'season'  => $season_name,
             'ig'      => get_field('ig_username', $cast->ID) ?: '',
             'url'     => get_permalink($cast),
+        ];
+    }
+
+    return new WP_REST_Response($results);
+}
+
+/**
+ * VOD検索API — 番組名でshowを検索しVOD配信情報を返す
+ */
+function koi_ria_rest_vod_search(WP_REST_Request $request): WP_REST_Response {
+    $q = sanitize_text_field($request->get_param('q') ?: '');
+
+    if (mb_strlen($q) < 1) {
+        return new WP_REST_Response([]);
+    }
+
+    // 番組名 or 略称でマッチ
+    $shows = get_posts([
+        'post_type'      => 'show',
+        'posts_per_page' => 20,
+        's'              => $q,
+    ]);
+
+    $results = [];
+    foreach ($shows as $show) {
+        $platform      = get_field('platform', $show->ID) ?: '';
+        $vod_links     = get_field('vod_links', $show->ID) ?: [];
+        $affiliate_url = get_field('affiliate_url', $show->ID) ?: '';
+        $available     = get_field('available_vods', $show->ID) ?: [];
+
+        $vods = [];
+
+        // メインプラットフォーム
+        if ($platform) {
+            $vods[] = [
+                'name'    => $platform,
+                'url'     => $affiliate_url ?: '',
+                'is_free' => false,
+            ];
+        }
+
+        // VODリピーターフィールド
+        if (is_array($vod_links)) {
+            foreach ($vod_links as $vl) {
+                $vod_name = $vl['vod_name'] ?? '';
+                if ($vod_name && $vod_name !== $platform) {
+                    $vods[] = [
+                        'name'    => $vod_name,
+                        'url'     => $vl['url'] ?? '',
+                        'is_free' => !empty($vl['is_free']),
+                    ];
+                }
+            }
+        }
+
+        $results[] = [
+            'show_id'       => $show->ID,
+            'title'         => get_field('short_name', $show->ID) ?: $show->post_title,
+            'url'           => get_permalink($show),
+            'platform'      => $platform,
+            'available_vods' => $available,
+            'vods'          => $vods,
+        ];
+    }
+
+    return new WP_REST_Response($results);
+}
+
+/**
+ * 推しフィードAPI — 推し登録されたcastに関連する記事を返す
+ */
+function koi_ria_rest_favorites_feed(WP_REST_Request $request): WP_REST_Response {
+    $cast_ids_raw = sanitize_text_field($request->get_param('cast_ids') ?: '');
+
+    if (empty($cast_ids_raw)) {
+        return new WP_REST_Response([]);
+    }
+
+    $cast_ids = array_filter(array_map('intval', explode(',', $cast_ids_raw)));
+    if (empty($cast_ids)) {
+        return new WP_REST_Response([]);
+    }
+
+    // 出演者名からタグスラッグを収集
+    $tag_slugs = [];
+    foreach ($cast_ids as $cid) {
+        $cast_post = get_post($cid);
+        if (!$cast_post) continue;
+        $display_name = get_field('display_name', $cid) ?: $cast_post->post_title;
+        $tag_slugs[] = sanitize_title($display_name);
+        $tag_slugs[] = sanitize_title($cast_post->post_title);
+    }
+
+    $tag_slugs = array_unique(array_filter($tag_slugs));
+    if (empty($tag_slugs)) {
+        return new WP_REST_Response([]);
+    }
+
+    // タグに一致する記事を取得
+    $posts = get_posts([
+        'post_type'      => 'post',
+        'posts_per_page' => 20,
+        'tax_query'      => [
+            [
+                'taxonomy' => 'post_tag',
+                'field'    => 'slug',
+                'terms'    => $tag_slugs,
+            ],
+        ],
+        'orderby' => 'date',
+        'order'   => 'DESC',
+    ]);
+
+    $results = [];
+    foreach ($posts as $post) {
+        $thumb = has_post_thumbnail($post) ? get_the_post_thumbnail_url($post, 'thumbnail') : '';
+        $cats  = get_the_category($post->ID);
+        $results[] = [
+            'id'        => $post->ID,
+            'title'     => $post->post_title,
+            'url'       => get_permalink($post),
+            'date'      => get_the_date('Y.m.d', $post),
+            'thumbnail' => $thumb,
+            'category'  => $cats ? $cats[0]->name : '',
         ];
     }
 

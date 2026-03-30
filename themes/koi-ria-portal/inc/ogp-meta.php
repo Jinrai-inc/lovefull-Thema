@@ -104,6 +104,16 @@ function koi_ria_ogp_meta(): void {
         $description = koi_ria_get_page_description();
         $url         = get_permalink();
 
+        // 番組診断: 結果パラメータでOGP画像を動的変更
+        if (is_page('shindan') && isset($_GET['result'])) {
+            $result_slug = sanitize_file_name($_GET['result']);
+            $result_image = KOI_RIA_URI . '/assets/img/shindan/' . $result_slug . '.png';
+            $image     = $result_image;
+            $image_alt = '番組診断結果';
+            $title     = '番組診断の結果 | ' . $site_name;
+            $description = 'あなたにぴったりの恋リアを5つの質問で診断！';
+        }
+
         if (has_post_thumbnail($post_id)) {
             $thumb_id = get_post_thumbnail_id($post_id);
             $image    = get_the_post_thumbnail_url($post_id, 'large');
@@ -309,5 +319,5 @@ function koi_ria_ogp_default_image(): string {
             return $logo_url;
         }
     }
-    return KOI_RIA_URI . '/assets/images/ogp-default.png';
+    return KOI_RIA_URI . '/assets/img/ogp-default.png';
 }

@@ -65,23 +65,55 @@ defined('ABSPATH') || exit;
         <span class="mobile-bottom-nav__icon">&#x1F3E0;</span>
         <span class="mobile-bottom-nav__label">ホーム</span>
     </a>
-    <a href="<?php echo esc_url(get_post_type_archive_link('show')); ?>" class="mobile-bottom-nav__item <?php echo is_post_type_archive('show') ? 'is-active' : ''; ?>">
-        <span class="mobile-bottom-nav__icon">&#x1F4FA;</span>
-        <span class="mobile-bottom-nav__label">番組</span>
-    </a>
     <a href="<?php echo esc_url(get_post_type_archive_link('cast')); ?>" class="mobile-bottom-nav__item <?php echo is_post_type_archive('cast') ? 'is-active' : ''; ?>">
         <span class="mobile-bottom-nav__icon">&#x1F465;</span>
         <span class="mobile-bottom-nav__label">出演者</span>
+    </a>
+    <?php
+    $fav_page = get_page_by_path('favorites');
+    $fav_url  = $fav_page ? get_permalink($fav_page) : home_url('/favorites/');
+    ?>
+    <a href="<?php echo esc_url($fav_url); ?>" class="mobile-bottom-nav__item <?php echo is_page('favorites') ? 'is-active' : ''; ?>">
+        <span class="mobile-bottom-nav__icon">&#x2764;</span>
+        <span class="mobile-bottom-nav__label">推し</span>
     </a>
     <a href="<?php echo esc_url(get_post_type_archive_link('poll')); ?>" class="mobile-bottom-nav__item <?php echo is_post_type_archive('poll') ? 'is-active' : ''; ?>">
         <span class="mobile-bottom-nav__icon">&#x1F4CA;</span>
         <span class="mobile-bottom-nav__label">投票</span>
     </a>
-    <a href="<?php echo esc_url(home_url('/?s=')); ?>" class="mobile-bottom-nav__item">
-        <span class="mobile-bottom-nav__icon">&#x1F50D;</span>
-        <span class="mobile-bottom-nav__label">検索</span>
-    </a>
+    <button class="mobile-bottom-nav__item" id="mobileMenuBtn" aria-label="メニューを開く" aria-expanded="false">
+        <span class="mobile-bottom-nav__icon">&#x2630;</span>
+        <span class="mobile-bottom-nav__label">メニュー</span>
+    </button>
 </nav>
+
+<!-- モバイルドロワーメニュー -->
+<div class="mobile-drawer" id="mobileDrawer" style="display:none;">
+    <div class="mobile-drawer__overlay" id="mobileDrawerOverlay"></div>
+    <div class="mobile-drawer__panel">
+        <div class="mobile-drawer__header">
+            <span>メニュー</span>
+            <button class="mobile-drawer__close" id="mobileDrawerClose" aria-label="閉じる">&times;</button>
+        </div>
+        <nav class="mobile-drawer__nav">
+            <a href="<?php echo esc_url(get_post_type_archive_link('show')); ?>">&#x1F4FA; 番組一覧</a>
+            <a href="<?php echo esc_url(get_post_type_archive_link('cast')); ?>">&#x1F465; 出演者データベース</a>
+            <a href="<?php echo esc_url(get_post_type_archive_link('couple')); ?>">&#x1F491; カップルその後</a>
+            <a href="<?php echo esc_url(get_post_type_archive_link('poll')); ?>">&#x1F4CA; みんなの予想</a>
+            <?php
+            $shindan_page = get_page_by_path('shindan');
+            $vod_page     = get_page_by_path('vod-search');
+            ?>
+            <?php if ($shindan_page) : ?>
+            <a href="<?php echo esc_url(get_permalink($shindan_page)); ?>">&#x1F4AB; 番組診断</a>
+            <?php endif; ?>
+            <?php if ($vod_page) : ?>
+            <a href="<?php echo esc_url(get_permalink($vod_page)); ?>">&#x1F4FA; VOD検索</a>
+            <?php endif; ?>
+            <a href="<?php echo esc_url(home_url('/?s=')); ?>">&#x1F50D; 検索</a>
+        </nav>
+    </div>
+</div>
 
 <?php wp_footer(); ?>
 </body>

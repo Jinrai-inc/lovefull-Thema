@@ -147,4 +147,28 @@ function koi_ria_register_post_types(): void {
         'supports'     => ['title'],
         'show_in_rest' => true,
     ]);
+
+    // カップル（couple）
+    register_post_type('couple', [
+        'label'        => 'カップル',
+        'labels'       => [
+            'name'               => 'カップル',
+            'singular_name'      => 'カップル',
+            'add_new'            => '新規追加',
+            'add_new_item'       => 'カップルを追加',
+            'edit_item'          => 'カップルを編集',
+            'new_item'           => '新しいカップル',
+            'view_item'          => 'カップルを表示',
+            'search_items'       => 'カップルを検索',
+            'not_found'          => 'カップルが見つかりません',
+            'not_found_in_trash' => 'ゴミ箱にカップルはありません',
+            'all_items'          => 'すべてのカップル',
+        ],
+        'public'       => true,
+        'has_archive'  => true,
+        'menu_icon'    => 'dashicons-heart',
+        'supports'     => ['title', 'editor', 'thumbnail'],
+        'rewrite'      => ['slug' => 'couple'],
+        'show_in_rest' => true,
+    ]);
 }

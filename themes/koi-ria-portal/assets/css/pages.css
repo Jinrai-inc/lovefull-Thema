@@ -731,3 +731,28 @@
     background: var(--color-gradient);
     color: #fff;
 }
+
+/* --- 番組診断 --- */
+.shindan-step { display: none; }
+.shindan-step.is-active { display: block; }
+.shindan-progress__bar { height: 4px; background: #E5E7EB; border-radius: 2px; overflow: hidden; }
+.shindan-progress__fill { height: 100%; background: var(--color-gradient); transition: width 0.3s ease; border-radius: 2px; }
+.shindan-progress__text { font-size: 0.75rem; color: var(--color-text-sub); margin-top: var(--space-xs); display: block; }
+
+.shindan-question { font-size: 1.125rem; font-weight: 700; text-align: center; margin-bottom: var(--space-lg); }
+.shindan-options { display: flex; flex-direction: column; gap: var(--space-sm); }
+.shindan-option { background: var(--color-card); border: 2px solid #E5E7EB; border-radius: var(--radius-lg); padding: var(--space-md); font-size: 0.9375rem; text-align: center; cursor: pointer; transition: all 0.2s; }
+.shindan-option:hover { border-color: var(--color-primary); background: rgba(168,85,247,0.04); }
+.shindan-option.is-selected { border-color: var(--color-primary); background: rgba(168,85,247,0.08); }
+
+.shindan-result-card { background: var(--color-card); border-radius: var(--radius-xl); padding: var(--space-xl); box-shadow: 0 4px 20px rgba(0,0,0,0.08); max-width: 400px; margin: 0 auto; }
+.shindan-result-card__emoji { font-size: 3rem; }
+.shindan-result-card__title { font-size: 1.375rem; font-weight: 700; margin-top: var(--space-sm); background: var(--color-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.shindan-result-card__desc { font-size: 0.875rem; color: var(--color-text-sub); margin-top: var(--space-md); line-height: 1.8; }
+.shindan-result-card__recs { margin-top: var(--space-md); text-align: left; }
+.shindan-result-card__recs li { font-size: 0.8125rem; padding: 4px 0; }
+
+.shindan-share { display: flex; gap: var(--space-sm); justify-content: center; margin-top: var(--space-lg); }
+.shindan-share__btn { display: inline-flex; align-items: center; gap: var(--space-xs); padding: 8px 20px; border-radius: var(--radius-full); font-size: 0.8125rem; font-weight: 700; text-decoration: none; color: #fff; }
+.shindan-share__btn--x { background: #000; }
+.shindan-share__btn--line { background: #00B900; }

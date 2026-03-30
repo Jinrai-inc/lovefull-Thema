@@ -138,10 +138,38 @@ if ($breaking) :
     </div>
 </section>
 
-<?php // 5-12. アフィリエイトバナー ?>
+<?php // 5-12. 番組診断バナー ?>
+<?php
+$shindan_page = get_page_by_path('shindan');
+if ($shindan_page) :
+?>
+<section class="section">
+    <a href="<?php echo esc_url(get_permalink($shindan_page)); ?>" class="promo-banner" style="background: var(--color-gradient); color: #fff; display: block; border-radius: var(--radius-lg); padding: var(--space-lg); text-decoration: none; text-align: center; margin: 0 var(--space-md);">
+        <span style="font-size: 2rem; display: block;">&#x1F4AB;</span>
+        <div style="font-weight: 700; font-size: 1.125rem; margin-top: var(--space-xs);">あなたにぴったりの恋リアは？</div>
+        <p style="font-size: 0.8125rem; opacity: 0.9; margin-top: var(--space-xs);">5つの質問で診断！→</p>
+    </a>
+</section>
+<?php endif; ?>
+
+<?php // 5-13. VOD検索バナー ?>
+<?php
+$vod_page = get_page_by_path('vod-search');
+if ($vod_page) :
+?>
+<section class="section">
+    <a href="<?php echo esc_url(get_permalink($vod_page)); ?>" class="promo-banner" style="background: linear-gradient(135deg, #00B900, #0077B5); color: #fff; display: block; border-radius: var(--radius-lg); padding: var(--space-lg); text-decoration: none; text-align: center; margin: 0 var(--space-md);">
+        <span style="font-size: 2rem; display: block;">&#x1F4FA;</span>
+        <div style="font-weight: 700; font-size: 1.125rem; margin-top: var(--space-xs);">どのVODで見れる？</div>
+        <p style="font-size: 0.8125rem; opacity: 0.9; margin-top: var(--space-xs);">番組の配信先を検索 →</p>
+    </a>
+</section>
+<?php endif; ?>
+
+<?php // 5-14. アフィリエイトバナー ?>
 <?php get_template_part('template-parts/affiliate-banner'); ?>
 
-<?php // 5-13. AdSenseスロット ?>
+<?php // 5-15. AdSenseスロット ?>
 <?php get_template_part('template-parts/adsense-slot'); ?>
 
 <?php

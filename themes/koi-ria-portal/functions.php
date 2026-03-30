@@ -12,6 +12,28 @@ define('KOI_RIA_DIR', get_template_directory());
 define('KOI_RIA_URI', get_template_directory_uri());
 
 /**
+ * ACF が未インストールの場合のフォールバック
+ * get_field() が存在しないと Fatal Error になるため、ダミー関数を定義
+ */
+if (! function_exists('get_field')) {
+    function get_field(string $selector, $post_id = false, bool $format_value = true) {
+        return null;
+    }
+}
+
+/**
+ * ACF Pro が必要である旨の管理画面通知
+ */
+add_action('admin_notices', function () {
+    if (class_exists('ACF')) {
+        return;
+    }
+    echo '<div class="notice notice-warning is-dismissible"><p>';
+    echo '<strong>恋リアポータル:</strong> このテーマはカスタムフィールドの管理に <strong>Advanced Custom Fields PRO</strong> プラグインが必要です。インストール・有効化してください。';
+    echo '</p></div>';
+});
+
+/**
  * テーマセットアップ
  */
 add_action('after_setup_theme', function () {
@@ -63,6 +85,7 @@ add_action('wp_enqueue_scripts', function () {
     wp_enqueue_script('koi-ria-column-slider', KOI_RIA_URI . '/assets/js/column-slider.js', [], KOI_RIA_VERSION, true);
     wp_enqueue_script('koi-ria-cast-accordion', KOI_RIA_URI . '/assets/js/cast-accordion.js', [], KOI_RIA_VERSION, true);
     wp_enqueue_script('koi-ria-poll-vote', KOI_RIA_URI . '/assets/js/poll-vote.js', [], KOI_RIA_VERSION, true);
+    wp_enqueue_script('koi-ria-favorites', KOI_RIA_URI . '/assets/js/favorites.js', [], KOI_RIA_VERSION, true);
 
     // Ajax用のローカライズ
     wp_localize_script('koi-ria-poll-vote', 'koiRia', [
@@ -70,7 +93,51 @@ add_action('wp_enqueue_scripts', function () {
         'nonce'    => wp_create_nonce('wp_rest'),
         'siteUrl'  => home_url('/'),
     ]);
+
+    // VOD検索ページ用JS
+    if (is_page_template('page-vod-search.php')) {
+        wp_enqueue_script('koi-ria-vod-search', KOI_RIA_URI . '/assets/js/vod-search.js', [], KOI_RIA_VERSION, true);
+    }
+
+    // 診断ページ用JS
+    if (is_page_template('page-shindan.php')) {
+        wp_enqueue_script('koi-ria-shindan', KOI_RIA_URI . '/assets/js/shindan.js', [], KOI_RIA_VERSION, true);
+    }
 });
+
+/**
+ * 記事下にVODウィジェット自動挿入
+ */
+add_filter('the_content', function (string $content): string {
+    if (!is_singular('post') || !in_the_loop() || !is_main_query()) {
+        return $content;
+    }
+
+    // タグから番組を特定
+    $tags = get_the_tags();
+    if (!$tags) return $content;
+
+    $show_id = 0;
+    foreach ($tags as $tag) {
+        $found = get_posts([
+            'post_type'      => 'show',
+            'posts_per_page' => 1,
+            'meta_query'     => [['key' => 'short_name', 'value' => $tag->name]],
+        ]);
+        if ($found) {
+            $show_id = $found[0]->ID;
+            break;
+        }
+    }
+
+    if (!$show_id) return $content;
+
+    ob_start();
+    get_template_part('template-parts/vod-auto-insert', null, ['show_id' => $show_id]);
+    $widget = ob_get_clean();
+
+    return $content . $widget;
+}, 20);
 
 /**
  * Preconnect / DNS Prefetch（パフォーマンス最適化）

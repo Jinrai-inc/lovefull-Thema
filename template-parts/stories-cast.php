@@ -32,7 +32,7 @@ if (empty($popular_cast)) {
 
 <section class="section">
     <div class="section-header">
-        <h2>&#x1F525; 話題の出演者</h2>
+        <h2><?php echo koi_ria_icon('fire', 22); ?> 話題の出演者</h2>
         <a href="<?php echo esc_url(get_post_type_archive_link('cast')); ?>" class="section-header__more">もっと見る →</a>
     </div>
     <div class="scroll-x stories-scroll">
@@ -62,7 +62,7 @@ if (empty($popular_cast)) {
                 <?php if ($avatar_url) : ?>
                     <img src="<?php echo esc_url($avatar_url); ?>" alt="<?php echo esc_attr($display_name); ?>" class="ig-avatar__img" loading="lazy">
                 <?php else : ?>
-                    <div class="ig-avatar__img" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:#f0f0f0;">&#x1F464;</div>
+                    <div class="ig-avatar__img" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:#f0f0f0;"><?php echo koi_ria_icon('users', 24); ?></div>
                 <?php endif; ?>
             </div>
             <span class="stories-item__name"><?php echo esc_html($display_name); ?></span>

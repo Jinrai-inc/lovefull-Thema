@@ -20,7 +20,7 @@ if (empty($columns)) {
 
 <section class="section column-slider-section">
     <div class="section-header">
-        <h2>&#x2B50; 特集コラム</h2>
+        <h2><?php echo koi_ria_icon('star', 22); ?> 特集コラム</h2>
         <a href="<?php echo esc_url(get_category_link(get_cat_ID('column'))); ?>" class="section-header__more">もっと見る →</a>
     </div>
 

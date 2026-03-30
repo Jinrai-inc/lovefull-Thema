@@ -91,15 +91,15 @@ $related_posts = get_posts([
 <?php // タブナビゲーション ?>
 <nav class="show-tabs" style="position: sticky; top: var(--header-height); z-index: 50; background: var(--color-bg); border-bottom: 1px solid #E5E7EB;" aria-label="番組情報タブ">
     <div class="scroll-x" style="gap: 0; padding: 0;" role="tablist">
-        <button class="show-tab is-active" data-tab="members" role="tab" aria-selected="true" aria-controls="tab-members" id="tab-btn-members">&#x1F465; メンバー</button>
+        <button class="show-tab is-active" data-tab="members" role="tab" aria-selected="true" aria-controls="tab-members" id="tab-btn-members"><?php echo koi_ria_icon('users', 18); ?> メンバー</button>
         <?php if ($seasons) : ?>
-        <button class="show-tab" data-tab="chart" role="tab" aria-selected="false" aria-controls="tab-chart" id="tab-btn-chart">&#x1F495; 相関図</button>
+        <button class="show-tab" data-tab="chart" role="tab" aria-selected="false" aria-controls="tab-chart" id="tab-btn-chart"><?php echo koi_ria_icon('couple', 18); ?> 相関図</button>
         <?php endif; ?>
         <?php if ($videos) : ?>
-        <button class="show-tab" data-tab="videos" role="tab" aria-selected="false" aria-controls="tab-videos" id="tab-btn-videos">&#x25B6; 動画</button>
+        <button class="show-tab" data-tab="videos" role="tab" aria-selected="false" aria-controls="tab-videos" id="tab-btn-videos"><?php echo koi_ria_icon('play', 18); ?> 動画</button>
         <?php endif; ?>
         <?php if ($related_posts) : ?>
-        <button class="show-tab" data-tab="articles" role="tab" aria-selected="false" aria-controls="tab-articles" id="tab-btn-articles">&#x1F4F0; 記事</button>
+        <button class="show-tab" data-tab="articles" role="tab" aria-selected="false" aria-controls="tab-articles" id="tab-btn-articles"><?php echo koi_ria_icon('news', 18); ?> 記事</button>
         <?php endif; ?>
     </div>
 </nav>
@@ -227,7 +227,7 @@ $related_posts = get_posts([
                             <?php if ($m_avatar) : ?>
                                 <img src="<?php echo esc_url($m_avatar); ?>" alt="" class="ig-avatar__img" style="width: 50px; height: 50px;" loading="lazy">
                             <?php else : ?>
-                                <div class="ig-avatar__img" style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;background:#f0f0f0;">&#x1F464;</div>
+                                <div class="ig-avatar__img" style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;background:#f0f0f0;"><?php echo koi_ria_icon('users', 20); ?></div>
                             <?php endif; ?>
                         </div>
                         <small style="display: block; margin-top: 4px; font-size: 0.6875rem; font-weight: 500;"><?php echo esc_html($m_name); ?></small>
@@ -255,11 +255,11 @@ $related_posts = get_posts([
                         }
 
                         $rel_icon = match($r_type) {
-                            'love'     => '💗',
-                            'rival'    => '⚡',
-                            'couple'   => '💑',
-                            'interest' => '👀',
-                            default    => '❓',
+                            'love'     => koi_ria_icon('heart-filled', 20),
+                            'rival'    => koi_ria_icon('fire', 20),
+                            'couple'   => koi_ria_icon('couple', 20),
+                            'interest' => koi_ria_icon('search', 20),
+                            default    => '？',
                         };
                         $rel_color = match($r_type) {
                             'love'     => 'var(--color-accent)',
@@ -287,7 +287,7 @@ $related_posts = get_posts([
                 </div>
             <?php else : ?>
                 <div style="padding: var(--space-2xl) var(--space-md); text-align: center; color: var(--color-text-sub);">
-                    <p style="font-size: 2rem; margin-bottom: var(--space-sm);">&#x1F495;</p>
+                    <p style="font-size: 2rem; margin-bottom: var(--space-sm);"><?php echo koi_ria_icon('couple', 32); ?></p>
                     <p style="font-size: 0.875rem;">このシーズンの相関図データはまだ登録されていません</p>
                 </div>
             <?php endif; ?>
@@ -311,10 +311,10 @@ $related_posts = get_posts([
                     <?php if ($thumb) : ?>
                         <img src="<?php echo esc_url($thumb); ?>" alt="<?php echo esc_attr($video->post_title); ?>" class="card__thumb" loading="lazy">
                     <?php else : ?>
-                        <div class="card__thumb" style="display:flex;align-items:center;justify-content:center;background:#1F2937;color:#fff;font-size:2rem;">&#x25B6;</div>
+                        <div class="card__thumb" style="display:flex;align-items:center;justify-content:center;background:#1F2937;color:#fff;font-size:2rem;"><?php echo koi_ria_icon('play', 20); ?></div>
                     <?php endif; ?>
                     <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;">
-                        <span style="color:#fff;font-size:1.2rem;margin-left:3px;">&#x25B6;</span>
+                        <span style="color:#fff;font-size:1.2rem;margin-left:3px;"><?php echo koi_ria_icon('play', 20); ?></span>
                     </div>
                 </div>
                 <div class="card__body">

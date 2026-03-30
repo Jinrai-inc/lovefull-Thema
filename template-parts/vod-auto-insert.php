@@ -49,7 +49,7 @@ $platform_map = [
 ?>
 
 <div class="vod-auto-insert">
-    <p class="vod-auto-insert__title">&#x1F4FA; 「<?php echo esc_html($show_title); ?>」を見るなら</p>
+    <p class="vod-auto-insert__title"><?php echo koi_ria_icon('tv', 20); ?> 「<?php echo esc_html($show_title); ?>」を見るなら</p>
 
     <div class="vod-badges" style="margin-bottom: var(--space-md);">
         <?php if ($platform && isset($platform_map[$platform])) : ?>

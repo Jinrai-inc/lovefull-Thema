@@ -54,7 +54,7 @@ if (empty($schedule_data)) {
 
 <section class="section">
     <div class="section-header">
-        <h2>&#x1F4C5; 今週の放送</h2>
+        <h2><?php echo koi_ria_icon('calendar', 22); ?> 今週の放送</h2>
     </div>
     <div class="scroll-x">
         <?php foreach ($schedule_data as $i => $entry) :

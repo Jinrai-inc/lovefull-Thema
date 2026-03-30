@@ -73,7 +73,7 @@ if ($breaking) :
 <?php // 5-8. みんなの予想（投票） ?>
 <section class="section">
     <div class="section-header">
-        <h2>&#x1F5F3; みんなの予想</h2>
+        <h2><?php echo koi_ria_icon('vote', 22); ?> みんなの予想</h2>
         <a href="<?php echo esc_url(get_post_type_archive_link('poll')); ?>" class="section-header__more">もっと見る →</a>
     </div>
     <?php
@@ -96,40 +96,59 @@ if ($breaking) :
 <?php // 5-9. 話題の出演者（ストーリーズ型横スクロール） ?>
 <?php get_template_part('template-parts/stories-cast'); ?>
 
-<?php // 5-10. 最新ニュース ?>
+<?php // 5-10. 恋愛コラム ?>
 <section class="section">
     <div class="section-header">
-        <h2>&#x1F4F0; 最新ニュース</h2>
-        <a href="<?php echo esc_url(get_permalink(get_option('page_for_posts'))); ?>" class="section-header__more">もっと見る →</a>
+        <h2><?php echo koi_ria_icon('column', 22); ?> 恋愛コラム</h2>
+        <?php $column_cat = get_category_by_slug('column'); ?>
+        <?php if ($column_cat) : ?>
+            <a href="<?php echo esc_url(get_category_link($column_cat->term_id)); ?>" class="section-header__more">もっと見る →</a>
+        <?php endif; ?>
     </div>
-    <div>
+    <div class="grid-2" style="padding: 0 var(--space-md);">
         <?php
-        $news = get_posts([
+        $columns = get_posts([
             'post_type'      => 'post',
-            'posts_per_page' => 3,
+            'posts_per_page' => 4,
+            'category_name'  => 'column',
         ]);
-        foreach ($news as $post) :
+        foreach ($columns as $post) :
             setup_postdata($post);
-            get_template_part('template-parts/news-card', null, ['post' => $post]);
+        ?>
+        <a href="<?php echo esc_url(get_permalink($post)); ?>" class="card" style="text-decoration: none; color: inherit;">
+            <?php if (has_post_thumbnail($post)) : ?>
+                <?php echo get_the_post_thumbnail($post, 'show-card', ['class' => 'card__thumb', 'loading' => 'lazy']); ?>
+            <?php endif; ?>
+            <div class="card__body">
+                <div style="font-size: 0.875rem; font-weight: 600; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"><?php echo esc_html($post->post_title); ?></div>
+                <p style="font-size: 0.75rem; color: var(--color-text-sub); margin-top: var(--space-xs); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"><?php echo esc_html(wp_trim_words(get_the_excerpt($post), 40, '…')); ?></p>
+            </div>
+        </a>
+        <?php
         endforeach;
         wp_reset_postdata();
         ?>
     </div>
 </section>
 
-<?php // 5-11. HOW TO・ガイド ?>
+<?php // 5-11. 最新ニュース ?>
 <section class="section">
     <div class="section-header">
-        <h2>&#x1F4D6; ガイド・HOW TO</h2>
+        <h2><?php echo koi_ria_icon('news', 22); ?> 最新ニュース</h2>
+        <a href="<?php echo esc_url(get_permalink(get_option('page_for_posts'))); ?>" class="section-header__more">もっと見る →</a>
     </div>
     <div>
         <?php
-        $guides = get_posts([
+        $column_cat_id = get_cat_ID('column');
+        $news_args = [
             'post_type'      => 'post',
-            'posts_per_page' => 5,
-            'category_name'  => 'guide',
-        ]);
-        foreach ($guides as $post) :
+            'posts_per_page' => 3,
+        ];
+        if ($column_cat_id) {
+            $news_args['category__not_in'] = [$column_cat_id];
+        }
+        $news = get_posts($news_args);
+        foreach ($news as $post) :
             setup_postdata($post);
             get_template_part('template-parts/news-card', null, ['post' => $post]);
         endforeach;
@@ -145,7 +164,7 @@ if ($shindan_page) :
 ?>
 <section class="section">
     <a href="<?php echo esc_url(get_permalink($shindan_page)); ?>" class="promo-banner" style="background: var(--color-gradient); color: #fff; display: block; border-radius: var(--radius-lg); padding: var(--space-lg); text-decoration: none; text-align: center; margin: 0 var(--space-md);">
-        <span style="font-size: 2rem; display: block;">&#x1F4AB;</span>
+        <span style="font-size: 2rem; display: block;"><?php echo koi_ria_icon('sparkle', 32); ?></span>
         <div style="font-weight: 700; font-size: 1.125rem; margin-top: var(--space-xs);">あなたにぴったりの恋リアは？</div>
         <p style="font-size: 0.8125rem; opacity: 0.9; margin-top: var(--space-xs);">5つの質問で診断！→</p>
     </a>
@@ -159,7 +178,7 @@ if ($vod_page) :
 ?>
 <section class="section">
     <a href="<?php echo esc_url(get_permalink($vod_page)); ?>" class="promo-banner" style="background: linear-gradient(135deg, #00B900, #0077B5); color: #fff; display: block; border-radius: var(--radius-lg); padding: var(--space-lg); text-decoration: none; text-align: center; margin: 0 var(--space-md);">
-        <span style="font-size: 2rem; display: block;">&#x1F4FA;</span>
+        <span style="font-size: 2rem; display: block;"><?php echo koi_ria_icon('compass', 32); ?></span>
         <div style="font-weight: 700; font-size: 1.125rem; margin-top: var(--space-xs);">どのVODで見れる？</div>
         <p style="font-size: 0.8125rem; opacity: 0.9; margin-top: var(--space-xs);">番組の配信先を検索 →</p>
     </a>

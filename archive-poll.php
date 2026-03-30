@@ -10,7 +10,7 @@ get_header();
 
 <section class="section">
     <div class="section-header">
-        <h1>&#x1F5F3; みんなの予想</h1>
+        <h1><?php echo koi_ria_icon('vote', 24); ?> みんなの予想</h1>
     </div>
 
     <?php

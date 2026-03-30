@@ -58,7 +58,7 @@ $rows = [
 
 <section class="section" style="padding-top: var(--space-lg);">
     <div class="section-header">
-        <h2>&#x1F4CA; VOD比較表</h2>
+        <h2><?php echo koi_ria_icon('chart', 22); ?> VOD比較表</h2>
     </div>
 
     <div style="overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 0 var(--space-md);">

@@ -73,15 +73,15 @@ $recent_events = array_slice($timeline, -3);
             <?php if ($a_avatar) : ?>
                 <img class="ig-avatar__img" src="<?php echo esc_url($a_avatar); ?>" alt="<?php echo esc_attr($a_name); ?>">
             <?php else : ?>
-                <span class="ig-avatar__img" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:#f0f0f0;">&#x1F464;</span>
+                <span class="ig-avatar__img" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:#f0f0f0;"><?php echo koi_ria_icon('users', 24); ?></span>
             <?php endif; ?>
         </span>
-        <span class="couple-card__heart">&#x2764;&#xFE0F;</span>
+        <span class="couple-card__heart"><?php echo koi_ria_icon('heart-filled', 20); ?></span>
         <span class="ig-avatar">
             <?php if ($b_avatar) : ?>
                 <img class="ig-avatar__img" src="<?php echo esc_url($b_avatar); ?>" alt="<?php echo esc_attr($b_name); ?>">
             <?php else : ?>
-                <span class="ig-avatar__img" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:#f0f0f0;">&#x1F464;</span>
+                <span class="ig-avatar__img" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:#f0f0f0;"><?php echo koi_ria_icon('users', 24); ?></span>
             <?php endif; ?>
         </span>
     </div>

@@ -8,11 +8,11 @@
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-card);
     overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
     box-shadow: var(--shadow-lg);
 }
 
@@ -24,7 +24,7 @@
     width: 100%;
     aspect-ratio: 16 / 9;
     object-fit: cover;
-    background-color: #f0f0f0;
+    background-color: var(--color-primary-light);
 }
 
 /* --- ボタン --- */
@@ -37,7 +37,7 @@
     border-radius: var(--radius-pill);
     font-weight: 700;
     font-size: 0.875rem;
-    transition: opacity 0.2s ease, transform 0.1s ease;
+    transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.25s ease;
     white-space: nowrap;
 }
 
@@ -48,11 +48,21 @@
 .btn--primary {
     background: var(--color-gradient);
     color: #fff;
+    box-shadow: 0 4px 16px rgba(232, 97, 154, 0.25);
+}
+
+.btn--primary:hover {
+    box-shadow: 0 6px 24px rgba(232, 97, 154, 0.35);
+    transform: translateY(-1px);
 }
 
 .btn--outline {
     border: 2px solid var(--color-primary);
     color: var(--color-primary);
+}
+
+.btn--outline:hover {
+    background: var(--color-primary-pale);
 }
 
 .btn--sm {
@@ -63,11 +73,35 @@
 .btn--ig {
     background: linear-gradient(45deg, #833AB4, #E1306C, #F77737);
     color: #fff;
+    box-shadow: 0 4px 16px rgba(225, 48, 108, 0.25);
+}
+
+.btn--ig:hover {
+    box-shadow: 0 6px 24px rgba(225, 48, 108, 0.35);
+    transform: translateY(-1px);
 }
 
 .btn--tiktok {
-    background: linear-gradient(135deg, #000000, #25F4EE);
+    background: #000000;
     color: #fff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn--tiktok::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 4px;
+    background: #25F4EE;
+}
+
+.btn--tiktok:hover {
+    box-shadow: 0 6px 24px rgba(37, 244, 238, 0.3);
+    transform: translateY(-1px);
 }
 
 .btn--x {
@@ -75,26 +109,33 @@
     color: #fff;
 }
 
+.btn--x:hover {
+    background: #1a1a1a;
+    transform: translateY(-1px);
+}
+
 /* --- バッジ --- */
 .badge {
     display: inline-flex;
     align-items: center;
-    padding: 2px 10px;
+    padding: 3px 12px;
     border-radius: var(--radius-pill);
     font-size: 0.625rem;
     font-weight: 700;
     letter-spacing: 0.05em;
     white-space: nowrap;
+    border: 1px solid transparent;
 }
 
 .badge--on-air {
-    background: var(--color-accent);
+    background: linear-gradient(135deg, #FF6B9D, #E8619A);
     color: #fff;
+    border-color: transparent;
     animation: pulse-badge 2s ease-in-out infinite;
 }
 
 .badge--new {
-    background: var(--color-primary);
+    background: var(--color-gradient);
     color: #fff;
 }
 
@@ -147,7 +188,7 @@
 }
 
 .badge--unknown {
-    background: #9CA3AF;
+    background: #9B8FA1;
     color: #fff;
 }
 
@@ -175,22 +216,28 @@
 }
 
 .pill-filter {
-    padding: 6px 18px;
+    padding: 7px 20px;
     border-radius: var(--radius-pill);
     font-size: 0.8125rem;
     font-weight: 500;
     background: var(--color-card);
-    border: 1px solid #E5E7EB;
+    border: 1px solid var(--color-border);
     white-space: nowrap;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
     cursor: pointer;
 }
 
-.pill-filter.is-active,
 .pill-filter:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: var(--color-primary-pale);
+}
+
+.pill-filter.is-active {
     background: var(--color-gradient);
     color: #fff;
     border-color: transparent;
+    box-shadow: 0 2px 12px rgba(232, 97, 154, 0.2);
 }
 
 /* --- Instagram風アバター --- */
@@ -199,7 +246,13 @@
     display: inline-block;
     border-radius: var(--radius-circle);
     padding: 3px;
-    background: linear-gradient(45deg, #833AB4, #E1306C, #F77737);
+    background: linear-gradient(135deg, #FF6B9D, #C084FC, #FF6B9D);
+    background-size: 200% 200%;
+    transition: transform 0.25s ease;
+}
+
+.ig-avatar:hover {
+    transform: scale(1.05);
 }
 
 .ig-avatar__img {
@@ -209,7 +262,7 @@
     border-radius: var(--radius-circle);
     object-fit: cover;
     border: 3px solid var(--color-card);
-    background-color: #f0f0f0;
+    background-color: var(--color-primary-light);
 }
 
 .ig-avatar--lg .ig-avatar__img {
@@ -286,13 +339,13 @@
     background: var(--color-card);
     box-shadow: var(--shadow-sm);
     font-size: 0.875rem;
-    border: 1px solid #E5E7EB;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    border: 1.5px solid var(--color-border);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .search-bar__input:focus {
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+    box-shadow: 0 0 0 4px rgba(232, 97, 154, 0.12), var(--shadow-sm);
 }
 
 .search-bar__icon {
@@ -305,25 +358,6 @@
     pointer-events: none;
 }
 
-/* --- セクションヘッダー --- */
-.section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 var(--space-md);
-    margin-bottom: var(--space-md);
-}
-
-.section-header h2 {
-    font-size: 1.125rem;
-}
-
-.section-header__more {
-    font-size: 0.8125rem;
-    color: var(--color-primary);
-    font-weight: 500;
-}
-
 /* --- カップルカード --- */
 .couple-card {
     background: var(--color-card);
@@ -332,13 +366,15 @@
     text-decoration: none;
     color: var(--color-text);
     display: block;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    border: 1px solid var(--color-border);
 }
 
 .couple-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
     box-shadow: var(--shadow-lg);
+    background: var(--color-primary-pale);
 }
 
 .couple-card__avatars {
@@ -379,7 +415,7 @@
 .couple-card__status--交際中 { background: rgba(16,185,129,0.1); color: #10B981; }
 .couple-card__status--破局 { background: rgba(239,68,68,0.1); color: #EF4444; }
 .couple-card__status--結婚 { background: rgba(212,160,23,0.1); color: #D4A017; }
-.couple-card__status--不明 { background: rgba(156,163,175,0.1); color: #9CA3AF; }
+.couple-card__status--不明 { background: rgba(155,143,161,0.1); color: #9B8FA1; }
 
 .couple-grid {
     display: grid;
@@ -396,7 +432,7 @@
 .couple-timeline {
     position: relative;
     padding-left: 20px;
-    border-left: 2px solid #E5E7EB;
+    border-left: 2px solid var(--color-border);
     margin: var(--space-lg) 0;
 }
 
@@ -413,7 +449,7 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #FF3B6F, #A855F7);
+    background: var(--color-gradient);
 }
 
 .timeline-event[data-type="破局報告"]::before { background: #EF4444; }
@@ -455,12 +491,44 @@
 }
 
 /* --- 推しボタン --- */
-.fav-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; z-index: 10; transition: transform 0.2s; }
-.fav-btn:hover { transform: scale(1.15); }
-.fav-btn .fav-heart.active { display: none; color: #FF3B6F; }
-.fav-btn .fav-heart { display: inline; color: #9CA3AF; }
+.fav-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: none;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    z-index: 10;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px rgba(232, 97, 154, 0.1);
+}
+.fav-btn:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 16px rgba(232, 97, 154, 0.2);
+}
+.fav-btn .fav-heart.active { display: none; color: var(--color-accent); }
+.fav-btn .fav-heart { display: inline; color: var(--color-text-sub); }
 .fav-btn.is-fav .fav-heart { display: none; }
-.fav-btn.is-fav .fav-heart.active { display: inline; }
+.fav-btn.is-fav .fav-heart.active {
+    display: inline;
+    animation: heartPulse 0.4s ease;
+}
+
+@keyframes heartPulse {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.35); }
+    60% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
 
 /* 推しボタン — プロフィールヘッダー用（大きめ・relative配置） */
 .cast-profile-header .fav-btn { position: static; width: 40px; height: 40px; font-size: 1.25rem; }
@@ -473,19 +541,20 @@
 
 /* --- VOD比較表 --- */
 .vod-compare { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
-.vod-compare th, .vod-compare td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #E5E7EB; }
+.vod-compare th, .vod-compare td { padding: 10px 12px; text-align: center; border-bottom: 1px solid var(--color-border); }
 .vod-compare th { font-weight: 700; color: #fff; font-size: 0.75rem; }
 .vod-compare td:first-child { font-weight: 500; text-align: left; white-space: nowrap; color: var(--color-text-sub); }
-.vod-compare__cta { display: inline-block; margin-top: 8px; padding: 6px 16px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 700; color: #fff; text-decoration: none; }
+.vod-compare__cta { display: inline-block; margin-top: 8px; padding: 6px 16px; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 700; color: #fff; text-decoration: none; transition: opacity 0.2s ease; }
 .vod-compare__cta:hover { opacity: 0.85; }
 
 /* --- VOD検索結果カード --- */
-.vod-result-card { background: var(--color-card); border-radius: var(--radius-lg); padding: var(--space-md); margin-bottom: var(--space-md); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.vod-result-card { background: var(--color-card); border-radius: var(--radius-lg); padding: var(--space-md); margin-bottom: var(--space-md); box-shadow: var(--shadow-sm); border: 1px solid var(--color-border); transition: box-shadow 0.25s ease; }
+.vod-result-card:hover { box-shadow: var(--shadow-card); }
 .vod-result-card__title { font-size: 1rem; font-weight: 700; margin-bottom: var(--space-sm); }
 .vod-badges { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-bottom: var(--space-sm); }
 
 /* --- VOD記事下自動挿入 --- */
-.vod-auto-insert { background: linear-gradient(135deg, rgba(168,85,247,0.05), rgba(255,59,111,0.05)); border-radius: var(--radius-lg); padding: var(--space-lg); margin-top: var(--space-xl); }
+.vod-auto-insert { background: linear-gradient(135deg, rgba(232,97,154,0.05), rgba(192,132,252,0.05)); border-radius: var(--radius-lg); padding: var(--space-lg); margin-top: var(--space-xl); border: 1px solid var(--color-border); }
 .vod-auto-insert__title { font-weight: 700; margin-bottom: var(--space-sm); }
 .vod-auto-insert__links { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
 
@@ -497,6 +566,12 @@
     margin: 0 var(--space-md);
     text-align: center;
     box-shadow: var(--shadow-card);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.sns-follow-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
 }
 
 .sns-follow-card--ig {
@@ -523,7 +598,7 @@
     border-radius: var(--radius-circle);
     object-fit: cover;
     flex-shrink: 0;
-    background-color: #f0f0f0;
+    background-color: var(--color-primary-light);
 }
 
 .sns-follow-card__avatar--placeholder {
@@ -653,7 +728,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.2s ease;
+    transition: transform 0.25s ease;
 }
 
 .corr-avatar:hover {
@@ -661,11 +736,11 @@
 }
 
 .corr-avatar--female {
-    background: linear-gradient(45deg, #FF3B6F, #FF8BA7);
+    background: linear-gradient(45deg, #FF6B9D, #FF8BA7);
 }
 
 .corr-avatar--male {
-    background: linear-gradient(45deg, #3B82F6, #A855F7);
+    background: linear-gradient(45deg, #3B82F6, #C084FC);
 }
 
 .corr-avatar__img {
@@ -674,7 +749,7 @@
     border-radius: var(--radius-circle);
     object-fit: cover;
     border: 3px solid var(--color-card);
-    background-color: #f0f0f0;
+    background-color: var(--color-primary-light);
     display: block;
 }
 
@@ -683,7 +758,7 @@
     height: 50px;
     border-radius: var(--radius-circle);
     border: 3px solid var(--color-card);
-    background: #f0f0f0;
+    background: var(--color-primary-light);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -709,10 +784,10 @@
     gap: 3px;
 }
 
-.corr-legend__item.corr-rel--love     { background: rgba(255, 59, 111, 0.12); color: #FF3B6F; }
+.corr-legend__item.corr-rel--love     { background: rgba(255, 107, 157, 0.12); color: #FF6B9D; }
 .corr-legend__item.corr-rel--couple   { background: rgba(212, 160, 23, 0.12); color: #D4A017; }
 .corr-legend__item.corr-rel--rival    { background: rgba(245, 158, 11, 0.12); color: #F59E0B; }
-.corr-legend__item.corr-rel--interest { background: rgba(168, 85, 247, 0.12); color: #A855F7; }
+.corr-legend__item.corr-rel--interest { background: rgba(192, 132, 252, 0.12); color: #C084FC; }
 
 /* --- リレーションリスト --- */
 .corr-relations {
@@ -726,7 +801,7 @@
     align-items: center;
     gap: var(--space-sm);
     padding: var(--space-sm) 0;
-    border-bottom: 1px solid #F3F4F6;
+    border-bottom: 1px solid var(--color-border);
     flex-wrap: wrap;
 }
 
@@ -768,11 +843,11 @@
 }
 
 /* 関係タイプ別カラー */
-.corr-rel--love .corr-rel__line     { background: #FF3B6F; }
+.corr-rel--love .corr-rel__line     { background: #FF6B9D; }
 .corr-rel--couple .corr-rel__line   { background: #D4A017; }
 .corr-rel--rival .corr-rel__line    { background: #F59E0B; }
-.corr-rel--interest .corr-rel__line { background: #A855F7; }
-.corr-rel--unknown .corr-rel__line  { background: #9CA3AF; }
+.corr-rel--interest .corr-rel__line { background: #C084FC; }
+.corr-rel--unknown .corr-rel__line  { background: #9B8FA1; }
 
 /* バッジ（関係ラベル） */
 .corr-rel__badge {
@@ -786,11 +861,11 @@
     margin-top: -2px;
 }
 
-.corr-rel--love .corr-rel__badge     { background: rgba(255, 59, 111, 0.1); color: #FF3B6F; }
+.corr-rel--love .corr-rel__badge     { background: rgba(255, 107, 157, 0.1); color: #FF6B9D; }
 .corr-rel--couple .corr-rel__badge   { background: rgba(212, 160, 23, 0.1); color: #D4A017; }
 .corr-rel--rival .corr-rel__badge    { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
-.corr-rel--interest .corr-rel__badge { background: rgba(168, 85, 247, 0.1); color: #A855F7; }
-.corr-rel--unknown .corr-rel__badge  { background: rgba(156, 163, 175, 0.1); color: #9CA3AF; }
+.corr-rel--interest .corr-rel__badge { background: rgba(192, 132, 252, 0.1); color: #C084FC; }
+.corr-rel--unknown .corr-rel__badge  { background: rgba(155, 143, 161, 0.1); color: #9B8FA1; }
 
 /* --- レスポンシブ --- */
 @media (min-width: 480px) {

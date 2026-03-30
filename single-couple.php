@@ -71,19 +71,19 @@ while (have_posts()) : the_post();
                 <?php if ($a_avatar) : ?>
                     <img class="ig-avatar__img" src="<?php echo esc_url($a_avatar); ?>" alt="<?php echo esc_attr($a_name); ?>">
                 <?php else : ?>
-                    <span class="ig-avatar__img" style="display:flex;align-items:center;justify-content:center;font-size:2rem;background:#f0f0f0;">&#x1F464;</span>
+                    <span class="ig-avatar__img" style="display:flex;align-items:center;justify-content:center;font-size:2rem;background:#f0f0f0;"><?php echo koi_ria_icon('users', 32); ?></span>
                 <?php endif; ?>
             </a>
             <?php endif; ?>
 
-            <span class="couple-header__heart">&#x2764;&#xFE0F;</span>
+            <span class="couple-header__heart"><?php echo koi_ria_icon('heart-filled', 24); ?></span>
 
             <?php if ($b_post) : ?>
             <a href="<?php echo esc_url(get_permalink($b_post->ID)); ?>" class="ig-avatar ig-avatar--lg">
                 <?php if ($b_avatar) : ?>
                     <img class="ig-avatar__img" src="<?php echo esc_url($b_avatar); ?>" alt="<?php echo esc_attr($b_name); ?>">
                 <?php else : ?>
-                    <span class="ig-avatar__img" style="display:flex;align-items:center;justify-content:center;font-size:2rem;background:#f0f0f0;">&#x1F464;</span>
+                    <span class="ig-avatar__img" style="display:flex;align-items:center;justify-content:center;font-size:2rem;background:#f0f0f0;"><?php echo koi_ria_icon('users', 32); ?></span>
                 <?php endif; ?>
             </a>
             <?php endif; ?>
@@ -115,7 +115,7 @@ while (have_posts()) : the_post();
     <!-- Timeline -->
     <?php if ($timeline) : ?>
     <div style="padding: 0 var(--space-md);">
-        <h2 style="font-size:1rem; font-weight:700; margin-bottom:var(--space-md);">&#x1F4C5; タイムライン</h2>
+        <h2 style="font-size:1rem; font-weight:700; margin-bottom:var(--space-md);"><?php echo koi_ria_icon('calendar', 20); ?> タイムライン</h2>
         <?php get_template_part('template-parts/couple-timeline', null, ['timeline' => $timeline]); ?>
     </div>
     <?php endif; ?>

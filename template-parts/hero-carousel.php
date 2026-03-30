@@ -42,7 +42,7 @@ if (empty($pinned)) {
             <?php if ($thumbnail_url) : ?>
                 <img src="<?php echo esc_url($thumbnail_url); ?>" alt="<?php echo esc_attr($video->post_title); ?>" class="hero-carousel__thumb" loading="lazy">
             <?php else : ?>
-                <div class="hero-carousel__thumb" style="background:#1F2937;display:flex;align-items:center;justify-content:center;color:#fff;font-size:3rem;">&#x25B6;</div>
+                <div class="hero-carousel__thumb" style="background:#1F2937;display:flex;align-items:center;justify-content:center;color:#fff;font-size:3rem;"><?php echo koi_ria_icon('play', 40); ?></div>
             <?php endif; ?>
             <div class="hero-carousel__overlay">
                 <div style="display: flex; gap: 6px; margin-bottom: 4px;">

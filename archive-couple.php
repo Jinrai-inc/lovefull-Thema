@@ -9,7 +9,7 @@ get_header(); ?>
 
 <section class="section">
     <div class="section-header">
-        <h1>&#x1F491; カップルその後</h1>
+        <h1><?php echo koi_ria_icon('couple', 22); ?> カップルその後</h1>
     </div>
 
     <!-- Status filter -->

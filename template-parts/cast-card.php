@@ -46,7 +46,7 @@ if ($_show_id) {
         <?php if ($avatar_url) : ?>
             <img src="<?php echo esc_url($avatar_url); ?>" alt="<?php echo esc_attr($display_name); ?>" class="ig-avatar__img" loading="lazy">
         <?php else : ?>
-            <div class="ig-avatar__img" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:#f0f0f0;">&#x1F464;</div>
+            <div class="ig-avatar__img" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0;"><?php echo koi_ria_icon('users', 24); ?></div>
         <?php endif; ?>
     </div>
     <div class="cast-card__name"><?php echo esc_html($display_name); ?></div>

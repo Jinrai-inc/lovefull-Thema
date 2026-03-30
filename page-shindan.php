@@ -10,7 +10,7 @@ get_header();
     <!-- Step: Intro -->
     <div class="shindan-step shindan-intro is-active" data-step="intro">
         <div style="text-align: center; padding: var(--space-xl) var(--space-md);">
-            <span style="font-size: 3rem;">&#x1F4AB;</span>
+            <span style="font-size: 3rem;"><?php echo koi_ria_icon('sparkle', 40); ?></span>
             <h1 style="margin-top: var(--space-md); font-size: 1.375rem;">あなたにぴったりの<br>恋リアは？</h1>
             <p style="margin-top: var(--space-sm); color: var(--color-text-sub); font-size: 0.875rem;">5つの質問に答えるだけ！</p>
             <button class="btn btn--primary" id="shindanStart" style="margin-top: var(--space-lg);">診断スタート</button>

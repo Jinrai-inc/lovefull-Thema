@@ -55,21 +55,21 @@ $relations = get_posts([
 
 // --- 関係タイプ定義 ---
 $type_map = [
-    'love'     => ['icon' => "\u{1F497}", 'color_class' => 'corr-rel--love',     'label' => '恋愛'],
-    'couple'   => ['icon' => "\u{1F491}", 'color_class' => 'corr-rel--couple',   'label' => 'カップル'],
-    'rival'    => ['icon' => "\u{26A1}",  'color_class' => 'corr-rel--rival',    'label' => 'ライバル'],
-    'interest' => ['icon' => "\u{1F440}", 'color_class' => 'corr-rel--interest', 'label' => '気になる'],
+    'love'     => ['icon' => koi_ria_icon('heart-filled', 18), 'color_class' => 'corr-rel--love',     'label' => '恋愛'],
+    'couple'   => ['icon' => koi_ria_icon('couple', 18),       'color_class' => 'corr-rel--couple',   'label' => 'カップル'],
+    'rival'    => ['icon' => koi_ria_icon('fire', 18),         'color_class' => 'corr-rel--rival',    'label' => 'ライバル'],
+    'interest' => ['icon' => koi_ria_icon('search', 18),       'color_class' => 'corr-rel--interest', 'label' => '気になる'],
 ];
 ?>
 
 <section class="section correlation-chart">
     <div class="section-header">
-        <h2>&#x1F495; 相関図</h2>
+        <h2><?php echo koi_ria_icon('couple', 22); ?> 相関図</h2>
     </div>
 
     <?php if ( empty($relations) ) : ?>
         <div class="corr-empty">
-            <p class="corr-empty__icon">&#x1F495;</p>
+            <p class="corr-empty__icon"><?php echo koi_ria_icon('couple', 32); ?></p>
             <p class="corr-empty__text">相関図データはまだ登録されていません</p>
             <?php if ( current_user_can('edit_posts') ) : ?>
                 <p class="corr-empty__hint">管理画面の「リレーション」から相関データを追加してください。</p>
@@ -94,7 +94,7 @@ $type_map = [
                     <?php if ( $m_avatar ) : ?>
                         <img src="<?php echo esc_url($m_avatar); ?>" alt="<?php echo esc_attr($m_name); ?>" class="corr-avatar__img" loading="lazy">
                     <?php else : ?>
-                        <span class="corr-avatar__fallback">&#x1F464;</span>
+                        <span class="corr-avatar__fallback"><?php echo koi_ria_icon('users', 32); ?></span>
                     <?php endif; ?>
                 </div>
                 <span class="corr-cast-item__name"><?php echo esc_html($m_name); ?></span>

@@ -80,7 +80,7 @@ if ($season_id) {
         <?php if ($avatar_url) : ?>
             <img src="<?php echo esc_url($avatar_url); ?>" alt="<?php echo esc_attr($display_name); ?>" class="ig-avatar__img">
         <?php else : ?>
-            <div class="ig-avatar__img" style="display:flex;align-items:center;justify-content:center;font-size:2rem;background:#f0f0f0;">&#x1F464;</div>
+            <div class="ig-avatar__img" style="display:flex;align-items:center;justify-content:center;font-size:2rem;background:#f0f0f0;"><?php echo koi_ria_icon('users', 32); ?></div>
         <?php endif; ?>
     </div>
 
@@ -153,7 +153,7 @@ if ($season_id) {
 <?php if ($relations) : ?>
 <section class="section">
     <div class="section-header">
-        <h2>&#x1F495; 相関図</h2>
+        <h2><?php echo koi_ria_icon('couple', 22); ?> 相関図</h2>
     </div>
     <div style="background: var(--color-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); margin: 0 var(--space-md); padding: var(--space-md); overflow: hidden;">
         <?php foreach ($relations as $rel) :
@@ -173,11 +173,11 @@ if ($season_id) {
             $other_name = $other_post ? (get_field('display_name', $other_post->ID) ?: $other_post->post_title) : '？';
 
             $rel_icon = match($r_type) {
-                'love'     => '💗',
-                'rival'    => '⚡',
-                'couple'   => '💑',
-                'interest' => '👀',
-                default    => '❓',
+                'love'     => koi_ria_icon('heart-filled', 20),
+                'rival'    => koi_ria_icon('fire', 20),
+                'couple'   => koi_ria_icon('couple', 20),
+                'interest' => koi_ria_icon('search', 20),
+                default    => '？',
             };
         ?>
         <a href="<?php echo $other_post ? esc_url(get_permalink($other_post)) : '#'; ?>" class="couple-item" style="border-color: #F3F4F6;">
@@ -206,7 +206,7 @@ if ($season_id) {
             <?php if ($avatar_url) : ?>
                 <img src="<?php echo esc_url($avatar_url); ?>" alt="<?php echo esc_attr($ig_username); ?>" class="sns-follow-card__avatar">
             <?php else : ?>
-                <div class="sns-follow-card__avatar sns-follow-card__avatar--placeholder">&#x1F4F7;</div>
+                <div class="sns-follow-card__avatar sns-follow-card__avatar--placeholder"><?php echo koi_ria_icon('instagram', 24); ?></div>
             <?php endif; ?>
             <div class="sns-follow-card__info">
                 <div class="sns-follow-card__username">@<?php echo esc_html($ig_username); ?></div>
@@ -230,7 +230,7 @@ if ($season_id) {
     </div>
     <div class="sns-follow-card sns-follow-card--tiktok">
         <div class="sns-follow-card__profile">
-            <div class="sns-follow-card__tiktok-icon">&#x266B;</div>
+            <div class="sns-follow-card__tiktok-icon"><?php echo koi_ria_icon('tiktok', 24); ?></div>
             <div class="sns-follow-card__info">
                 <div class="sns-follow-card__username">@<?php echo esc_html($tiktok_username); ?></div>
                 <?php if ($tiktok_followers) : ?>
@@ -255,7 +255,7 @@ if ($related) :
 ?>
 <section class="section">
     <div class="section-header">
-        <h2>&#x1F4F0; 関連記事</h2>
+        <h2><?php echo koi_ria_icon('news', 22); ?> 関連記事</h2>
     </div>
     <?php
     foreach ($related as $post) :
@@ -283,7 +283,7 @@ if ($s_id) :
 ?>
 <section class="section">
     <div class="section-header">
-        <h2>&#x1F465; 同じシーズンのメンバー</h2>
+        <h2><?php echo koi_ria_icon('users', 22); ?> 同じシーズンのメンバー</h2>
     </div>
     <div class="scroll-x">
         <?php foreach ($same_season_members as $cast) :

@@ -62,13 +62,29 @@ add_action('after_setup_theme', function () {
 });
 
 /**
+ * デフォルトカテゴリの自動登録
+ */
+add_action('init', function() {
+    // Ensure default categories exist
+    if (!term_exists('column', 'category')) {
+        wp_insert_term('恋愛コラム', 'category', ['slug' => 'column', 'description' => '恋愛に関するコラム・特集記事']);
+    }
+    if (!term_exists('news', 'category')) {
+        wp_insert_term('ニュース', 'category', ['slug' => 'news', 'description' => '最新ニュース・速報']);
+    }
+    if (!term_exists('guide', 'category')) {
+        wp_insert_term('ガイド', 'category', ['slug' => 'guide', 'description' => 'HOW TO・ガイド記事']);
+    }
+}, 20);
+
+/**
  * スタイル・スクリプト読み込み
  */
 add_action('wp_enqueue_scripts', function () {
     // Google Fonts
     wp_enqueue_style(
         'koi-ria-google-fonts',
-        'https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap',
+        'https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap',
         [],
         null
     );

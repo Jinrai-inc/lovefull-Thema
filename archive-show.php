@@ -10,7 +10,7 @@ get_header();
 
 <section class="section">
     <div class="section-header">
-        <h1>&#x1F4FA; 番組一覧</h1>
+        <h1><?php echo koi_ria_icon('tv', 22); ?> 番組一覧</h1>
     </div>
 
     <?php // プラットフォームフィルター ?>

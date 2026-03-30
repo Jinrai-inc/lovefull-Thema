@@ -10,7 +10,7 @@ get_header();
 
 <section class="section">
     <div class="section-header">
-        <h1>&#x1F4F0; 記事一覧</h1>
+        <h1><?php echo koi_ria_icon('news', 24); ?> 記事一覧</h1>
     </div>
 
     <?php if (have_posts()) : ?>

@@ -31,7 +31,7 @@ if (empty($couple_posts)) {
     ?>
     <section class="section">
         <div class="section-header">
-            <h2>&#x1F491; カップルその後</h2>
+            <h2><?php echo koi_ria_icon('couple', 22); ?> カップルその後</h2>
         </div>
         <div style="background: var(--color-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); margin: 0 var(--space-md); overflow: hidden;">
             <?php foreach ($couples as $rel) :
@@ -62,7 +62,7 @@ if (empty($couple_posts)) {
                 }
             ?>
             <div class="couple-item">
-                <span class="couple-item__icon">&#x1F496;</span>
+                <span class="couple-item__icon"><?php echo koi_ria_icon('heart-filled', 20); ?></span>
                 <div class="couple-item__info">
                     <div class="couple-item__names"><?php echo esc_html($from_name); ?> &times; <?php echo esc_html($to_name); ?></div>
                     <?php if ($show_name) : ?>
@@ -84,7 +84,7 @@ if (empty($couple_posts)) {
 ?>
 <section class="section">
     <div class="section-header">
-        <h2>&#x1F491; カップルその後</h2>
+        <h2><?php echo koi_ria_icon('couple', 22); ?> カップルその後</h2>
         <a href="<?php echo esc_url(get_post_type_archive_link('couple')); ?>" class="section-header__more">もっと見る →</a>
     </div>
 
@@ -128,15 +128,15 @@ if (empty($couple_posts)) {
                     <?php if ($a_avatar) : ?>
                         <img src="<?php echo esc_url($a_avatar); ?>" alt="<?php echo esc_attr($a_name); ?>" class="ig-avatar__img" style="width:50px;height:50px;" loading="lazy">
                     <?php else : ?>
-                        <div class="ig-avatar__img" style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;">&#x1F464;</div>
+                        <div class="ig-avatar__img" style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;"><?php echo koi_ria_icon('users', 20); ?></div>
                     <?php endif; ?>
                 </div>
-                <span class="couple-card__heart">&#x2764;</span>
+                <span class="couple-card__heart"><?php echo koi_ria_icon('heart', 18); ?></span>
                 <div class="ig-avatar" style="width: 50px; height: 50px;">
                     <?php if ($b_avatar) : ?>
                         <img src="<?php echo esc_url($b_avatar); ?>" alt="<?php echo esc_attr($b_name); ?>" class="ig-avatar__img" style="width:50px;height:50px;" loading="lazy">
                     <?php else : ?>
-                        <div class="ig-avatar__img" style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;">&#x1F464;</div>
+                        <div class="ig-avatar__img" style="width:50px;height:50px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;"><?php echo koi_ria_icon('users', 20); ?></div>
                     <?php endif; ?>
                 </div>
             </div>

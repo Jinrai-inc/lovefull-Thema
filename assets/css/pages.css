@@ -567,7 +567,7 @@
     text-align: center;
     box-shadow: var(--shadow-sm);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
-    border: 1px solid var(--color-border);
+    border: 2px solid var(--color-border);
     border-top: 3px solid var(--platform-color);
     text-decoration: none;
     color: inherit;
@@ -588,12 +588,10 @@
 /* --- Today card: glow + gradient --- */
 .schedule-card.is-today {
     background: linear-gradient(160deg, #fff5f9 0%, #fdf0ff 50%, #f0f0ff 100%);
-    border: 2px solid var(--color-primary);
-    border-top: 3px solid var(--color-primary);
+    border-color: var(--color-primary);
+    border-top-color: var(--color-primary);
     box-shadow: 0 0 20px rgba(232, 97, 154, 0.25), 0 4px 24px rgba(192, 132, 252, 0.15);
     animation: schedule-glow 2.5s ease-in-out infinite;
-    flex-basis: 100px;
-    width: 100px;
 }
 
 .schedule-card.is-today:hover {

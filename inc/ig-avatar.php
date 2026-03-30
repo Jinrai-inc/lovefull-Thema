@@ -28,9 +28,13 @@ function koi_ria_get_ig_avatar(string $ig_username, int $size = 200): string {
         return koi_ria_get_fallback_avatar($ig_username, $size);
     }
 
-    $upload_dir = wp_upload_dir();
-    $cache_dir  = $upload_dir['basedir'] . '/ig-cache/';
-    $cache_url  = $upload_dir['baseurl'] . '/ig-cache/';
+    static $upload_dir_cache = null;
+    if ($upload_dir_cache === null) {
+        $upload_dir_cache = wp_upload_dir();
+    }
+
+    $cache_dir  = $upload_dir_cache['basedir'] . '/ig-cache/';
+    $cache_url  = $upload_dir_cache['baseurl'] . '/ig-cache/';
     $filename   = sanitize_file_name($ig_username) . '.jpg';
     $filepath   = $cache_dir . $filename;
 

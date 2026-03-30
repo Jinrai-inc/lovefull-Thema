@@ -15,6 +15,42 @@ $shows = get_posts([
     'order'          => 'ASC',
 ]);
 
+// 全シーズンを一括取得してshow_idでグループ化
+$all_seasons = get_posts([
+    'post_type'      => 'season',
+    'posts_per_page' => -1,
+    'meta_key'       => 'order',
+    'orderby'        => 'meta_value_num',
+    'order'          => 'ASC',
+]);
+$seasons_by_show = [];
+if ($all_seasons) {
+    update_meta_cache('post', wp_list_pluck($all_seasons, 'ID'));
+    foreach ($all_seasons as $s) {
+        $s_show = get_field('show', $s->ID);
+        $s_show_id = is_array($s_show) ? ($s_show[0] ?? 0) : ($s_show ?: 0);
+        if (is_object($s_show_id)) $s_show_id = $s_show_id->ID ?? 0;
+        $seasons_by_show[$s_show_id][] = $s;
+    }
+}
+
+// 全キャストを一括取得してseason_idでグループ化
+$all_cast = get_posts([
+    'post_type'      => 'cast',
+    'posts_per_page' => -1,
+    'post_status'    => 'publish',
+]);
+$cast_by_season = [];
+if ($all_cast) {
+    update_meta_cache('post', wp_list_pluck($all_cast, 'ID'));
+    foreach ($all_cast as $c) {
+        $c_season = get_field('season', $c->ID);
+        $c_season_id = is_array($c_season) ? ($c_season[0] ?? 0) : ($c_season ?: 0);
+        if (is_object($c_season_id)) $c_season_id = $c_season_id->ID ?? 0;
+        $cast_by_season[$c_season_id][] = $c;
+    }
+}
+
 if (empty($shows)) :
 ?>
     <p style="padding: 0 var(--space-md); color: var(--color-text-sub);">番組データはまだ登録されていません</p>
@@ -27,16 +63,7 @@ foreach ($shows as $show) :
     $short_name = get_field('short_name', $show->ID) ?: $show->post_title;
     $platform   = get_field('platform', $show->ID) ?: '';
 
-    $seasons = get_posts([
-        'post_type'      => 'season',
-        'posts_per_page' => -1,
-        'meta_query'     => [
-            ['key' => 'show', 'value' => $show->ID, 'compare' => '='],
-        ],
-        'meta_key'       => 'order',
-        'orderby'        => 'meta_value_num',
-        'order'          => 'ASC',
-    ]);
+    $seasons = $seasons_by_show[$show->ID] ?? [];
 ?>
 
 <div class="accordion" data-platform="<?php echo esc_attr($platform); ?>" style="margin: 0 var(--space-md) var(--space-xs);">
@@ -49,13 +76,7 @@ foreach ($shows as $show) :
                 $season_name = get_field('season_name', $season->ID) ?: $season->post_title;
                 $badge       = get_field('badge', $season->ID) ?: '';
 
-                $members = get_posts([
-                    'post_type'      => 'cast',
-                    'posts_per_page' => -1,
-                    'meta_query'     => [
-                        ['key' => 'season', 'value' => $season->ID, 'compare' => '='],
-                    ],
-                ]);
+                $members = $cast_by_season[$season->ID] ?? [];
 
                 // 性別でグループ分け
                 $girls = [];

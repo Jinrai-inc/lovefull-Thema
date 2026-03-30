@@ -23,14 +23,18 @@ if ($profile_image && isset($profile_image['url'])) {
     $avatar_url = koi_ria_get_ig_avatar($ig_username, 200);
 }
 
-// 番組名取得（推しボタン用）
+// 番組名取得（推しボタン用）- 静的キャッシュで同一showの重複クエリ防止
+static $_show_cache = [];
 $_show_id   = get_field('show', $cast->ID);
 $_show_title = '';
 if ($_show_id) {
-    $_show_post = is_array($_show_id) ? get_post($_show_id[0]) : get_post($_show_id);
-    if ($_show_post) {
-        $_show_title = get_field('short_name', $_show_post->ID) ?: $_show_post->post_title;
+    $_sid = is_array($_show_id) ? $_show_id[0] : $_show_id;
+    if (is_object($_sid)) $_sid = $_sid->ID ?? 0;
+    if (!isset($_show_cache[$_sid])) {
+        $_show_post = get_post($_sid);
+        $_show_cache[$_sid] = $_show_post ? (get_field('short_name', $_show_post->ID) ?: $_show_post->post_title) : '';
     }
+    $_show_title = $_show_cache[$_sid];
 }
 ?>
 

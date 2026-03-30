@@ -214,15 +214,9 @@ function koi_ria_sync_ga_popular_posts(bool $force = false): array {
     $request->set_query_params([
         'startDate'  => gmdate('Y-m-d', strtotime('-28 days')),
         'endDate'    => gmdate('Y-m-d', strtotime('-1 day')),
-        'metrics'    => [['name' => 'screenPageViews']],
-        'dimensions' => [['name' => 'pagePath']],
-        'orderby'    => [
-            [
-                'metric' => ['metricName' => 'screenPageViews'],
-                'desc'   => true,
-            ],
-        ],
-        'limit'      => 50,
+        'metrics'    => 'screenPageViews',
+        'dimensions' => 'pagePath',
+        'limit'      => '50',
     ]);
 
     $result['debug'][] = 'REST API リクエスト送信: /google-site-kit/v1/modules/analytics-4/data/report';
@@ -348,11 +342,17 @@ function koi_ria_ajax_sync_ga() {
         wp_send_json_error('権限がありません');
     }
 
-    // ロック解除して強制実行
-    delete_transient('koi_ria_ga_sync_lock');
-    $result = koi_ria_sync_ga_popular_posts(true);
-
-    wp_send_json_success($result);
+    try {
+        // ロック解除して強制実行
+        delete_transient('koi_ria_ga_sync_lock');
+        $result = koi_ria_sync_ga_popular_posts(true);
+        wp_send_json_success($result);
+    } catch (\Throwable $e) {
+        wp_send_json_error([
+            'message' => 'PHP例外: ' . $e->getMessage(),
+            'file'    => $e->getFile() . ':' . $e->getLine(),
+        ]);
+    }
 }
 add_action('wp_ajax_koi_ria_sync_ga', 'koi_ria_ajax_sync_ga');
 

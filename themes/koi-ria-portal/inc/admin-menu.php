@@ -22,6 +22,15 @@ function koi_ria_admin_menus(): void {
 
     add_submenu_page(
         'koi-ria-import',
+        'はじめに',
+        'はじめに',
+        'manage_options',
+        'koi-ria-guide',
+        'koi_ria_guide_page'
+    );
+
+    add_submenu_page(
+        'koi-ria-import',
         'CSVインポート',
         'CSVインポート',
         'manage_options',
@@ -55,6 +64,16 @@ function koi_ria_admin_menus(): void {
         'koi-ria-ads',
         'koi_ria_ads_page'
     );
+}
+
+/**
+ * はじめにガイドページ
+ */
+function koi_ria_guide_page(): void {
+    $guide_page = KOI_RIA_DIR . '/admin/getting-started.php';
+    if (file_exists($guide_page)) {
+        require_once $guide_page;
+    }
 }
 
 // 管理画面通知

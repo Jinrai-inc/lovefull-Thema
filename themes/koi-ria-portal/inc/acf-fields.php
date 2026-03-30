@@ -66,13 +66,14 @@ function koi_ria_register_acf_fields(): void {
                 'label' => 'YouTubeチャンネルID',
                 'name'  => 'youtube_channel_id',
                 'type'  => 'text',
-                'instructions' => 'YouTube API自動取得用',
+                'instructions' => 'UCで始まるチャンネルID（例: UCxxxxxxxxxxxxxxxxxxxxxxx）。YouTubeチャンネルページのURLまたは「チャンネルについて」から取得できます。設定するとYouTube動画を自動取得します。',
             ],
             [
                 'key'   => 'field_show_affiliate_url',
                 'label' => 'アフィリエイトURL',
                 'name'  => 'affiliate_url',
                 'type'  => 'url',
+                'instructions' => '番組の公式配信ページへのアフィリエイトリンク（A8.net、もしもアフィリエイト等）',
             ],
             [
                 'key'     => 'field_show_status',
@@ -195,7 +196,7 @@ function koi_ria_register_acf_fields(): void {
                 'label' => '名前（表示用）',
                 'name'  => 'display_name',
                 'type'  => 'text',
-                'instructions' => 'ひらがな等',
+                'instructions' => 'サイト上に表示される名前。空欄の場合はタイトルが使用されます（例: あいり / たくや）',
             ],
             [
                 'key'       => 'field_cast_show',
@@ -222,7 +223,7 @@ function koi_ria_register_acf_fields(): void {
                 'label' => 'Instagram ID',
                 'name'  => 'ig_username',
                 'type'  => 'text',
-                'instructions' => '@なし。例: airi_official',
+                'instructions' => '@なしのユーザー名（例: airi_official）。設定するとプロフィールページにInstagramリンクが表示され、API設定済みの場合はフォロワー数も自動取得されます。',
             ],
             [
                 'key'   => 'field_cast_tiktok_username',
@@ -243,7 +244,7 @@ function koi_ria_register_acf_fields(): void {
                 'label' => 'YouTube チャンネル',
                 'name'  => 'youtube_url',
                 'type'  => 'url',
-                'instructions' => '個人チャンネルがある場合',
+                'instructions' => '出演者の個人YouTubeチャンネルURL（例: https://youtube.com/@username）。プロフィールページにリンクが表示されます。',
             ],
             [
                 'key'          => 'field_cast_profile_image',
@@ -255,11 +256,11 @@ function koi_ria_register_acf_fields(): void {
             ],
             [
                 'key'           => 'field_cast_followers_count',
-                'label'         => 'フォロワー数',
+                'label'         => 'Instagramフォロワー数',
                 'name'          => 'followers_count',
                 'type'          => 'number',
                 'default_value' => 0,
-                'instructions'  => 'IG APIで自動更新',
+                'instructions'  => 'Instagram Graph API設定済みの場合は自動更新されます。手動入力も可能です。',
             ],
             [
                 'key'           => 'field_cast_tiktok_followers',
@@ -660,119 +661,7 @@ function koi_ria_register_acf_fields(): void {
         'style'      => 'default',
     ]);
 
-    // -------------------------------------------------------
-    // カップル（couple）
-    // -------------------------------------------------------
-    acf_add_local_field_group([
-        'key'      => 'group_couple_info',
-        'title'    => 'カップル情報',
-        'fields'   => [
-            [
-                'key'   => 'field_couple_name',
-                'label' => 'カップル名',
-                'name'  => 'couple_name',
-                'type'  => 'text',
-                'instructions' => '例: あいり&たくや',
-            ],
-            [
-                'key'       => 'field_couple_member_a',
-                'label'     => 'メンバーA',
-                'name'      => 'member_a',
-                'type'      => 'relationship',
-                'post_type' => ['cast'],
-                'max'       => 1,
-                'required'  => 1,
-                'return_format' => 'id',
-            ],
-            [
-                'key'       => 'field_couple_member_b',
-                'label'     => 'メンバーB',
-                'name'      => 'member_b',
-                'type'      => 'relationship',
-                'post_type' => ['cast'],
-                'max'       => 1,
-                'required'  => 1,
-                'return_format' => 'id',
-            ],
-            [
-                'key'       => 'field_couple_show',
-                'label'     => '番組',
-                'name'      => 'show',
-                'type'      => 'relationship',
-                'post_type' => ['show'],
-                'max'       => 1,
-                'return_format' => 'id',
-            ],
-            [
-                'key'       => 'field_couple_season',
-                'label'     => 'シーズン',
-                'name'      => 'season',
-                'type'      => 'relationship',
-                'post_type' => ['season'],
-                'max'       => 1,
-                'return_format' => 'id',
-            ],
-            [
-                'key'     => 'field_couple_status',
-                'label'   => 'ステータス',
-                'name'    => 'couple_status',
-                'type'    => 'select',
-                'choices' => [
-                    '交際中' => '交際中',
-                    '破局'   => '破局',
-                    '結婚'   => '結婚',
-                    '不明'   => '不明',
-                ],
-                'default_value' => '不明',
-            ],
-            [
-                'key'        => 'field_couple_timeline',
-                'label'      => 'タイムライン',
-                'name'       => 'timeline',
-                'type'       => 'repeater',
-                'layout'     => 'block',
-                'sub_fields' => [
-                    [
-                        'key'            => 'field_couple_tl_date',
-                        'label'          => '日付',
-                        'name'           => 'date',
-                        'type'           => 'date_picker',
-                        'display_format' => 'Y/m/d',
-                        'return_format'  => 'Y/m/d',
-                    ],
-                    [
-                        'key'     => 'field_couple_tl_event_type',
-                        'label'   => 'イベント種別',
-                        'name'    => 'event_type',
-                        'type'    => 'select',
-                        'choices' => [
-                            '成立'     => '成立',
-                            '交際報告' => '交際報告',
-                            '破局報告' => '破局報告',
-                            '結婚報告' => '結婚報告',
-                            '目撃情報' => '目撃情報',
-                            'SNS投稿'  => 'SNS投稿',
-                        ],
-                    ],
-                    [
-                        'key'   => 'field_couple_tl_event_note',
-                        'label' => 'メモ',
-                        'name'  => 'event_note',
-                        'type'  => 'textarea',
-                        'rows'  => 2,
-                    ],
-                ],
-            ],
-        ],
-        'location' => [
-            [
-                ['param' => 'post_type', 'operator' => '==', 'value' => 'couple'],
-            ],
-        ],
-        'menu_order' => 0,
-        'position'   => 'normal',
-        'style'      => 'default',
-    ]);
+    // （注: カップル情報は group_couple_info で定義済み）
 
     // -------------------------------------------------------
     // YouTube動画（youtube_video）

@@ -201,14 +201,22 @@ if ($season_id) {
         <h2>Instagram</h2>
         <a href="https://instagram.com/<?php echo esc_attr($ig_username); ?>" class="section-header__more" target="_blank" rel="noopener">@<?php echo esc_html($ig_username); ?> →</a>
     </div>
-    <div class="grid-3" id="igGrid" data-ig-user="<?php echo esc_attr($ig_username); ?>">
-        <?php // Instagram Graph API or oEmbed で取得（Phase4で自動化）
-        // 現段階ではプレースホルダー + リンク
-        for ($i = 0; $i < 6; $i++) : ?>
-        <a href="https://instagram.com/<?php echo esc_attr($ig_username); ?>" target="_blank" rel="noopener" style="aspect-ratio:1; background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: #ccc; font-size: 1.5rem; transition: opacity 0.2s;">
-            &#x1F4F7;
-        </a>
-        <?php endfor; ?>
+    <div class="sns-follow-card sns-follow-card--ig">
+        <div class="sns-follow-card__profile">
+            <?php if ($avatar_url) : ?>
+                <img src="<?php echo esc_url($avatar_url); ?>" alt="<?php echo esc_attr($ig_username); ?>" class="sns-follow-card__avatar">
+            <?php else : ?>
+                <div class="sns-follow-card__avatar sns-follow-card__avatar--placeholder">&#x1F4F7;</div>
+            <?php endif; ?>
+            <div class="sns-follow-card__info">
+                <div class="sns-follow-card__username">@<?php echo esc_html($ig_username); ?></div>
+                <?php if ($followers_count) : ?>
+                    <div class="sns-follow-card__followers"><?php echo esc_html(koi_ria_format_number($followers_count)); ?> フォロワー</div>
+                <?php endif; ?>
+            </div>
+        </div>
+        <a href="https://instagram.com/<?php echo esc_attr($ig_username); ?>" class="btn btn--ig sns-follow-card__cta" target="_blank" rel="noopener">Instagramをフォロー</a>
+        <div class="sns-follow-card__note">最新投稿はInstagramでチェック →</div>
     </div>
 </section>
 <?php endif; ?>
@@ -220,13 +228,18 @@ if ($season_id) {
         <h2>TikTok</h2>
         <a href="https://tiktok.com/@<?php echo esc_attr($tiktok_username); ?>" class="section-header__more" target="_blank" rel="noopener">@<?php echo esc_html($tiktok_username); ?> →</a>
     </div>
-    <div class="scroll-x">
-        <?php for ($i = 0; $i < 3; $i++) : ?>
-        <a href="https://tiktok.com/@<?php echo esc_attr($tiktok_username); ?>" target="_blank" rel="noopener" style="min-width:130px; aspect-ratio:9/16; background: linear-gradient(180deg, #000 0%, #25F4EE 100%); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-decoration: none; opacity: 0.3;">
-            <span style="font-size: 2rem;">&#x266B;</span>
-            <small style="margin-top: var(--space-xs); font-size: 0.625rem;">TikTok</small>
-        </a>
-        <?php endfor; ?>
+    <div class="sns-follow-card sns-follow-card--tiktok">
+        <div class="sns-follow-card__profile">
+            <div class="sns-follow-card__tiktok-icon">&#x266B;</div>
+            <div class="sns-follow-card__info">
+                <div class="sns-follow-card__username">@<?php echo esc_html($tiktok_username); ?></div>
+                <?php if ($tiktok_followers) : ?>
+                    <div class="sns-follow-card__followers"><?php echo esc_html(koi_ria_format_number($tiktok_followers)); ?> フォロワー</div>
+                <?php endif; ?>
+            </div>
+        </div>
+        <a href="https://tiktok.com/@<?php echo esc_attr($tiktok_username); ?>" class="btn btn--tiktok sns-follow-card__cta" target="_blank" rel="noopener">TikTokをフォロー</a>
+        <div class="sns-follow-card__note">最新動画はTikTokでチェック →</div>
     </div>
 </section>
 <?php endif; ?>

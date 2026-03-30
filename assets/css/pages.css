@@ -2,16 +2,17 @@
    pages.css — ページ固有スタイル
    ============================================ */
 
-/* --- トップページ: ヒーローカルーセル --- */
+/* --- トップページ: ヒーローカルーセル（黒背景） --- */
 .hero-carousel {
     position: relative;
     overflow: hidden;
+    background: #0a0a0a;
     border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 
 .hero-carousel__track {
     display: flex;
-    transition: transform 0.5s ease;
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .hero-carousel__slide {
@@ -19,12 +20,71 @@
     min-width: 100%;
     aspect-ratio: 16 / 9;
     cursor: pointer;
+    overflow: hidden;
+}
+
+.hero-carousel__slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.15);
+    pointer-events: none;
+    transition: background 0.3s ease;
+}
+
+.hero-carousel__slide:hover::after {
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .hero-carousel__thumb {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.hero-carousel__slide:hover .hero-carousel__thumb {
+    transform: scale(1.03);
+}
+
+.hero-carousel__thumb--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1a1a2e;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* 再生ボタン */
+.hero-carousel__play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(232, 97, 154, 0.85);
+    border-radius: var(--radius-circle);
+    color: #fff;
+    z-index: 2;
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 20px rgba(232, 97, 154, 0.4);
+}
+
+.hero-carousel__slide:hover .hero-carousel__play-btn {
+    transform: translate(-50%, -50%) scale(1.1);
+    background: rgba(232, 97, 154, 1);
+    box-shadow: 0 6px 28px rgba(232, 97, 154, 0.5);
+}
+
+/* iframe 再生中は再生ボタンを隠す */
+.hero-carousel__slide.is-playing .hero-carousel__play-btn,
+.hero-carousel__slide.is-playing .hero-carousel__overlay,
+.hero-carousel__slide.is-playing::after {
+    display: none;
 }
 
 .hero-carousel__overlay {
@@ -32,44 +92,148 @@
     bottom: 0;
     left: 0;
     right: 0;
-    padding: var(--space-lg) var(--space-md) var(--space-md);
-    background: linear-gradient(transparent, rgba(45, 27, 51, 0.75));
+    padding: var(--space-2xl) var(--space-md) var(--space-md);
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
     color: #fff;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.hero-carousel__badges {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.hero-carousel__badges .badge--pinned {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(232, 97, 154, 0.9);
+    color: #fff;
+    font-size: 0.625rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
 }
 
 .hero-carousel__title {
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     font-weight: 700;
     line-height: 1.4;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
+.hero-carousel__channel {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.6875rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 4px;
+}
+
+/* 左右矢印ナビ */
+.hero-carousel__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-circle);
+    color: #fff;
+    cursor: pointer;
+    z-index: 3;
+    transition: background 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+}
+
+.hero-carousel:hover .hero-carousel__arrow {
+    opacity: 1;
+}
+
+.hero-carousel__arrow:hover {
+    background: rgba(232, 97, 154, 0.7);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.hero-carousel__arrow--prev {
+    left: 12px;
+}
+.hero-carousel__arrow--prev svg {
+    transform: rotate(180deg);
+}
+
+.hero-carousel__arrow--next {
+    right: 12px;
+}
+
+/* ドットインジケーター */
 .hero-carousel__dots {
     position: absolute;
-    bottom: var(--space-sm);
+    bottom: 12px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     gap: 6px;
+    z-index: 3;
 }
 
 .hero-carousel__dot {
     width: 8px;
     height: 8px;
     border-radius: var(--radius-circle);
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.35);
     border: none;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .hero-carousel__dot.is-active {
-    width: 20px;
+    width: 24px;
     border-radius: 4px;
-    background: #fff;
+    background: var(--color-primary);
+    box-shadow: 0 0 8px rgba(232, 97, 154, 0.5);
+}
+
+/* スライドカウンター */
+.hero-carousel__counter {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    padding: 2px 10px;
+    border-radius: var(--radius-pill);
+    z-index: 3;
+}
+
+/* モバイルでは矢印を常に表示 */
+@media (max-width: 768px) {
+    .hero-carousel__arrow {
+        opacity: 1;
+        width: 34px;
+        height: 34px;
+    }
+    .hero-carousel__arrow--prev { left: 8px; }
+    .hero-carousel__arrow--next { right: 8px; }
+    .hero-carousel__play-btn {
+        width: 48px;
+        height: 48px;
+    }
 }
 
 /* --- 速報バー --- */

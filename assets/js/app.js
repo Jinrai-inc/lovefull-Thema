@@ -19,36 +19,58 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =============================================
-    // ヒーローカルーセル
+    // ヒーローカルーセル（黒背景スライダー + 自動再生）
     // =============================================
     const heroTrack = document.getElementById('heroTrack');
     const heroDots = document.getElementById('heroDots');
+    const heroCounter = document.getElementById('heroCounterCurrent');
+    const heroPrev = document.getElementById('heroPrev');
+    const heroNext = document.getElementById('heroNext');
+
     if (heroTrack && heroDots) {
         const slides = heroTrack.querySelectorAll('.hero-carousel__slide');
         const dots = heroDots.querySelectorAll('.hero-carousel__dot');
         let current = 0;
         let autoSlideTimer;
+        const AUTO_SLIDE_INTERVAL = 5000;
 
         function goToSlide(index) {
+            // ループ対応
+            if (index < 0) index = slides.length - 1;
+            if (index >= slides.length) index = 0;
+
             current = index;
             heroTrack.style.transform = `translateX(-${current * 100}%)`;
+
+            // ドット更新
             dots.forEach((dot, i) => {
                 dot.classList.toggle('is-active', i === current);
             });
+
+            // カウンター更新
+            if (heroCounter) {
+                heroCounter.textContent = current + 1;
+            }
         }
 
         function nextSlide() {
-            goToSlide((current + 1) % slides.length);
+            goToSlide(current + 1);
+        }
+
+        function prevSlide() {
+            goToSlide(current - 1);
         }
 
         function startAutoSlide() {
-            autoSlideTimer = setInterval(nextSlide, 6000);
+            stopAutoSlide();
+            autoSlideTimer = setInterval(nextSlide, AUTO_SLIDE_INTERVAL);
         }
 
         function stopAutoSlide() {
             clearInterval(autoSlideTimer);
         }
 
+        // ドットナビ
         dots.forEach(dot => {
             dot.addEventListener('click', () => {
                 stopAutoSlide();
@@ -57,42 +79,86 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
+        // 矢印ナビ
+        if (heroPrev) {
+            heroPrev.addEventListener('click', () => {
+                stopAutoSlide();
+                prevSlide();
+                startAutoSlide();
+            });
+        }
+        if (heroNext) {
+            heroNext.addEventListener('click', () => {
+                stopAutoSlide();
+                nextSlide();
+                startAutoSlide();
+            });
+        }
+
         // YouTube iframe 埋め込み再生
         slides.forEach(slide => {
             slide.addEventListener('click', () => {
                 const videoId = slide.dataset.videoId;
-                if (!videoId) return;
+                if (!videoId || slide.classList.contains('is-playing')) return;
+
                 stopAutoSlide();
-                slide.innerHTML = `<iframe
-                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0"
-                    style="width:100%;height:100%;border:none;"
-                    allow="autoplay; encrypted-media"
-                    allowfullscreen></iframe>`;
+                slide.classList.add('is-playing');
+
+                const iframe = document.createElement('iframe');
+                iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+                iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none;z-index:5;';
+                iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
+                iframe.allowFullscreen = true;
+                slide.appendChild(iframe);
             });
         });
 
+        // 自動スライド開始
         if (slides.length > 1) {
             startAutoSlide();
         }
 
-        // タッチスワイプ
+        // マウスホバーで一時停止
+        const carousel = document.getElementById('heroCarousel');
+        if (carousel) {
+            carousel.addEventListener('mouseenter', stopAutoSlide);
+            carousel.addEventListener('mouseleave', () => {
+                if (slides.length > 1) startAutoSlide();
+            });
+        }
+
+        // タッチスワイプ（ループ対応）
         let touchStartX = 0;
+        let touchStartY = 0;
         heroTrack.addEventListener('touchstart', (e) => {
             touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
             stopAutoSlide();
         }, { passive: true });
 
         heroTrack.addEventListener('touchend', (e) => {
-            const diff = touchStartX - e.changedTouches[0].clientX;
-            if (Math.abs(diff) > 50) {
-                if (diff > 0 && current < slides.length - 1) {
-                    goToSlide(current + 1);
-                } else if (diff < 0 && current > 0) {
-                    goToSlide(current - 1);
+            const diffX = touchStartX - e.changedTouches[0].clientX;
+            const diffY = touchStartY - e.changedTouches[0].clientY;
+
+            // 水平スワイプのみ反応（縦スクロールと区別）
+            if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
+                if (diffX > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
                 }
             }
-            startAutoSlide();
+            if (slides.length > 1) startAutoSlide();
         }, { passive: true });
+
+        // キーボードナビ（フォーカス時）
+        if (carousel) {
+            carousel.setAttribute('tabindex', '0');
+            carousel.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') { stopAutoSlide(); prevSlide(); startAutoSlide(); }
+                if (e.key === 'ArrowRight') { stopAutoSlide(); nextSlide(); startAutoSlide(); }
+            });
+        }
     }
 
     // =============================================

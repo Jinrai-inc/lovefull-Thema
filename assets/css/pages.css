@@ -553,6 +553,7 @@
 .section--schedule .scroll-x {
     display: flex;
     gap: var(--space-sm);
+    padding-top: 14px;
 }
 
 .schedule-card {

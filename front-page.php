@@ -139,14 +139,11 @@ if ($breaking) :
     </div>
     <div>
         <?php
-        $column_cat_id = get_cat_ID('column');
         $news_args = [
             'post_type'      => 'post',
             'posts_per_page' => 3,
+            'category_name'  => 'news',
         ];
-        if ($column_cat_id) {
-            $news_args['category__not_in'] = [$column_cat_id];
-        }
         $news = get_posts($news_args);
         foreach ($news as $post) :
             setup_postdata($post);

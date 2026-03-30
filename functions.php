@@ -385,6 +385,7 @@ $koi_ria_includes = [
     'inc/seo-helpers.php',
     'inc/legal-pages.php',
     'inc/admin-menu.php',
+    'inc/popular-posts.php',
 ];
 
 foreach ($koi_ria_includes as $file) {
@@ -407,15 +408,4 @@ function koi_ria_format_number(int $num): string {
     return (string) $num;
 }
 
-/**
- * 閲覧数カウンター（post_views_count メタ）
- */
-function koi_ria_track_post_views() {
-    if (is_single() && !is_admin() && get_post_type() === 'post') {
-        $post_id = get_the_ID();
-        if (!$post_id) return;
-        $count = (int) get_post_meta($post_id, 'post_views_count', true);
-        update_post_meta($post_id, 'post_views_count', $count + 1);
-    }
-}
-add_action('wp_head', 'koi_ria_track_post_views');
+// 閲覧数カウンター・GA連携は inc/popular-posts.php に移動

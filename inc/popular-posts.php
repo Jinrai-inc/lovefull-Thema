@@ -108,48 +108,73 @@ function koi_ria_resolve_post_id_from_path(string $path): int {
 
 /**
  * Site Kit GA4 レスポンスから rows を抽出（複数フォーマット対応）
+ *
+ * Site Kit は Google\Service\AnalyticsData\Row オブジェクトの配列、
+ * または連想配列など複数形式で返す可能性がある。
  */
 function koi_ria_parse_ga_rows($data): array {
-    $rows = [];
-
-    // フォーマット1: { rows: [...] }
-    if (isset($data['rows']) && is_array($data['rows'])) {
-        return $data['rows'];
-    }
-
-    // フォーマット2: 直接配列 [{ dimensionValues, metricValues }, ...]
-    if (is_array($data) && !isset($data['error'])) {
-        foreach ($data as $key => $item) {
-            if (is_numeric($key) && is_array($item)) {
-                if (isset($item['dimensionValues']) || isset($item['pagePath'])) {
-                    $rows[] = $item;
-                }
+    // データが直接イテレート可能な配列/オブジェクトリスト（Site Kit の主形式）
+    if (is_array($data)) {
+        // rows キー配下
+        if (isset($data['rows'])) {
+            $rows = $data['rows'];
+            if (is_array($rows) || $rows instanceof \Traversable) {
+                return is_array($rows) ? $rows : iterator_to_array($rows);
             }
         }
-        if (!empty($rows)) {
-            return $rows;
+
+        // data.rows
+        if (isset($data['data']['rows'])) {
+            $rows = $data['data']['rows'];
+            return is_array($rows) ? $rows : iterator_to_array($rows);
+        }
+
+        // 直接配列（数値キー）
+        $first_key = array_key_first($data);
+        if (is_int($first_key)) {
+            return $data;
         }
     }
 
-    // フォーマット3: { data: { rows: [...] } }
-    if (isset($data['data']['rows']) && is_array($data['data']['rows'])) {
-        return $data['data']['rows'];
-    }
-
-    // フォーマット4: { report: { rows: [...] } }
-    if (isset($data['report']['rows']) && is_array($data['report']['rows'])) {
-        return $data['report']['rows'];
-    }
-
-    return $rows;
+    return [];
 }
 
 /**
  * GA行データからパスとPVを抽出
+ *
+ * $row は配列または Google\Service\AnalyticsData\Row オブジェクト
  */
-function koi_ria_extract_path_views(array $row): array {
+function koi_ria_extract_path_views($row): array {
     $path  = '';
     $views = 0;
+
+    // Site Kit の Row オブジェクト（getDimensionValues / getMetricValues メソッド）
+    if (is_object($row)) {
+        // Google\Service\AnalyticsData\Row
+        if (method_exists($row, 'getDimensionValues')) {
+            $dims = $row->getDimensionValues();
+            $mets = $row->getMetricValues();
+            if (!empty($dims)) {
+                $dim = $dims[0];
+                $path = is_object($dim) && method_exists($dim, 'getValue') ? $dim->getValue() : (string) $dim;
+            }
+            if (!empty($mets)) {
+                $met = $mets[0];
+                $views = (int) (is_object($met) && method_exists($met, 'getValue') ? $met->getValue() : (string) $met);
+            }
+        }
+        // オブジェクトをプロパティアクセス
+        elseif (isset($row->dimensionValues)) {
+            $path  = $row->dimensionValues[0]->value ?? '';
+            $views = (int) ($row->metricValues[0]->value ?? 0);
+        }
+        return ['path' => $path, 'views' => $views];
+    }
+
+    // 以下は配列形式のフォールバック
+    if (!is_array($row)) {
+        return ['path' => $path, 'views' => $views];
+    }
 
     // パターン1: dimensionValues / metricValues（GA4 API形式）
     if (isset($row['dimensionValues'][0]['value'])) {

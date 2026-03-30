@@ -92,19 +92,21 @@ function koi_ria_cron_refresh_avatars(): array {
     return ['updated' => $success, 'skipped' => $skipped, 'errors' => $failed];
 }
 
-// 手動実行: アバター一括更新
+// 手動実行: アバター一括更新（バックグラウンド）
 add_action('admin_post_koi_ria_manual_avatar_refresh', function () {
     if (!current_user_can('manage_options')) {
         wp_die('権限がありません');
     }
     check_admin_referer('koi_ria_manual_cron');
 
-    $result = koi_ria_cron_refresh_avatars();
+    // バックグラウンドで実行（即座にリダイレクト）
+    wp_schedule_single_event(time(), 'koi_ria_refresh_all_avatars');
+    spawn_cron();
 
     set_transient('koi_ria_admin_notice', [
-        'type'    => 'success',
-        'message' => "アバター更新完了: 更新 {$result['updated']}件 / スキップ {$result['skipped']}件 / エラー {$result['errors']}件",
-    ], 30);
+        'type'    => 'info',
+        'message' => 'アバター更新をバックグラウンドで開始しました。数分後にこのページを再読み込みして結果を確認してください。',
+    ], 60);
 
     wp_redirect(admin_url('admin.php?page=koi-ria-cron'));
     exit;

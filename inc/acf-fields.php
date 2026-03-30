@@ -10,7 +10,10 @@
 
 defined('ABSPATH') || exit;
 
-add_action('acf/init', 'koi_ria_register_acf_fields');
+// ACF PRO がインストールされている場合のみフィールド登録
+if (function_exists('acf_add_local_field_group') || class_exists('ACF')) {
+    add_action('acf/init', 'koi_ria_register_acf_fields');
+}
 
 function koi_ria_register_acf_fields(): void {
     if (! function_exists('acf_add_local_field_group')) {

@@ -61,11 +61,12 @@ function koi_ria_handle_csv_import(): array {
         $row = array_combine($headers, array_map('trim', $data));
 
         $result = match ($type) {
-            'show'     => koi_ria_upsert_show($row, $mode),
-            'season'   => koi_ria_upsert_season($row, $mode),
-            'cast'     => koi_ria_upsert_cast($row, $mode),
-            'relation' => koi_ria_upsert_relation($row, $mode),
-            default    => ['status' => 'error', 'message' => "不明なインポートタイプ: {$type}"],
+            'show'          => koi_ria_upsert_show($row, $mode),
+            'season'        => koi_ria_upsert_season($row, $mode),
+            'cast'          => koi_ria_upsert_cast($row, $mode),
+            'relation'      => koi_ria_upsert_relation($row, $mode),
+            'youtube_video' => koi_ria_upsert_youtube_video($row, $mode),
+            default         => ['status' => 'error', 'message' => "不明なインポートタイプ: {$type}"],
         };
 
         switch ($result['status']) {

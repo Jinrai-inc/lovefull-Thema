@@ -118,12 +118,15 @@ function koi_ria_upsert_cast(array $row, string $mode = 'upsert'): array {
         return ['status' => 'error', 'message' => "シーズン {$row['season_name']} が見つかりません"];
     }
 
+    // Use display_name if provided, otherwise fall back to name
+    $display = $row['display_name'] ?? $row['name'] ?? '';
+
     $existing = get_posts([
         'post_type'      => 'cast',
         'meta_query'     => [
             ['key' => 'show', 'value' => $show->ID],
             ['key' => 'season', 'value' => $season->ID],
-            ['key' => 'display_name', 'value' => $row['name'] ?? ''],
+            ['key' => 'display_name', 'value' => $display],
         ],
         'posts_per_page' => 1,
     ]);
@@ -144,12 +147,12 @@ function koi_ria_upsert_cast(array $row, string $mode = 'upsert'): array {
         if (is_wp_error($post_id)) {
             return ['status' => 'error', 'message' => $post_id->get_error_message()];
         }
-        update_field('display_name', $row['name'] ?? '', $post_id);
+        update_field('display_name', $display, $post_id);
         update_field('show', $show->ID, $post_id);
         update_field('season', $season->ID, $post_id);
     }
 
-    $fields = ['ig_username', 'tiktok_username', 'x_username', 'role', 'gender', 'age', 'from_area'];
+    $fields = ['ig_username', 'tiktok_username', 'x_username', 'youtube_url', 'role', 'gender', 'age', 'from_area', 'cast_status'];
     foreach ($fields as $field) {
         if (isset($row[$field]) && $row[$field] !== '') {
             update_field($field, $row[$field], $post_id);
@@ -244,6 +247,66 @@ function koi_ria_upsert_relation(array $row, string $mode = 'upsert'): array {
     }
     if (isset($row['label']) && $row['label'] !== '') {
         update_field('relation_label', $row['label'], $post_id);
+    }
+
+    return ['status' => $existing ? 'updated' : 'created'];
+}
+
+/**
+ * YouTube動画 UPSERT
+ */
+function koi_ria_upsert_youtube_video(array $row, string $mode = 'upsert'): array {
+    $video_url = $row['url'] ?? $row['video_url'] ?? '';
+    $video_id  = $row['video_id'] ?? '';
+
+    // Auto-extract video ID from URL if not provided
+    if (!$video_id && $video_url) {
+        if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/', $video_url, $m)) {
+            $video_id = $m[1];
+        }
+    }
+
+    if (!$video_id) {
+        return ['status' => 'error', 'message' => 'video_idまたはURLが必要です'];
+    }
+
+    // Check for existing
+    $existing = get_posts([
+        'post_type'      => 'youtube_video',
+        'meta_query'     => [['key' => 'video_id', 'value' => $video_id]],
+        'posts_per_page' => 1,
+    ]);
+
+    if ($existing && $mode === 'add') {
+        return ['status' => 'skipped'];
+    }
+
+    $title = $row['title'] ?? 'YouTube: ' . $video_id;
+
+    if ($existing) {
+        $post_id = $existing[0]->ID;
+        wp_update_post(['ID' => $post_id, 'post_title' => $title]);
+    } else {
+        $post_id = wp_insert_post([
+            'post_type'   => 'youtube_video',
+            'post_title'  => $title,
+            'post_status' => 'publish',
+        ]);
+        if (is_wp_error($post_id)) {
+            return ['status' => 'error', 'message' => $post_id->get_error_message()];
+        }
+    }
+
+    update_field('video_id', $video_id, $post_id);
+    if (isset($row['channel_name'])) {
+        update_field('channel_name', $row['channel_name'], $post_id);
+    }
+    if (isset($row['thumbnail_url'])) {
+        update_field('thumbnail_url', $row['thumbnail_url'], $post_id);
+    }
+    // Auto-generate thumbnail if not provided
+    if (!get_field('thumbnail_url', $post_id)) {
+        update_field('thumbnail_url', 'https://img.youtube.com/vi/' . $video_id . '/hqdefault.jpg', $post_id);
     }
 
     return ['status' => $existing ? 'updated' : 'created'];

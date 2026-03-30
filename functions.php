@@ -12,26 +12,33 @@ define('KOI_RIA_DIR', get_template_directory());
 define('KOI_RIA_URI', get_template_directory_uri());
 
 /**
- * ACF が未インストールの場合のフォールバック
- * get_field() が存在しないと Fatal Error になるため、ダミー関数を定義
+ * ACF互換レイヤー — ACF PRO未インストール時のフォールバック
+ * get_field() / update_field() をpost_metaで代替
  */
 if (! function_exists('get_field')) {
     function get_field(string $selector, $post_id = false, bool $format_value = true) {
-        return null;
+        if (!$post_id) {
+            $post_id = get_the_ID();
+        }
+        if (is_array($post_id)) {
+            $post_id = $post_id[0] ?? 0;
+        }
+        $value = get_post_meta($post_id, $selector, true);
+        return $value !== '' ? $value : null;
     }
 }
 
-/**
- * ACF Pro が必要である旨の管理画面通知
- */
-add_action('admin_notices', function () {
-    if (class_exists('ACF')) {
-        return;
+if (! function_exists('update_field')) {
+    function update_field(string $selector, $value, $post_id = false): bool {
+        if (!$post_id) {
+            $post_id = get_the_ID();
+        }
+        if (is_array($post_id)) {
+            $post_id = $post_id[0] ?? 0;
+        }
+        return (bool) update_post_meta($post_id, $selector, $value);
     }
-    echo '<div class="notice notice-warning is-dismissible"><p>';
-    echo '<strong>恋リアポータル:</strong> このテーマはカスタムフィールドの管理に <strong>Advanced Custom Fields PRO</strong> プラグインが必要です。インストール・有効化してください。';
-    echo '</p></div>';
-});
+}
 
 /**
  * テーマセットアップ
@@ -186,6 +193,7 @@ add_action('wp_head', function () {
  */
 $koi_ria_includes = [
     'inc/svg-icons.php',
+    'inc/metaboxes.php',
     'inc/cpt-register.php',
     'inc/acf-fields.php',
     'inc/rest-api.php',

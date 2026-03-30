@@ -9,6 +9,8 @@
 
 defined('ABSPATH') || exit;
 
+// 設定は koi_ria_get_popular_posts() 内で自動適用される
+// 引数はデフォルト値（管理画面設定が優先される）
 $column_cat_id   = get_cat_ID('column');
 $koiria_cat_id   = 51; // 恋愛リアリティーショーカテゴリ
 $exclude_cats    = $column_cat_id ? [$column_cat_id] : [];
@@ -26,7 +28,7 @@ $has_ga   = !empty($pv_map);
 
 <section class="section section--popular">
     <div class="section-header">
-        <h2><?php echo koi_ria_icon('fire', 22); ?> 人気記事トップ3</h2>
+        <h2><?php echo koi_ria_icon('fire', 22); ?> 人気記事トップ<?php echo count($popular_posts); ?></h2>
     </div>
 
     <div class="popular-ranking" style="padding: 0 var(--space-md);">

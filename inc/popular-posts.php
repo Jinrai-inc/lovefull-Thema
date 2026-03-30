@@ -174,6 +174,37 @@ add_action('admin_init', 'koi_ria_sync_ga_popular_posts');
  */
 function koi_ria_get_popular_posts($count = 3, $exclude_cat_ids = [], $priority_cat_id = 0) {
 
+    // 管理画面の設定を適用
+    $popular_settings = get_option('koi_ria_popular_settings', []);
+
+    if (!empty($popular_settings)) {
+        if (isset($popular_settings['count'])) {
+            $count = (int) $popular_settings['count'];
+        }
+        if (isset($popular_settings['priority_cat_id'])) {
+            $priority_cat_id = (int) $popular_settings['priority_cat_id'];
+        }
+        if (isset($popular_settings['exclude_cats']) && is_array($popular_settings['exclude_cats'])) {
+            $exclude_cat_ids = $popular_settings['exclude_cats'];
+        }
+    }
+
+    // 手動モード: 設定された記事をそのまま返す
+    if (($popular_settings['mode'] ?? 'auto') === 'manual' && !empty($popular_settings['manual_post_ids'])) {
+        $manual_ids = array_slice($popular_settings['manual_post_ids'], 0, $count);
+        $posts = get_posts([
+            'post_type'      => 'post',
+            'post__in'       => $manual_ids,
+            'orderby'        => 'post__in',
+            'posts_per_page' => $count,
+            'post_status'    => 'publish',
+        ]);
+        if (!empty($posts)) {
+            return $posts;
+        }
+        // 手動記事が全部非公開の場合はフォールバックで自動モードへ
+    }
+
     // 共通: カテゴリ除外フィルタ
     $filter_excluded = function ($ids) use ($exclude_cat_ids) {
         if (empty($exclude_cat_ids)) {
@@ -299,6 +330,46 @@ function koi_ria_get_popular_posts($count = 3, $exclude_cat_ids = [], $priority_
     }
     return get_posts($fallback);
 }
+
+/**
+ * AJAX: 記事検索（人気記事設定用）
+ */
+function koi_ria_ajax_search_posts() {
+    check_ajax_referer('koi_ria_search_posts', 'nonce');
+
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error('permission denied');
+    }
+
+    $q = sanitize_text_field($_POST['q'] ?? '');
+    if (mb_strlen($q) < 1) {
+        wp_send_json_success([]);
+    }
+
+    $posts = get_posts([
+        'post_type'      => 'post',
+        'posts_per_page' => 20,
+        's'              => $q,
+        'post_status'    => 'publish',
+        'orderby'        => 'relevance',
+    ]);
+
+    $results = [];
+    foreach ($posts as $p) {
+        $cats = get_the_category($p->ID);
+        $results[] = [
+            'id'    => $p->ID,
+            'title' => $p->post_title,
+            'thumb' => get_the_post_thumbnail_url($p, 'thumbnail') ?: '',
+            'cat'   => $cats ? $cats[0]->name : '',
+            'pv'    => (int) get_post_meta($p->ID, 'post_views_count', true),
+            'date'  => get_the_date('Y-m-d', $p),
+        ];
+    }
+
+    wp_send_json_success($results);
+}
+add_action('wp_ajax_koi_ria_search_posts', 'koi_ria_ajax_search_posts');
 
 /**
  * 管理画面に同期ステータスを表示

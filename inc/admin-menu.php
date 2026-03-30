@@ -67,6 +67,15 @@ function koi_ria_admin_menus(): void {
 
     add_submenu_page(
         'koi-ria-import',
+        '人気記事設定',
+        '人気記事設定',
+        'manage_options',
+        'koi-ria-popular',
+        'koi_ria_popular_page'
+    );
+
+    add_submenu_page(
+        'koi-ria-import',
         '表示設定',
         '表示設定',
         'manage_options',
@@ -501,6 +510,370 @@ function koi_ria_ads_page(): void {
             '<td><input type="text" name="affiliate_color[]" class="regular-text" placeholder="linear-gradient(135deg, #xxx, #yyy)"></td>';
         tbody.appendChild(row);
     }
+    </script>
+    <?php
+}
+
+/**
+ * 人気記事設定ページ
+ */
+function koi_ria_popular_page(): void {
+    // 保存処理
+    if (isset($_POST['koi_ria_popular_nonce']) && wp_verify_nonce($_POST['koi_ria_popular_nonce'], 'koi_ria_save_popular')) {
+        $mode  = in_array($_POST['popular_mode'] ?? '', ['auto', 'manual'], true) ? $_POST['popular_mode'] : 'auto';
+        $count = max(1, min(10, intval($_POST['popular_count'] ?? 3)));
+
+        $priority_cat_id = intval($_POST['priority_cat_id'] ?? 0);
+
+        $exclude_cats = [];
+        if (!empty($_POST['exclude_cats']) && is_array($_POST['exclude_cats'])) {
+            $exclude_cats = array_map('intval', $_POST['exclude_cats']);
+        }
+
+        $manual_ids = [];
+        if (!empty($_POST['manual_post_ids'])) {
+            $raw_ids = array_map('intval', explode(',', sanitize_text_field($_POST['manual_post_ids'])));
+            foreach ($raw_ids as $pid) {
+                if ($pid > 0 && get_post_type($pid) === 'post') {
+                    $manual_ids[] = $pid;
+                }
+            }
+        }
+
+        $settings = [
+            'mode'            => $mode,
+            'count'           => $count,
+            'priority_cat_id' => $priority_cat_id,
+            'exclude_cats'    => $exclude_cats,
+            'manual_post_ids' => $manual_ids,
+        ];
+        update_option('koi_ria_popular_settings', $settings);
+        echo '<div class="notice notice-success"><p>人気記事設定を保存しました。</p></div>';
+    }
+
+    $settings = get_option('koi_ria_popular_settings', []);
+    $mode            = $settings['mode'] ?? 'auto';
+    $count           = $settings['count'] ?? 3;
+    $priority_cat_id = $settings['priority_cat_id'] ?? 0;
+    $exclude_cats    = $settings['exclude_cats'] ?? [];
+    $manual_ids      = $settings['manual_post_ids'] ?? [];
+
+    // GA同期ステータス
+    $ga_status   = get_option('koi_ria_ga_sync_status', '');
+    $ga_time     = get_option('koi_ria_ga_sync_time', '');
+    $ga_pv_map   = get_option('koi_ria_ga_popular_pv_map', []);
+
+    // カテゴリ一覧
+    $categories = get_categories(['hide_empty' => false]);
+
+    // 手動選択中の記事情報
+    $manual_posts = [];
+    if (!empty($manual_ids)) {
+        $manual_posts = get_posts([
+            'post_type'      => 'post',
+            'post__in'       => $manual_ids,
+            'orderby'        => 'post__in',
+            'posts_per_page' => count($manual_ids),
+            'post_status'    => 'any',
+        ]);
+    }
+    ?>
+    <style>
+    .koi-popular-wrap { max-width: 900px; }
+    .koi-mode-box { background: #fff; border: 1px solid #c3c4c7; border-radius: 4px; padding: 20px; margin-bottom: 20px; }
+    .koi-mode-box.is-active { border-color: #e8619a; border-width: 2px; }
+    .koi-mode-box h3 { margin: 0 0 10px; }
+    .koi-mode-box .mode-radio { margin-right: 8px; }
+    .koi-manual-list { margin: 16px 0; min-height: 50px; }
+    .koi-manual-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px; }
+    .koi-manual-item .drag-handle { cursor: grab; color: #999; font-size: 18px; }
+    .koi-manual-item .item-thumb { width: 60px; height: 40px; object-fit: cover; border-radius: 3px; background: #eee; }
+    .koi-manual-item .item-info { flex: 1; }
+    .koi-manual-item .item-title { font-weight: 600; font-size: 14px; }
+    .koi-manual-item .item-meta { color: #666; font-size: 12px; margin-top: 2px; }
+    .koi-manual-item .item-remove { color: #d63638; cursor: pointer; border: none; background: none; font-size: 18px; }
+    .koi-search-box { margin-top: 12px; display: flex; gap: 8px; }
+    .koi-search-box input { flex: 1; }
+    .koi-search-results { max-height: 240px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; margin-top: 8px; display: none; }
+    .koi-search-results .search-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; }
+    .koi-search-results .search-item:hover { background: #fff0f5; }
+    .koi-search-results .search-item img { width: 50px; height: 34px; object-fit: cover; border-radius: 3px; }
+    .koi-search-results .search-item .s-title { font-size: 13px; font-weight: 500; }
+    .koi-search-results .search-item .s-date { font-size: 11px; color: #888; }
+    .koi-ga-status { padding: 12px 16px; border-radius: 4px; margin-bottom: 16px; font-size: 13px; }
+    .koi-ga-status.ok { background: #edfaef; border: 1px solid #b8e6c0; }
+    .koi-ga-status.ng { background: #fef7e8; border: 1px solid #e6d5a8; }
+    </style>
+
+    <div class="wrap koi-popular-wrap">
+        <h1>人気記事設定</h1>
+        <p>トップページの「人気記事トップN」セクションの表示方法を設定します。</p>
+
+        <?php if ($ga_status === 'ok' && $ga_time) : ?>
+        <div class="koi-ga-status ok">
+            Google Analytics PVデータ: <strong>同期済み</strong>（<?php echo esc_html($ga_time); ?>、<?php echo count($ga_pv_map); ?>記事）
+        </div>
+        <?php elseif (class_exists('Google\Site_Kit\Plugin')) : ?>
+        <div class="koi-ga-status ng">
+            Google Analytics: <strong>未同期</strong><?php echo $ga_status ? '（' . esc_html($ga_status) . '）' : ''; ?>
+            — 管理画面を読み込むと6時間ごとに自動同期します
+        </div>
+        <?php else : ?>
+        <div class="koi-ga-status ng">
+            Site Kit プラグインが未インストールです。自動モードではAJAX閲覧数カウンターを使用します。
+        </div>
+        <?php endif; ?>
+
+        <form method="post" id="popularForm">
+            <?php wp_nonce_field('koi_ria_save_popular', 'koi_ria_popular_nonce'); ?>
+
+            <!-- 表示件数 -->
+            <table class="form-table">
+                <tr>
+                    <th><label for="popular_count">表示件数</label></th>
+                    <td>
+                        <input type="number" id="popular_count" name="popular_count" value="<?php echo esc_attr($count); ?>" min="1" max="10" style="width: 70px;">
+                        <span>件（1〜10）</span>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- モード選択 -->
+            <div class="koi-mode-box <?php echo $mode === 'auto' ? 'is-active' : ''; ?>" id="modeAuto">
+                <h3>
+                    <label>
+                        <input type="radio" name="popular_mode" value="auto" class="mode-radio" <?php checked($mode, 'auto'); ?>>
+                        自動モード（GA / 閲覧数ベース）
+                    </label>
+                </h3>
+                <p style="margin: 0 0 12px; color: #666;">Google Analytics のPVデータまたはAJAX閲覧数カウンターから自動でランキングを生成します。</p>
+
+                <table class="form-table" style="margin: 0;">
+                    <tr>
+                        <th><label for="priority_cat_id">優先カテゴリ</label></th>
+                        <td>
+                            <select id="priority_cat_id" name="priority_cat_id">
+                                <option value="0">なし</option>
+                                <?php foreach ($categories as $cat) : ?>
+                                <option value="<?php echo esc_attr($cat->term_id); ?>" <?php selected($priority_cat_id, $cat->term_id); ?>>
+                                    <?php echo esc_html($cat->name); ?>（<?php echo esc_html($cat->slug); ?> / ID:<?php echo $cat->term_id; ?>）
+                                </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <p class="description">このカテゴリの記事が優先的に上位表示されます</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>除外カテゴリ</th>
+                        <td>
+                            <?php foreach ($categories as $cat) : ?>
+                            <label style="display: inline-block; margin-right: 14px; margin-bottom: 4px;">
+                                <input type="checkbox" name="exclude_cats[]" value="<?php echo esc_attr($cat->term_id); ?>" <?php checked(in_array($cat->term_id, $exclude_cats)); ?>>
+                                <?php echo esc_html($cat->name); ?>
+                            </label>
+                            <?php endforeach; ?>
+                            <p class="description">チェックしたカテゴリの記事はランキングに含まれません</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="koi-mode-box <?php echo $mode === 'manual' ? 'is-active' : ''; ?>" id="modeManual">
+                <h3>
+                    <label>
+                        <input type="radio" name="popular_mode" value="manual" class="mode-radio" <?php checked($mode, 'manual'); ?>>
+                        手動モード（記事を自由に選択）
+                    </label>
+                </h3>
+                <p style="margin: 0 0 12px; color: #666;">表示する記事と順番を手動で設定します。ドラッグで並び替え可能です。</p>
+
+                <input type="hidden" name="manual_post_ids" id="manualPostIds" value="<?php echo esc_attr(implode(',', $manual_ids)); ?>">
+
+                <div class="koi-manual-list" id="manualList">
+                    <?php if (empty($manual_posts)) : ?>
+                        <p style="color: #999; text-align: center; padding: 20px;" id="emptyMsg">記事が選択されていません。下の検索から追加してください。</p>
+                    <?php else : ?>
+                        <?php foreach ($manual_posts as $mp) :
+                            $thumb = get_the_post_thumbnail_url($mp, 'thumbnail') ?: '';
+                            $cats  = get_the_category($mp->ID);
+                            $cat_label = $cats ? $cats[0]->name : '';
+                            $pv = (int) get_post_meta($mp->ID, 'post_views_count', true);
+                        ?>
+                        <div class="koi-manual-item" data-id="<?php echo esc_attr($mp->ID); ?>">
+                            <span class="drag-handle">&#9776;</span>
+                            <?php if ($thumb) : ?>
+                                <img src="<?php echo esc_url($thumb); ?>" class="item-thumb" alt="">
+                            <?php else : ?>
+                                <span class="item-thumb"></span>
+                            <?php endif; ?>
+                            <div class="item-info">
+                                <div class="item-title"><?php echo esc_html($mp->post_title); ?></div>
+                                <div class="item-meta">
+                                    ID:<?php echo $mp->ID; ?>
+                                    <?php if ($cat_label) echo ' / ' . esc_html($cat_label); ?>
+                                    <?php if ($pv) echo ' / ' . number_format($pv) . ' PV'; ?>
+                                    / <?php echo get_the_date('Y-m-d', $mp); ?>
+                                </div>
+                            </div>
+                            <button type="button" class="item-remove" onclick="removeManualItem(this)" title="削除">&times;</button>
+                        </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+
+                <div class="koi-search-box">
+                    <input type="text" id="postSearch" class="regular-text" placeholder="記事タイトルで検索...">
+                    <button type="button" class="button" id="searchBtn">検索</button>
+                </div>
+                <div class="koi-search-results" id="searchResults"></div>
+            </div>
+
+            <?php submit_button('設定を保存'); ?>
+        </form>
+    </div>
+
+    <script>
+    (function(){
+        // モード切り替え
+        var radios = document.querySelectorAll('.mode-radio');
+        radios.forEach(function(r) {
+            r.addEventListener('change', function() {
+                document.getElementById('modeAuto').classList.toggle('is-active', this.value === 'auto');
+                document.getElementById('modeManual').classList.toggle('is-active', this.value === 'manual');
+            });
+        });
+
+        // 手動記事リスト管理
+        function updateManualIds() {
+            var items = document.querySelectorAll('#manualList .koi-manual-item');
+            var ids = [];
+            items.forEach(function(el) { ids.push(el.dataset.id); });
+            document.getElementById('manualPostIds').value = ids.join(',');
+        }
+
+        // 削除
+        window.removeManualItem = function(btn) {
+            btn.closest('.koi-manual-item').remove();
+            updateManualIds();
+            if (!document.querySelector('#manualList .koi-manual-item')) {
+                document.getElementById('manualList').innerHTML = '<p style="color:#999;text-align:center;padding:20px;" id="emptyMsg">記事が選択されていません。</p>';
+            }
+        };
+
+        // ドラッグ並び替え（シンプル実装）
+        var dragSrc = null;
+        document.getElementById('manualList').addEventListener('dragstart', function(e) {
+            var item = e.target.closest('.koi-manual-item');
+            if (!item) return;
+            dragSrc = item;
+            item.style.opacity = '0.4';
+        });
+        document.getElementById('manualList').addEventListener('dragover', function(e) {
+            e.preventDefault();
+            var item = e.target.closest('.koi-manual-item');
+            if (item && item !== dragSrc) {
+                var rect = item.getBoundingClientRect();
+                var mid = rect.top + rect.height / 2;
+                if (e.clientY < mid) {
+                    item.parentNode.insertBefore(dragSrc, item);
+                } else {
+                    item.parentNode.insertBefore(dragSrc, item.nextSibling);
+                }
+            }
+        });
+        document.getElementById('manualList').addEventListener('dragend', function(e) {
+            if (dragSrc) { dragSrc.style.opacity = '1'; dragSrc = null; }
+            updateManualIds();
+        });
+        // Make items draggable
+        document.querySelectorAll('.koi-manual-item').forEach(function(el) { el.draggable = true; });
+
+        // 記事検索
+        var searchInput = document.getElementById('postSearch');
+        var searchBtn   = document.getElementById('searchBtn');
+        var resultsDiv  = document.getElementById('searchResults');
+
+        function doSearch() {
+            var q = searchInput.value.trim();
+            if (!q) return;
+            resultsDiv.style.display = 'block';
+            resultsDiv.innerHTML = '<div style="padding:12px;color:#888;">検索中...</div>';
+
+            var url = '<?php echo esc_url(admin_url('admin-ajax.php')); ?>';
+            var fd = new FormData();
+            fd.append('action', 'koi_ria_search_posts');
+            fd.append('q', q);
+            fd.append('nonce', '<?php echo wp_create_nonce('koi_ria_search_posts'); ?>');
+
+            fetch(url, { method: 'POST', body: fd })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (!data.success || !data.data.length) {
+                        resultsDiv.innerHTML = '<div style="padding:12px;color:#888;">該当する記事がありません</div>';
+                        return;
+                    }
+                    var html = '';
+                    data.data.forEach(function(p) {
+                        html += '<div class="search-item" data-id="' + p.id + '" data-title="' + escHtml(p.title) + '" data-thumb="' + (p.thumb || '') + '" data-cat="' + escHtml(p.cat) + '" data-pv="' + p.pv + '" data-date="' + p.date + '">';
+                        html += p.thumb ? '<img src="' + p.thumb + '" alt="">' : '<span style="width:50px;height:34px;background:#eee;display:inline-block;border-radius:3px;"></span>';
+                        html += '<div><div class="s-title">' + escHtml(p.title) + '</div><div class="s-date">ID:' + p.id + ' / ' + escHtml(p.cat) + ' / ' + p.date + '</div></div>';
+                        html += '</div>';
+                    });
+                    resultsDiv.innerHTML = html;
+
+                    resultsDiv.querySelectorAll('.search-item').forEach(function(item) {
+                        item.addEventListener('click', function() {
+                            addManualItem(item.dataset);
+                        });
+                    });
+                });
+        }
+
+        function escHtml(s) {
+            var d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
+
+        function addManualItem(data) {
+            // 重複チェック
+            if (document.querySelector('#manualList .koi-manual-item[data-id="' + data.id + '"]')) {
+                return;
+            }
+            var empty = document.getElementById('emptyMsg');
+            if (empty) empty.remove();
+
+            var el = document.createElement('div');
+            el.className = 'koi-manual-item';
+            el.draggable = true;
+            el.dataset.id = data.id;
+            el.innerHTML = '<span class="drag-handle">&#9776;</span>'
+                + (data.thumb ? '<img src="' + data.thumb + '" class="item-thumb" alt="">' : '<span class="item-thumb"></span>')
+                + '<div class="item-info"><div class="item-title">' + escHtml(data.title) + '</div>'
+                + '<div class="item-meta">ID:' + data.id
+                + (data.cat ? ' / ' + escHtml(data.cat) : '')
+                + (data.pv > 0 ? ' / ' + Number(data.pv).toLocaleString() + ' PV' : '')
+                + ' / ' + data.date + '</div></div>'
+                + '<button type="button" class="item-remove" onclick="removeManualItem(this)" title="削除">&times;</button>';
+
+            document.getElementById('manualList').appendChild(el);
+            updateManualIds();
+            resultsDiv.style.display = 'none';
+            searchInput.value = '';
+        }
+
+        searchBtn.addEventListener('click', doSearch);
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); doSearch(); }
+        });
+
+        // 検索結果外クリックで閉じる
+        document.addEventListener('click', function(e) {
+            if (!resultsDiv.contains(e.target) && e.target !== searchInput && e.target !== searchBtn) {
+                resultsDiv.style.display = 'none';
+            }
+        });
+    })();
     </script>
     <?php
 }

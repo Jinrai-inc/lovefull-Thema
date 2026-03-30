@@ -5,16 +5,22 @@
 /* --- CSS変数 --- */
 :root {
     /* カラーパレット */
-    --color-primary: #A855F7;
-    --color-accent: #FF3B6F;
-    --color-gradient: linear-gradient(135deg, #FF3B6F, #A855F7);
+    --color-primary: #E8619A;
+    --color-primary-light: #FFF0F5;
+    --color-primary-pale: #FFF5F8;
+    --color-accent: #FF6B9D;
+    --color-gradient: linear-gradient(135deg, #FF6B9D, #C084FC);
+    --color-gradient-warm: linear-gradient(135deg, #FFA07A, #FF6B9D);
+    --color-text: #2D1B33;
+    --color-text-sub: #9B8FA1;
+    --color-bg: #FDF8FA;
+    --color-card: #FFFFFF;
+    --color-border: #F0E6EE;
+
+    /* VODブランドカラー */
     --color-abema: #00B900;
     --color-netflix: #E50914;
     --color-prime: #00A8E1;
-    --color-text: #1F2937;
-    --color-text-sub: #9CA3AF;
-    --color-bg: #FAFAFF;
-    --color-card: #FFFFFF;
 
     /* ステータスカラー */
     --color-success: #10B981;
@@ -23,7 +29,7 @@
     --color-gold: #D4A017;
 
     /* フォント */
-    --font-family: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Meiryo', sans-serif;
+    --font-family: 'M PLUS Rounded 1c', 'Zen Kaku Gothic New', 'Hiragino Sans', 'Meiryo', sans-serif;
 
     /* スペーシング */
     --space-xs: 4px;
@@ -34,16 +40,16 @@
     --space-2xl: 48px;
 
     /* 角丸 */
-    --radius-sm: 8px;
-    --radius-md: 16px;
-    --radius-lg: 20px;
+    --radius-sm: 12px;
+    --radius-md: 18px;
+    --radius-lg: 24px;
     --radius-pill: 50px;
     --radius-circle: 50%;
 
     /* シャドウ */
-    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+    --shadow-card: 0 4px 24px rgba(232, 97, 154, 0.08);
+    --shadow-sm: 0 2px 12px rgba(232, 97, 154, 0.06);
+    --shadow-lg: 0 8px 32px rgba(232, 97, 154, 0.14);
 
     /* レイアウト */
     --header-height: 56px;

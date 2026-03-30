@@ -23,14 +23,13 @@ defined('ABSPATH') || exit;
 <header class="site-header" role="banner">
     <div class="site-header__inner">
         <a href="<?php echo esc_url(home_url('/')); ?>" class="site-logo">
-            <span class="site-logo__icon">&#x1F496;</span>
+            <span class="site-logo__icon"><?php echo koi_ria_icon('heart-filled', 24); ?></span>
             <span class="site-logo__text">恋リアポータル</span>
         </a>
 
         <button class="hamburger" id="menuToggle" aria-label="メニューを開く" aria-expanded="false">
-            <span class="hamburger__line"></span>
-            <span class="hamburger__line"></span>
-            <span class="hamburger__line"></span>
+            <span class="hamburger__icon hamburger__icon--menu"><?php echo koi_ria_icon('menu', 24); ?></span>
+            <span class="hamburger__icon hamburger__icon--close" style="display:none;"><?php echo koi_ria_icon('close', 24); ?></span>
         </button>
     </div>
 

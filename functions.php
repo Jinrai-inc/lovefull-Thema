@@ -169,6 +169,7 @@ add_action('wp_head', function () {
  * インクルードファイル読み込み
  */
 $koi_ria_includes = [
+    'inc/svg-icons.php',
     'inc/cpt-register.php',
     'inc/acf-fields.php',
     'inc/rest-api.php',

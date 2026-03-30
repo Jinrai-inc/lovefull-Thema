@@ -15,7 +15,7 @@ get_header();
 <section class="section">
     <form class="search-bar" action="<?php echo esc_url(home_url('/')); ?>" method="get" role="search" aria-label="サイト内検索">
         <label for="top-search" class="screen-reader-text">検索キーワード</label>
-        <span class="search-bar__icon">&#x1F50D;</span>
+        <span class="search-bar__icon"><?php echo koi_ria_icon('search', 18); ?></span>
         <input type="search" class="search-bar__input" id="top-search" name="s" placeholder="番組名・出演者を検索…" value="<?php echo get_search_query(); ?>">
     </form>
 </section>
@@ -44,7 +44,7 @@ if ($breaking) :
 <?php // 5-5. 注目の番組 ?>
 <section class="section">
     <div class="section-header">
-        <h2>&#x1F4FA; 注目の番組</h2>
+        <h2><?php echo koi_ria_icon('tv', 22); ?> 注目の番組</h2>
         <a href="<?php echo esc_url(get_post_type_archive_link('show')); ?>" class="section-header__more">もっと見る →</a>
     </div>
     <div class="scroll-x">

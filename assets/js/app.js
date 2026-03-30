@@ -120,28 +120,34 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(autoSlideTimer);
         }
 
-        // ドットナビ
+        // ドットナビ（再生中もスライド操作可能）
         dots.forEach(function(dot) {
-            dot.addEventListener('click', function() {
+            dot.addEventListener('click', function(e) {
+                e.stopPropagation();
                 userClickedPlay = false;
+                killAllIframes();
                 stopAutoSlide();
                 goToSlide(parseInt(dot.dataset.index, 10));
                 startAutoSlide();
             });
         });
 
-        // 矢印ナビ
+        // 矢印ナビ（再生中もスライド操作可能）
         if (heroPrev) {
-            heroPrev.addEventListener('click', function() {
+            heroPrev.addEventListener('click', function(e) {
+                e.stopPropagation();
                 userClickedPlay = false;
+                killAllIframes();
                 stopAutoSlide();
                 prevSlide();
                 startAutoSlide();
             });
         }
         if (heroNext) {
-            heroNext.addEventListener('click', function() {
+            heroNext.addEventListener('click', function(e) {
+                e.stopPropagation();
                 userClickedPlay = false;
+                killAllIframes();
                 stopAutoSlide();
                 nextSlide();
                 startAutoSlide();

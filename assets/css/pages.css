@@ -87,6 +87,15 @@
     display: none;
 }
 
+/* 動画再生中は矢印ナビを常時表示 */
+.hero-carousel:has(.is-playing) .hero-carousel__arrow {
+    opacity: 1;
+}
+
+.hero-carousel:has(.is-playing) .hero-carousel__dots {
+    z-index: 10;
+}
+
 .hero-carousel__overlay {
     position: absolute;
     bottom: 0;
@@ -153,8 +162,8 @@
     border-radius: var(--radius-circle);
     color: #fff;
     cursor: pointer;
-    z-index: 3;
-    transition: background 0.3s ease, transform 0.3s ease;
+    z-index: 10;
+    transition: background 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
     opacity: 0;
 }
 
@@ -186,7 +195,7 @@
     transform: translateX(-50%);
     display: flex;
     gap: 6px;
-    z-index: 3;
+    z-index: 10;
 }
 
 .hero-carousel__dot {
@@ -218,7 +227,7 @@
     font-weight: 500;
     padding: 2px 10px;
     border-radius: var(--radius-pill);
-    z-index: 3;
+    z-index: 10;
 }
 
 /* モバイルでは矢印を常に表示 */
@@ -237,73 +246,45 @@
 }
 
 /* --- トップページ: セクション背景色 --- */
+[class*="section--"] {
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-xl);
+    border-radius: var(--radius-lg);
+    margin: var(--space-md) var(--space-sm);
+}
+
 .section--search {
     background: linear-gradient(180deg, #0a0a0a 0%, var(--color-bg) 100%);
-    padding-top: var(--space-lg);
+    margin-top: 0;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 
 .section--shows {
     background: linear-gradient(135deg, #FFF0F5 0%, #F5E6FF 50%, #E8F4FD 100%);
-    padding-top: var(--space-lg);
-    padding-bottom: var(--space-lg);
-    border-radius: var(--radius-lg);
-    margin: var(--space-sm) 0;
 }
 
 .section--poll {
     background: linear-gradient(135deg, #FFF5E6 0%, #FFE8F0 100%);
-    padding-top: var(--space-lg);
-    padding-bottom: var(--space-lg);
-    border-radius: var(--radius-lg);
-    margin: var(--space-sm) 0;
 }
 
 .section--column {
     background: linear-gradient(135deg, #F8E8FF 0%, #FFE8F5 50%, #FFF0F0 100%);
-    padding-top: var(--space-lg);
-    padding-bottom: var(--space-lg);
-    border-radius: var(--radius-lg);
-    margin: var(--space-sm) 0;
 }
 
 .section--news {
     background: linear-gradient(135deg, #E8F8FF 0%, #F0E8FF 100%);
-    padding-top: var(--space-lg);
-    padding-bottom: var(--space-lg);
-    border-radius: var(--radius-lg);
-    margin: var(--space-sm) 0;
 }
 
 .section--shindan {
     background: linear-gradient(135deg, #FFE8EC 0%, #FFD6E8 50%, #F0E0FF 100%);
-    padding-top: var(--space-lg);
-    padding-bottom: var(--space-lg);
-    border-radius: var(--radius-lg);
-    margin: var(--space-sm) 0;
-}
-
-.section--schedule {
-    background: linear-gradient(135deg, #E8FFF0 0%, #E8F8FF 100%);
-    padding-top: var(--space-lg);
-    padding-bottom: var(--space-lg);
-    border-radius: var(--radius-lg);
-    margin: var(--space-sm) 0;
 }
 
 .section--couple {
     background: linear-gradient(135deg, #FFE8F0 0%, #FFE0E8 50%, #FFF0E8 100%);
-    padding-top: var(--space-lg);
-    padding-bottom: var(--space-lg);
-    border-radius: var(--radius-lg);
-    margin: var(--space-sm) 0;
 }
 
 .section--cast {
     background: linear-gradient(135deg, #F0E8FF 0%, #FFE8F8 50%, #FFE8E8 100%);
-    padding-top: var(--space-lg);
-    padding-bottom: var(--space-lg);
-    border-radius: var(--radius-lg);
-    margin: var(--space-sm) 0;
 }
 
 /* --- 速報バー --- */
@@ -451,10 +432,6 @@
 /* --- 人気記事ランキング --- */
 .section--popular {
     background: linear-gradient(135deg, #FFF8E8 0%, #FFE8F5 50%, #F0E8FF 100%);
-    padding-top: var(--space-lg);
-    padding-bottom: var(--space-lg);
-    border-radius: var(--radius-lg);
-    margin: var(--space-sm) 0;
 }
 
 .popular-ranking {

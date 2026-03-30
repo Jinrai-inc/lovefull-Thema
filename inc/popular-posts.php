@@ -12,7 +12,6 @@ defined('ABSPATH') || exit;
 
 /**
  * AJAX閲覧数カウンター（キャッシュ環境対応）
- * wp_head の PHP カウンターと違い、ページキャッシュがあっても動作する。
  */
 function koi_ria_enqueue_view_counter() {
     if (is_single() && get_post_type() === 'post' && !is_admin()) {
@@ -61,34 +60,160 @@ add_action('wp_ajax_koi_ria_count_view', 'koi_ria_ajax_count_view');
 add_action('wp_ajax_nopriv_koi_ria_count_view', 'koi_ria_ajax_count_view');
 
 /**
- * Site Kit (GA4) から人気ページのPVデータを同期
- * 管理画面アクセス時に6時間おきに実行。
+ * URLパスから投稿IDを解決（複数の方法でフォールバック）
  */
-function koi_ria_sync_ga_popular_posts() {
-    // admin画面 + 管理者のみ
-    if (!is_admin() || wp_doing_cron() || wp_doing_ajax()) {
-        return;
+function koi_ria_resolve_post_id_from_path(string $path): int {
+    // パスの正規化
+    $path = trim($path, '/');
+    if (empty($path)) {
+        return 0;
     }
+
+    // 方法1: url_to_postid（WordPress標準）
+    $post_id = url_to_postid(home_url('/' . $path . '/'));
+    if ($post_id && get_post_type($post_id) === 'post') {
+        return $post_id;
+    }
+
+    // 方法2: スラッグで直接検索（パーマリンク設定に依存しない）
+    $slug = basename($path);
+    $found = get_posts([
+        'post_type'      => 'post',
+        'name'           => $slug,
+        'posts_per_page' => 1,
+        'post_status'    => 'publish',
+        'fields'         => 'ids',
+    ]);
+    if (!empty($found)) {
+        return $found[0];
+    }
+
+    // 方法3: パス全体をpost_nameとして検索
+    $slug_from_path = sanitize_title($path);
+    if ($slug_from_path !== $slug) {
+        $found = get_posts([
+            'post_type'      => 'post',
+            'name'           => $slug_from_path,
+            'posts_per_page' => 1,
+            'post_status'    => 'publish',
+            'fields'         => 'ids',
+        ]);
+        if (!empty($found)) {
+            return $found[0];
+        }
+    }
+
+    return 0;
+}
+
+/**
+ * Site Kit GA4 レスポンスから rows を抽出（複数フォーマット対応）
+ */
+function koi_ria_parse_ga_rows($data): array {
+    $rows = [];
+
+    // フォーマット1: { rows: [...] }
+    if (isset($data['rows']) && is_array($data['rows'])) {
+        return $data['rows'];
+    }
+
+    // フォーマット2: 直接配列 [{ dimensionValues, metricValues }, ...]
+    if (is_array($data) && !isset($data['error'])) {
+        foreach ($data as $key => $item) {
+            if (is_numeric($key) && is_array($item)) {
+                if (isset($item['dimensionValues']) || isset($item['pagePath'])) {
+                    $rows[] = $item;
+                }
+            }
+        }
+        if (!empty($rows)) {
+            return $rows;
+        }
+    }
+
+    // フォーマット3: { data: { rows: [...] } }
+    if (isset($data['data']['rows']) && is_array($data['data']['rows'])) {
+        return $data['data']['rows'];
+    }
+
+    // フォーマット4: { report: { rows: [...] } }
+    if (isset($data['report']['rows']) && is_array($data['report']['rows'])) {
+        return $data['report']['rows'];
+    }
+
+    return $rows;
+}
+
+/**
+ * GA行データからパスとPVを抽出
+ */
+function koi_ria_extract_path_views(array $row): array {
+    $path  = '';
+    $views = 0;
+
+    // パターン1: dimensionValues / metricValues（GA4 API形式）
+    if (isset($row['dimensionValues'][0]['value'])) {
+        $path  = $row['dimensionValues'][0]['value'];
+        $views = (int) ($row['metricValues'][0]['value'] ?? 0);
+    }
+    // パターン2: フラットキー
+    elseif (isset($row['pagePath'])) {
+        $path  = $row['pagePath'];
+        $views = (int) ($row['screenPageViews'] ?? $row['pageViews'] ?? $row['views'] ?? 0);
+    }
+    // パターン3: dimensions / metrics 配列
+    elseif (isset($row['dimensions'][0])) {
+        $path  = $row['dimensions'][0];
+        $views = (int) ($row['metrics'][0]['values'][0] ?? $row['metrics'][0] ?? 0);
+    }
+
+    return ['path' => $path, 'views' => $views];
+}
+
+/**
+ * Site Kit (GA4) から人気ページのPVデータを同期
+ *
+ * @param bool $force  trueの場合、ロックを無視して強制同期
+ * @return array       同期結果の詳細情報
+ */
+function koi_ria_sync_ga_popular_posts(bool $force = false): array {
+    $result = [
+        'success'     => false,
+        'message'     => '',
+        'debug'       => [],
+        'matched'     => 0,
+        'unmatched'   => 0,
+        'total_rows'  => 0,
+    ];
+
     if (!current_user_can('manage_options')) {
-        return;
+        $result['message'] = '権限がありません';
+        return $result;
     }
-    // 6時間ごとに同期
-    if (get_transient('koi_ria_ga_sync_lock')) {
-        return;
+
+    // ロック確認（強制時はスキップ）
+    if (!$force && get_transient('koi_ria_ga_sync_lock')) {
+        $result['message'] = '同期ロック中（6時間ごとに自動実行）';
+        return $result;
     }
 
     // Site Kit が利用可能か確認
     if (!class_exists('Google\Site_Kit\Plugin')) {
-        return;
+        $result['message'] = 'Site Kit プラグインが有効化されていません';
+        update_option('koi_ria_ga_sync_status', 'error: Site Kit not found');
+        return $result;
     }
+
+    $result['debug'][] = 'Site Kit 検出OK';
 
     // REST API サーバーを初期化
     rest_get_server();
 
+    // Site Kit REST API を呼び出し
     $request = new WP_REST_Request('GET', '/google-site-kit/v1/modules/analytics-4/data/report');
     $request->set_query_params([
-        'startDate'  => gmdate('Y-m-d', strtotime('-30 days')),
-        'endDate'    => gmdate('Y-m-d'),
+        'startDate'  => gmdate('Y-m-d', strtotime('-28 days')),
+        'endDate'    => gmdate('Y-m-d', strtotime('-1 day')),
         'metrics'    => wp_json_encode([['name' => 'screenPageViews']]),
         'dimensions' => wp_json_encode([['name' => 'pagePath']]),
         'orderBys'   => wp_json_encode([
@@ -97,80 +222,139 @@ function koi_ria_sync_ga_popular_posts() {
         'limit'      => '50',
     ]);
 
+    $result['debug'][] = 'REST API リクエスト送信: /google-site-kit/v1/modules/analytics-4/data/report';
+
     $response = rest_do_request($request);
 
-    // エラー時は1時間後にリトライ
     if ($response->is_error()) {
+        $error_msg = $response->as_error()->get_error_message();
+        $result['message'] = 'REST APIエラー: ' . $error_msg;
+        $result['debug'][] = 'エラーコード: ' . $response->get_status();
+        $result['debug'][] = 'エラー詳細: ' . $error_msg;
+
         set_transient('koi_ria_ga_sync_lock', 1, HOUR_IN_SECONDS);
-        update_option('koi_ria_ga_sync_status', 'error: ' . $response->as_error()->get_error_message());
-        return;
+        update_option('koi_ria_ga_sync_status', 'error: ' . $error_msg);
+        update_option('koi_ria_ga_sync_debug', $result);
+        return $result;
     }
 
-    $data        = $response->get_data();
+    $data = $response->get_data();
+    $result['debug'][] = 'レスポンスステータス: ' . $response->get_status();
+    $result['debug'][] = 'レスポンスデータ型: ' . gettype($data);
+
+    if (is_array($data)) {
+        $top_keys = array_slice(array_keys($data), 0, 10);
+        $result['debug'][] = 'トップレベルキー: ' . implode(', ', $top_keys);
+    }
+
+    // レスポンスからrowsを抽出
+    $rows = koi_ria_parse_ga_rows($data);
+    $result['total_rows'] = count($rows);
+    $result['debug'][] = '抽出rows数: ' . count($rows);
+
+    if (empty($rows)) {
+        // データが空の場合、レスポンス全体をデバッグ用に保存
+        $result['message'] = 'GAデータの解析に失敗（rows が空）';
+        $result['debug'][] = 'レスポンスサンプル: ' . mb_substr(wp_json_encode($data, JSON_UNESCAPED_UNICODE), 0, 1000);
+        update_option('koi_ria_ga_sync_status', 'error: empty rows');
+        update_option('koi_ria_ga_sync_debug', $result);
+        set_transient('koi_ria_ga_sync_lock', 1, HOUR_IN_SECONDS);
+        return $result;
+    }
+
+    // 最初の行のデバッグ情報
+    $result['debug'][] = '最初のrow: ' . mb_substr(wp_json_encode($rows[0], JSON_UNESCAPED_UNICODE), 0, 500);
+
     $popular_ids = [];
     $pv_map      = [];
-
-    // レスポンス形式: rows配列 (Site Kit v1.x 形式)
-    $rows = [];
-    if (isset($data['rows']) && is_array($data['rows'])) {
-        $rows = $data['rows'];
-    } elseif (is_array($data)) {
-        // 配列直接返却の場合
-        foreach ($data as $item) {
-            if (isset($item['dimensionValues'], $item['metricValues'])) {
-                $rows[] = $item;
-            }
-        }
-    }
+    $unmatched   = [];
 
     foreach ($rows as $row) {
-        $path  = '';
-        $views = 0;
-
-        // Site Kit レスポンス形式パターン1: dimensionValues / metricValues
-        if (isset($row['dimensionValues'][0]['value'])) {
-            $path  = $row['dimensionValues'][0]['value'];
-            $views = (int) ($row['metricValues'][0]['value'] ?? 0);
-        }
-        // パターン2: フラットな配列
-        elseif (isset($row['pagePath'])) {
-            $path  = $row['pagePath'];
-            $views = (int) ($row['screenPageViews'] ?? 0);
-        }
+        $extracted = koi_ria_extract_path_views($row);
+        $path  = $extracted['path'];
+        $views = $extracted['views'];
 
         if (empty($path) || $path === '/' || $views < 1) {
             continue;
         }
 
-        // URLパスから投稿IDを解決
-        $post_id = url_to_postid(home_url($path));
-        if ($post_id && get_post_type($post_id) === 'post') {
+        $post_id = koi_ria_resolve_post_id_from_path($path);
+
+        if ($post_id) {
             update_post_meta($post_id, 'post_views_count', $views);
             update_post_meta($post_id, 'ga_views_30d', $views);
-            $popular_ids[]     = $post_id;
-            $pv_map[$post_id]  = $views;
+            $popular_ids[]    = $post_id;
+            $pv_map[$post_id] = $views;
+            $result['matched']++;
+        } else {
+            $unmatched[] = $path . ' (' . $views . ' PV)';
+            $result['unmatched']++;
         }
     }
 
+    if (!empty($unmatched)) {
+        $result['debug'][] = 'マッチしなかったパス: ' . implode(', ', array_slice($unmatched, 0, 10));
+    }
+
+    // 結果保存
     if (!empty($popular_ids)) {
         update_option('koi_ria_ga_popular_post_ids', array_slice($popular_ids, 0, 30), false);
         update_option('koi_ria_ga_popular_pv_map', $pv_map, false);
+        $result['success'] = true;
+        $result['message'] = $result['matched'] . '記事のPVデータを同期しました';
+    } else {
+        $result['message'] = 'マッチする投稿が見つかりませんでした（' . $result['unmatched'] . 'パス未解決）';
     }
 
-    update_option('koi_ria_ga_sync_status', 'ok');
+    update_option('koi_ria_ga_sync_status', $result['success'] ? 'ok' : 'partial');
     update_option('koi_ria_ga_sync_time', current_time('mysql'));
+    update_option('koi_ria_ga_sync_debug', $result);
     set_transient('koi_ria_ga_sync_lock', 1, 6 * HOUR_IN_SECONDS);
+
+    return $result;
 }
-add_action('admin_init', 'koi_ria_sync_ga_popular_posts');
+
+/**
+ * admin_init 自動同期（従来の自動実行ロジック）
+ */
+function koi_ria_auto_sync_ga() {
+    if (!is_admin() || wp_doing_cron() || wp_doing_ajax()) {
+        return;
+    }
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    if (get_transient('koi_ria_ga_sync_lock')) {
+        return;
+    }
+    if (!class_exists('Google\Site_Kit\Plugin')) {
+        return;
+    }
+
+    koi_ria_sync_ga_popular_posts(false);
+}
+add_action('admin_init', 'koi_ria_auto_sync_ga');
+
+/**
+ * AJAX: 手動GA同期（管理画面のボタンから実行）
+ */
+function koi_ria_ajax_sync_ga() {
+    check_ajax_referer('koi_ria_sync_ga', 'nonce');
+
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error('権限がありません');
+    }
+
+    // ロック解除して強制実行
+    delete_transient('koi_ria_ga_sync_lock');
+    $result = koi_ria_sync_ga_popular_posts(true);
+
+    wp_send_json_success($result);
+}
+add_action('wp_ajax_koi_ria_sync_ga', 'koi_ria_ajax_sync_ga');
 
 /**
  * 人気記事を取得（GA4 PVデータ優先 → AJAXカウンター → 最新記事）
- * 優先カテゴリの記事を上位に、それ以外をPV順で埋める。
- *
- * @param int   $count              取得件数
- * @param array $exclude_cat_ids    除外カテゴリID配列
- * @param int   $priority_cat_id    優先表示カテゴリID（0=なし）
- * @return WP_Post[]
  */
 function koi_ria_get_popular_posts($count = 3, $exclude_cat_ids = [], $priority_cat_id = 0) {
 
@@ -189,7 +373,7 @@ function koi_ria_get_popular_posts($count = 3, $exclude_cat_ids = [], $priority_
         }
     }
 
-    // 手動モード: 設定された記事をそのまま返す
+    // 手動モード
     if (($popular_settings['mode'] ?? 'auto') === 'manual' && !empty($popular_settings['manual_post_ids'])) {
         $manual_ids = array_slice($popular_settings['manual_post_ids'], 0, $count);
         $posts = get_posts([
@@ -202,7 +386,6 @@ function koi_ria_get_popular_posts($count = 3, $exclude_cat_ids = [], $priority_
         if (!empty($posts)) {
             return $posts;
         }
-        // 手動記事が全部非公開の場合はフォールバックで自動モードへ
     }
 
     // 共通: カテゴリ除外フィルタ

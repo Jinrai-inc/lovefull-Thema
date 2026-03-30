@@ -562,6 +562,8 @@ function koi_ria_popular_page(): void {
     $ga_status   = get_option('koi_ria_ga_sync_status', '');
     $ga_time     = get_option('koi_ria_ga_sync_time', '');
     $ga_pv_map   = get_option('koi_ria_ga_popular_pv_map', []);
+    $ga_debug    = get_option('koi_ria_ga_sync_debug', []);
+    $ga_post_ids = get_option('koi_ria_ga_popular_post_ids', []);
 
     // カテゴリ一覧
     $categories = get_categories(['hide_empty' => false]);
@@ -603,26 +605,77 @@ function koi_ria_popular_page(): void {
     .koi-ga-status { padding: 12px 16px; border-radius: 4px; margin-bottom: 16px; font-size: 13px; }
     .koi-ga-status.ok { background: #edfaef; border: 1px solid #b8e6c0; }
     .koi-ga-status.ng { background: #fef7e8; border: 1px solid #e6d5a8; }
+    .koi-ga-box { background: #fff; border: 1px solid #c3c4c7; border-radius: 4px; padding: 20px; margin-bottom: 20px; }
+    .koi-ga-box h3 { margin: 0 0 12px; }
+    .koi-sync-result { margin-top: 12px; padding: 12px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; display: none; }
+    .koi-sync-result pre { background: #1e1e1e; color: #d4d4d4; padding: 12px; border-radius: 4px; font-size: 12px; overflow-x: auto; max-height: 300px; overflow-y: auto; white-space: pre-wrap; }
+    .koi-pv-table { font-size: 13px; }
+    .koi-pv-table td, .koi-pv-table th { padding: 6px 10px; }
     </style>
 
     <div class="wrap koi-popular-wrap">
         <h1>人気記事設定</h1>
         <p>トップページの「人気記事トップN」セクションの表示方法を設定します。</p>
 
-        <?php if ($ga_status === 'ok' && $ga_time) : ?>
-        <div class="koi-ga-status ok">
-            Google Analytics PVデータ: <strong>同期済み</strong>（<?php echo esc_html($ga_time); ?>、<?php echo count($ga_pv_map); ?>記事）
+        <!-- GA同期パネル -->
+        <div class="koi-ga-box">
+            <h3>Google Analytics 連携ステータス</h3>
+
+            <?php if ($ga_status === 'ok' && $ga_time) : ?>
+            <div class="koi-ga-status ok">
+                <strong>同期済み</strong> — <?php echo esc_html($ga_time); ?>（<?php echo count($ga_pv_map); ?>記事マッチ）
+            </div>
+            <?php elseif (class_exists('Google\Site_Kit\Plugin')) : ?>
+            <div class="koi-ga-status ng">
+                <strong><?php echo $ga_status ? esc_html($ga_status) : '未同期'; ?></strong>
+                — 管理画面を読み込むと6時間ごとに自動同期します
+            </div>
+            <?php else : ?>
+            <div class="koi-ga-status ng">
+                Site Kit プラグインが未インストールです。自動モードではAJAX閲覧数カウンターを使用します。
+            </div>
+            <?php endif; ?>
+
+            <p>
+                <button type="button" class="button button-primary" id="syncGaBtn">今すぐGA同期を実行</button>
+                <span id="syncSpinner" class="spinner" style="float:none; vertical-align:middle;"></span>
+            </p>
+
+            <div class="koi-sync-result" id="syncResult"></div>
+
+            <?php if (!empty($ga_pv_map)) : ?>
+            <h4 style="margin-top: 16px;">現在の同期データ（上位<?php echo count($ga_pv_map); ?>記事）</h4>
+            <table class="widefat striped koi-pv-table" style="max-width: 700px;">
+                <thead><tr><th>順位</th><th>記事タイトル</th><th>PV数</th></tr></thead>
+                <tbody>
+                    <?php
+                    arsort($ga_pv_map);
+                    $rank = 1;
+                    foreach ($ga_pv_map as $pid => $pv) :
+                        $post_obj = get_post($pid);
+                        if (!$post_obj) continue;
+                    ?>
+                    <tr>
+                        <td><?php echo $rank++; ?></td>
+                        <td><a href="<?php echo esc_url(get_edit_post_link($pid)); ?>"><?php echo esc_html($post_obj->post_title); ?></a></td>
+                        <td><?php echo number_format($pv); ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+            <?php endif; ?>
+
+            <?php if (!empty($ga_debug['debug'])) : ?>
+            <details style="margin-top: 12px;">
+                <summary style="cursor: pointer; color: #666;">前回の同期デバッグログを表示</summary>
+                <pre style="background: #f0f0f1; padding: 10px; font-size: 12px; margin-top: 6px; overflow-x: auto;"><?php
+                    foreach ($ga_debug['debug'] as $line) {
+                        echo esc_html($line) . "\n";
+                    }
+                ?></pre>
+            </details>
+            <?php endif; ?>
         </div>
-        <?php elseif (class_exists('Google\Site_Kit\Plugin')) : ?>
-        <div class="koi-ga-status ng">
-            Google Analytics: <strong>未同期</strong><?php echo $ga_status ? '（' . esc_html($ga_status) . '）' : ''; ?>
-            — 管理画面を読み込むと6時間ごとに自動同期します
-        </div>
-        <?php else : ?>
-        <div class="koi-ga-status ng">
-            Site Kit プラグインが未インストールです。自動モードではAJAX閲覧数カウンターを使用します。
-        </div>
-        <?php endif; ?>
 
         <form method="post" id="popularForm">
             <?php wp_nonce_field('koi_ria_save_popular', 'koi_ria_popular_nonce'); ?>
@@ -873,6 +926,60 @@ function koi_ria_popular_page(): void {
                 resultsDiv.style.display = 'none';
             }
         });
+
+        // GA同期ボタン
+        var syncBtn = document.getElementById('syncGaBtn');
+        var syncSpinner = document.getElementById('syncSpinner');
+        var syncResult = document.getElementById('syncResult');
+
+        if (syncBtn) {
+            syncBtn.addEventListener('click', function() {
+                syncBtn.disabled = true;
+                syncBtn.textContent = '同期中...';
+                syncSpinner.classList.add('is-active');
+                syncResult.style.display = 'block';
+                syncResult.innerHTML = '<p>Google Analytics からPVデータを取得しています...</p>';
+
+                var fd = new FormData();
+                fd.append('action', 'koi_ria_sync_ga');
+                fd.append('nonce', '<?php echo wp_create_nonce('koi_ria_sync_ga'); ?>');
+
+                fetch('<?php echo esc_url(admin_url('admin-ajax.php')); ?>', { method: 'POST', body: fd })
+                    .then(function(r) { return r.json(); })
+                    .then(function(resp) {
+                        syncBtn.disabled = false;
+                        syncBtn.textContent = '今すぐGA同期を実行';
+                        syncSpinner.classList.remove('is-active');
+
+                        if (!resp.success) {
+                            syncResult.innerHTML = '<p style="color:#d63638;"><strong>エラー:</strong> ' + escHtml(resp.data || '不明なエラー') + '</p>';
+                            return;
+                        }
+
+                        var d = resp.data;
+                        var html = '<p><strong>' + (d.success ? '同期成功' : '同期失敗') + ':</strong> ' + escHtml(d.message) + '</p>';
+                        html += '<p>GA行数: ' + d.total_rows + ' / マッチ: ' + d.matched + ' / 未解決: ' + d.unmatched + '</p>';
+
+                        if (d.debug && d.debug.length) {
+                            html += '<details><summary style="cursor:pointer;">デバッグログ</summary><pre>';
+                            d.debug.forEach(function(line) { html += escHtml(line) + '\n'; });
+                            html += '</pre></details>';
+                        }
+
+                        if (d.success) {
+                            html += '<p style="color:#00a32a; margin-top:8px;">ページをリロードすると同期データの一覧が更新されます。</p>';
+                        }
+
+                        syncResult.innerHTML = html;
+                    })
+                    .catch(function(err) {
+                        syncBtn.disabled = false;
+                        syncBtn.textContent = '今すぐGA同期を実行';
+                        syncSpinner.classList.remove('is-active');
+                        syncResult.innerHTML = '<p style="color:#d63638;">通信エラー: ' + err.message + '</p>';
+                    });
+            });
+        }
     })();
     </script>
     <?php

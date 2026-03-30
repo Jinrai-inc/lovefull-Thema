@@ -27,9 +27,7 @@ $seasons_by_show = [];
 if ($all_seasons) {
     update_meta_cache('post', wp_list_pluck($all_seasons, 'ID'));
     foreach ($all_seasons as $s) {
-        $s_show = get_field('show', $s->ID);
-        $s_show_id = is_array($s_show) ? ($s_show[0] ?? 0) : ($s_show ?: 0);
-        if (is_object($s_show_id)) $s_show_id = $s_show_id->ID ?? 0;
+        $s_show_id = intval(get_post_meta($s->ID, 'show', true));
         $seasons_by_show[$s_show_id][] = $s;
     }
 }
@@ -44,9 +42,7 @@ $cast_by_season = [];
 if ($all_cast) {
     update_meta_cache('post', wp_list_pluck($all_cast, 'ID'));
     foreach ($all_cast as $c) {
-        $c_season = get_field('season', $c->ID);
-        $c_season_id = is_array($c_season) ? ($c_season[0] ?? 0) : ($c_season ?: 0);
-        if (is_object($c_season_id)) $c_season_id = $c_season_id->ID ?? 0;
+        $c_season_id = intval(get_post_meta($c->ID, 'season', true));
         $cast_by_season[$c_season_id][] = $c;
     }
 }

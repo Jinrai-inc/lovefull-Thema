@@ -28,8 +28,8 @@
     --color-warning: #F59E0B;
     --color-gold: #D4A017;
 
-    /* フォント */
-    --font-family: 'M PLUS Rounded 1c', 'Zen Kaku Gothic New', 'Hiragino Sans', 'Meiryo', sans-serif;
+    /* フォント（かわいい丸ゴシック） */
+    --font-family: 'Zen Maru Gothic', 'M PLUS Rounded 1c', 'Kosugi Maru', 'Hiragino Maru Gothic ProN', 'Hiragino Sans', sans-serif;
 
     /* スペーシング */
     --space-xs: 4px;
@@ -127,6 +127,39 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+    position: relative;
+}
+
+/* 固定背景画像 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    background-image: var(--bg-image, none);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    filter: blur(var(--bg-blur, 0px));
+    transform: scale(1.02); /* ぼかし端の隙間防止 */
+}
+
+/* オーバーレイ */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-color: var(--bg-overlay-color, #FDF8FA);
+    opacity: var(--bg-overlay-opacity, 0.85);
+    pointer-events: none;
 }
 
 img {

@@ -105,12 +105,30 @@ add_action('after_setup_theme', function () {
         'unlink-homepage-logo' => false,
     ]);
 
-    // ロゴサイズをCSS変数で出力（モバイル/PC別）
+    // CSS変数を出力（ロゴ + 背景設定）
     add_action('wp_head', function () {
         $mobile   = intval(get_theme_mod('koi_ria_logo_height_mobile', 50));
         $pc       = intval(get_theme_mod('koi_ria_logo_height_pc', 70));
         $maxw     = intval(get_theme_mod('koi_ria_logo_max_width', 300));
-        echo '<style>:root{--logo-height-mobile:' . $mobile . 'px;--logo-height-pc:' . $pc . 'px;--logo-max-width:' . $maxw . 'px;}</style>' . "\n";
+        $bg_image = esc_url(get_theme_mod('koi_ria_bg_image', ''));
+        $bg_color = sanitize_hex_color(get_theme_mod('koi_ria_bg_overlay_color', '#FDF8FA'));
+        $bg_opacity = intval(get_theme_mod('koi_ria_bg_overlay_opacity', 85)) / 100;
+        $bg_blur  = intval(get_theme_mod('koi_ria_bg_blur', 0));
+
+        $css = ':root{';
+        $css .= '--logo-height-mobile:' . $mobile . 'px;';
+        $css .= '--logo-height-pc:' . $pc . 'px;';
+        $css .= '--logo-max-width:' . $maxw . 'px;';
+        if ($bg_image) {
+            $css .= '--bg-image:url(' . $bg_image . ');';
+        } else {
+            $css .= '--bg-image:none;';
+        }
+        $css .= '--bg-overlay-color:' . $bg_color . ';';
+        $css .= '--bg-overlay-opacity:' . number_format($bg_opacity, 2) . ';';
+        $css .= '--bg-blur:' . $bg_blur . 'px;';
+        $css .= '}';
+        echo '<style>' . $css . '</style>' . "\n";
     }, 5);
 
     // サムネイルサイズ
@@ -174,10 +192,10 @@ add_action('admin_init', function () {
  * スタイル・スクリプト読み込み
  */
 add_action('wp_enqueue_scripts', function () {
-    // Google Fonts
+    // Google Fonts — とってもかわいいフォント
     wp_enqueue_style(
         'koi-ria-google-fonts',
-        'https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap',
+        'https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&family=Zen+Maru+Gothic:wght@400;500;700&family=Kosugi+Maru&display=swap',
         [],
         null
     );

@@ -494,9 +494,26 @@
     transform: scale(0.97);
 }
 
+.show-card__logo {
+    width: 80px;
+    height: 60px;
+    margin: 0 auto var(--space-xs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.show-card__logo-img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+}
+
 .show-card__emoji {
     font-size: 2rem;
-    margin-bottom: var(--space-xs);
 }
 
 .show-card__name {
@@ -504,6 +521,25 @@
     font-weight: 700;
     margin-bottom: var(--space-xs);
     line-height: 1.3;
+}
+
+/* 出演者カード: 番組ロゴ表示 */
+.cast-card__show-logo {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto var(--space-xs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cast-card__show-logo-img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
 }
 
 /* --- 出演者カード --- */
@@ -689,24 +725,23 @@
 
 /* --- Thumbnail / Emoji circle --- */
 .schedule-card__thumb {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
+    width: 52px;
+    height: 40px;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, rgba(255, 107, 157, 0.08), rgba(192, 132, 252, 0.08));
-    border: 2px solid rgba(232, 97, 154, 0.12);
     flex-shrink: 0;
     margin-top: 2px;
 }
 
 .schedule-card__img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
 }
 
 .schedule-card__emoji {
@@ -715,8 +750,7 @@
 }
 
 .schedule-card.is-today .schedule-card__thumb {
-    border-color: rgba(232, 97, 154, 0.3);
-    background: linear-gradient(135deg, rgba(255, 107, 157, 0.15), rgba(192, 132, 252, 0.15));
+    transform: scale(1.1);
 }
 
 /* --- Show name --- */

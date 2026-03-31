@@ -19,22 +19,30 @@ $profile_image   = get_field('profile_image', $cast->ID);
 $avatar_url = '';
 if ($profile_image && isset($profile_image['url'])) {
     $avatar_url = $profile_image['url'];
-} elseif ($ig_username) {
-    $avatar_url = koi_ria_get_ig_avatar($ig_username, 200);
 }
 
-// 番組名取得（推しボタン用）- 静的キャッシュで同一showの重複クエリ防止
+// 番組情報取得（推しボタン用 + ロゴ画像）- 静的キャッシュで同一showの重複クエリ防止
 static $_show_cache = [];
 $_show_id   = get_field('show', $cast->ID);
 $_show_title = '';
+$_show_logo_url = '';
 if ($_show_id) {
     $_sid = is_array($_show_id) ? $_show_id[0] : $_show_id;
     if (is_object($_sid)) $_sid = $_sid->ID ?? 0;
     if (!isset($_show_cache[$_sid])) {
         $_show_post = get_post($_sid);
-        $_show_cache[$_sid] = $_show_post ? (get_field('short_name', $_show_post->ID) ?: $_show_post->post_title) : '';
+        $_show_cache[$_sid] = [
+            'title' => $_show_post ? (get_field('short_name', $_show_post->ID) ?: $_show_post->post_title) : '',
+            'logo'  => $_show_post ? get_the_post_thumbnail_url($_show_post->ID, 'cast-avatar') : '',
+        ];
     }
-    $_show_title = $_show_cache[$_sid];
+    $_show_title = $_show_cache[$_sid]['title'];
+    $_show_logo_url = $_show_cache[$_sid]['logo'];
+}
+
+// アバター: プロフィール画像 → 番組ロゴ → フォールバック
+if (!$avatar_url && $_show_logo_url) {
+    $avatar_url = $_show_logo_url;
 }
 ?>
 
@@ -45,13 +53,19 @@ if ($_show_id) {
         'ig'         => $ig_username,
         'show_title' => $_show_title,
     ]); ?>
-    <div class="ig-avatar" style="margin: 0 auto;">
-        <?php if ($avatar_url) : ?>
+    <?php if ($avatar_url && !$profile_image && $_show_logo_url) : ?>
+        <div class="cast-card__show-logo">
+            <img src="<?php echo esc_url($avatar_url); ?>" alt="<?php echo esc_attr($_show_title); ?>" class="cast-card__show-logo-img" loading="lazy">
+        </div>
+    <?php elseif ($avatar_url) : ?>
+        <div class="ig-avatar" style="margin: 0 auto;">
             <img src="<?php echo esc_url($avatar_url); ?>" alt="<?php echo esc_attr($display_name); ?>" class="ig-avatar__img" loading="lazy">
-        <?php else : ?>
+        </div>
+    <?php else : ?>
+        <div class="ig-avatar" style="margin: 0 auto;">
             <div class="ig-avatar__img" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0;"><?php echo koi_ria_icon('users', 24); ?></div>
-        <?php endif; ?>
-    </div>
+        </div>
+    <?php endif; ?>
     <div class="cast-card__name"><?php echo esc_html($display_name); ?></div>
     <?php if ($followers_count) : ?>
         <div class="cast-card__followers"><?php echo esc_html(number_format($followers_count)); ?> followers</div>

@@ -52,7 +52,7 @@ function koi_ria_upsert_show(array $row, string $mode = 'upsert'): array {
         update_field('description', $description, $post_id);
     }
 
-    $fields = ['short_name', 'platform', 'platform_color', 'emoji', 'youtube_channel_id', 'affiliate_url', 'show_status', 'genre', 'target', 'priority'];
+    $fields = ['short_name', 'platform', 'platform_color', 'emoji', 'youtube_channel_id', 'affiliate_url', 'show_status', 'genre', 'target', 'priority', 'broadcast_day', 'broadcast_time'];
     foreach ($fields as $field) {
         if (isset($row[$field]) && $row[$field] !== '') {
             update_field($field, $row[$field], $post_id);

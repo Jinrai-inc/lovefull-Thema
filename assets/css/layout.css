@@ -4,17 +4,63 @@
 
 /* --- サイトヘッダー --- */
 .site-header {
+    background: #fff;
+}
+
+/* --- ロゴバー（センター配置・非追尾） --- */
+.site-logo-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-md) var(--space-md);
+}
+
+.site-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.site-logo__img {
+    height: var(--logo-height-mobile, 50px);
+    width: auto;
+    max-width: var(--logo-max-width, 300px);
+    object-fit: contain;
+}
+
+@media (min-width: 769px) {
+    .site-logo__img {
+        height: var(--logo-height-pc, 70px);
+    }
+}
+
+.site-logo__icon {
+    font-size: 1.75rem;
+}
+
+.site-logo__text {
+    background: var(--color-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.5rem;
+}
+
+/* --- ナビバー（追尾sticky） --- */
+.nav-bar {
     position: sticky;
     top: 0;
     z-index: 100;
     background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: none;
+    border-bottom: 1px solid var(--color-border);
 }
 
-/* ヘッダー下部のグラデーションシマーライン */
-.site-header::after {
+/* ナビ下部のグラデーションシマーライン */
+.nav-bar::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -25,53 +71,48 @@
     opacity: 0.5;
 }
 
-/* --- ヘッダーナビ（クイックリンクバー）— モバイルは非表示、PCのみ --- */
-.header-nav {
-    display: none;
-}
-
-@media (min-width: 769px) {
-    .header-nav {
-        display: block;
-        position: sticky;
-        top: var(--header-height);
-        z-index: 99;
-        background: rgba(255, 255, 255, 0.90);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-bottom: 1px solid var(--color-border);
-        overflow: visible;
-    }
-}
-
-/* ナビ下部のグラデーションシマーライン */
-.header-nav::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #FF6B9D, #C084FC, #FF6B9D, transparent);
-    opacity: 0.3;
-}
-
-.header-nav__inner {
+.nav-bar__inner {
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
-    height: var(--header-nav-height);
+    justify-content: space-between;
+    height: var(--header-nav-height, 40px);
     max-width: var(--content-max-width);
     margin: 0 auto;
     padding: 0 var(--space-md);
+}
+
+/* --- ナビリンク --- */
+.nav-bar__links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     white-space: nowrap;
+    flex: 1;
+    min-width: 0;
 }
 
-.header-nav__inner::-webkit-scrollbar {
+.nav-bar__links::-webkit-scrollbar {
     display: none;
+}
+
+/* モバイル: ナビリンク非表示、ハンバーガーのみ */
+@media (max-width: 768px) {
+    .nav-bar__links {
+        display: none;
+    }
+    .nav-bar__inner {
+        justify-content: flex-end;
+    }
+}
+
+/* PC: ハンバーガー非表示 */
+@media (min-width: 769px) {
+    .hamburger {
+        display: none;
+    }
 }
 
 .header-nav__link {
@@ -130,43 +171,6 @@
 .category-news .header-nav__link--news svg,
 .page-template-page-shindan .header-nav__link--shindan svg {
     color: #fff;
-}
-
-.site-header__inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: var(--header-height);
-    padding: 0 var(--space-md);
-    max-width: var(--content-max-width);
-    margin: 0 auto;
-}
-
-/* --- ロゴ --- */
-.site-logo {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-    font-weight: 700;
-    font-size: 1.125rem;
-}
-
-.site-logo__img {
-    height: var(--logo-height, 40px);
-    width: auto;
-    max-width: var(--logo-max-width, 200px);
-    object-fit: contain;
-}
-
-.site-logo__icon {
-    font-size: 1.5rem;
-}
-
-.site-logo__text {
-    background: var(--color-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
 }
 
 /* --- ハンバーガー --- */
@@ -500,10 +504,6 @@
     .global-nav__list {
         flex-direction: row;
         gap: var(--space-lg);
-    }
-
-    .site-header__inner {
-        gap: var(--space-xl);
     }
 
     .grid-2 {

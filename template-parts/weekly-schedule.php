@@ -2,47 +2,68 @@
 /**
  * 放送スケジュール（今週の放送）
  *
- * ACFオプションページから取得。未設定時は番組CPTの show_status=放送中 から動的生成。
+ * 番組CPTの broadcast_day フィールドから曜日別に表示。
+ * broadcast_day 未設定の番組はスケジュールに表示されない。
  *
  * @package KoiRiaPortal
  */
 
 defined('ABSPATH') || exit;
 
-$days_ja    = ['月', '火', '水', '木', '金', '土', '日'];
+$days_ja     = ['月', '火', '水', '木', '金', '土', '日'];
 $today_index = (int) date('N') - 1; // 0=月, 6=日
 
-// ACFオプションページからスケジュールデータを取得（設定されている場合）
-$schedule_data = function_exists('get_field') ? get_field('weekly_schedule', 'option') : null;
-
-// ACFオプションページ未設定時: 放送中番組から自動生成
-if (empty($schedule_data)) {
-    $on_air_shows = get_posts([
-        'post_type'      => 'show',
-        'posts_per_page' => -1,
-        'meta_query'     => [
-            [
-                'key'     => 'show_status',
-                'value'   => ['放送中', '配信中'],
-                'compare' => 'IN',
-            ],
+// 放送中・配信中の番組を取得
+$on_air_shows = get_posts([
+    'post_type'      => 'show',
+    'posts_per_page' => -1,
+    'meta_query'     => [
+        [
+            'key'     => 'show_status',
+            'value'   => ['放送中', '配信中'],
+            'compare' => 'IN',
         ],
-        'meta_key' => 'priority',
-        'orderby'  => 'meta_value_num',
-        'order'    => 'ASC',
-    ]);
+    ],
+    'meta_key' => 'priority',
+    'orderby'  => 'meta_value_num',
+    'order'    => 'ASC',
+]);
 
-    // 番組を曜日に割り当て（ラウンドロビン）
-    $schedule_data = [];
-    foreach ($days_ja as $i => $day) {
-        $show_index = $i % max(count($on_air_shows), 1);
-        $show = $on_air_shows[$show_index] ?? null;
+// 曜日別に番組をグループ化（broadcast_day フィールドを使用）
+$shows_by_day = array_fill(0, 7, []);
+
+foreach ($on_air_shows as $show) {
+    $broadcast_day = get_field('broadcast_day', $show->ID);
+    if ($broadcast_day === '' || $broadcast_day === null || $broadcast_day === false) {
+        continue; // 放送曜日未設定 → スケジュール非表示
+    }
+    $day_index = intval($broadcast_day);
+    if ($day_index >= 0 && $day_index <= 6) {
+        $shows_by_day[$day_index][] = $show;
+    }
+}
+
+// スケジュールデータ生成
+$schedule_data = [];
+foreach ($days_ja as $i => $day) {
+    $day_shows = $shows_by_day[$i];
+    if (!empty($day_shows)) {
+        // 最優先の番組を表示（複数ある場合は priority 順で最初の1つ）
+        $show = $day_shows[0];
         $schedule_data[] = [
             'day'       => $day,
-            'time'      => $show ? '21:00' : '',
-            'show_name' => $show ? (get_field('short_name', $show->ID) ?: $show->post_title) : '',
-            'platform'  => $show ? (get_field('platform', $show->ID) ?: '') : '',
-            'show_id'   => $show ? $show->ID : 0,
+            'time'      => get_field('broadcast_time', $show->ID) ?: '',
+            'show_name' => get_field('short_name', $show->ID) ?: $show->post_title,
+            'platform'  => get_field('platform', $show->ID) ?: '',
+            'show_id'   => $show->ID,
+        ];
+    } else {
+        $schedule_data[] = [
+            'day'       => $day,
+            'time'      => '',
+            'show_name' => '',
+            'platform'  => '',
+            'show_id'   => 0,
         ];
     }
 }

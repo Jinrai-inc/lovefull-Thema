@@ -40,8 +40,6 @@ $koi_sections = [
     'column'         => 'koi_ria_render_column',
     'news'           => 'koi_ria_render_news',
     'shindan'        => 'koi_ria_render_shindan',
-    'vod_search'     => 'koi_ria_render_vod_search',
-    'affiliate'      => 'koi_ria_render_affiliate',
     'adsense'        => 'koi_ria_render_adsense',
 ];
 
@@ -56,7 +54,7 @@ usort($koi_section_keys, function ($a, $b) use ($koi_display, &$default_order) {
             'breaking_bar' => 4, 'shows' => 5, 'popular_posts' => 6,
             'couple_tracker' => 7, 'poll' => 8, 'stories_cast' => 9,
             'column' => 10, 'news' => 11, 'shindan' => 12,
-            'vod_search' => 13, 'affiliate' => 14, 'adsense' => 15,
+            'adsense' => 13,
         ];
     }
     $order_a = isset($koi_display[$a]['order']) ? (int) $koi_display[$a]['order'] : $defaults[$a];
@@ -283,29 +281,11 @@ function koi_ria_render_shindan(): void {
     <?php endif;
 }
 
-function koi_ria_render_vod_search(): void {
-    // 5-13. VOD検索バナー
-    $vod_page = get_page_by_path('vod-search');
-    if ($vod_page) :
-    ?>
-    <section class="section">
-        <a href="<?php echo esc_url(get_permalink($vod_page)); ?>" class="promo-banner" style="background: linear-gradient(135deg, #00B900, #0077B5); color: #fff; display: block; border-radius: var(--radius-lg); padding: var(--space-lg); text-decoration: none; text-align: center; margin: 0 var(--space-md);">
-            <span style="font-size: 2rem; display: block;"><?php echo koi_ria_icon('compass', 32); ?></span>
-            <div style="font-weight: 700; font-size: 1.125rem; margin-top: var(--space-xs);">どのVODで見れる？</div>
-            <p style="font-size: 0.8125rem; opacity: 0.9; margin-top: var(--space-xs);">番組の配信先を検索 →</p>
-        </a>
-    </section>
-    <?php endif;
-}
-
-function koi_ria_render_affiliate(): void {
-    // 5-14. アフィリエイトバナー
-    get_template_part('template-parts/affiliate-banner');
-}
-
 function koi_ria_render_adsense(): void {
     // 5-15. AdSenseスロット
     get_template_part('template-parts/adsense-slot');
 }
+
+get_template_part('template-parts/sidebar-banners');
 
 get_footer();

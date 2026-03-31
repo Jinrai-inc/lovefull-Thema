@@ -340,16 +340,6 @@ $related_posts = get_posts([
 </div>
 <?php endif; ?>
 
-<?php // アフィリエイト ?>
-<?php if ($affiliate_url) : ?>
-<section class="section">
-    <a href="<?php echo esc_url($affiliate_url); ?>" class="affiliate-banner" style="background: linear-gradient(135deg, <?php echo esc_attr($platform_color); ?>, <?php echo esc_attr($platform_color); ?>CC);" target="_blank" rel="noopener sponsored">
-        <div class="affiliate-banner__title"><?php echo esc_html($short_name); ?>を<?php echo esc_html($platform); ?>で見る</div>
-        <span class="affiliate-banner__cta">今すぐ視聴</span>
-        <small class="affiliate-banner__pr">PR</small>
-    </a>
-</section>
-<?php endif; ?>
-
 <?php
+get_template_part('template-parts/sidebar-banners');
 get_footer();

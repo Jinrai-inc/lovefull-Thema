@@ -201,5 +201,9 @@ while (have_posts()) :
 
 <?php
 endwhile;
+?>
 
+<?php get_template_part('template-parts/sidebar-banners'); ?>
+
+<?php
 get_footer();

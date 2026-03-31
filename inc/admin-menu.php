@@ -432,26 +432,25 @@ function koi_ria_ads_page(): void {
         update_option('koi_ria_adsense_slot_article', sanitize_text_field($_POST['adsense_slot_article'] ?? ''));
         update_option('koi_ria_adsense_slot_sidebar', sanitize_text_field($_POST['adsense_slot_sidebar'] ?? ''));
 
-        // アフィリエイトバナー設定
-        $banners = [];
-        $names   = $_POST['affiliate_name'] ?? [];
-        $urls    = $_POST['affiliate_url'] ?? [];
-        $ctas    = $_POST['affiliate_cta'] ?? [];
-        $colors  = $_POST['affiliate_color'] ?? [];
+        // サイドバー固定バナー設定
+        $sidebar_banners = [];
+        $sb_images = $_POST['sidebar_banner_image'] ?? [];
+        $sb_urls   = $_POST['sidebar_banner_url'] ?? [];
+        $sb_labels = $_POST['sidebar_banner_label'] ?? [];
 
-        for ($i = 0; $i < count($names); $i++) {
-            $name = sanitize_text_field($names[$i] ?? '');
-            $url  = esc_url_raw($urls[$i] ?? '');
-            if ($name && $url) {
-                $banners[] = [
-                    'name'  => $name,
+        for ($i = 0; $i < count($sb_images); $i++) {
+            $image = esc_url_raw($sb_images[$i] ?? '');
+            $url   = esc_url_raw($sb_urls[$i] ?? '');
+            $label = sanitize_text_field($sb_labels[$i] ?? '');
+            if ($image) {
+                $sidebar_banners[] = [
+                    'image' => $image,
                     'url'   => $url,
-                    'cta'   => sanitize_text_field($ctas[$i] ?? ''),
-                    'color' => sanitize_text_field($colors[$i] ?? ''),
+                    'label' => $label,
                 ];
             }
         }
-        update_option('koi_ria_affiliate_banners', $banners);
+        update_option('koi_ria_sidebar_banners', $sidebar_banners);
 
         echo '<div class="notice notice-success"><p>広告設定を保存しました。</p></div>';
     }
@@ -460,15 +459,9 @@ function koi_ria_ads_page(): void {
     $slot_top        = get_option('koi_ria_adsense_slot_top', '');
     $slot_article    = get_option('koi_ria_adsense_slot_article', '');
     $slot_sidebar    = get_option('koi_ria_adsense_slot_sidebar', '');
-    $banners         = get_option('koi_ria_affiliate_banners', []);
-
-    // デフォルトバナー
-    if (empty($banners)) {
-        $banners = [
-            ['name' => 'ABEMAプレミアム', 'url' => '', 'cta' => '2週間無料でお試し', 'color' => 'linear-gradient(135deg, #00B900, #00D900)'],
-            ['name' => 'Netflix', 'url' => '', 'cta' => '今すぐ視聴する', 'color' => 'linear-gradient(135deg, #E50914, #B20710)'],
-            ['name' => 'Amazonプライム', 'url' => '', 'cta' => '30日間無料体験', 'color' => 'linear-gradient(135deg, #00A8E1, #0077B5)'],
-        ];
+    $sidebar_banners = get_option('koi_ria_sidebar_banners', []);
+    if (empty($sidebar_banners)) {
+        $sidebar_banners = [['image' => '', 'url' => '', 'label' => '']];
     }
     ?>
     <div class="wrap">
@@ -505,48 +498,94 @@ function koi_ria_ads_page(): void {
                 </tr>
             </table>
 
-            <h2 class="title">アフィリエイトバナー</h2>
-            <p class="description">トップページ下部やサイドバーに表示するアフィリエイトバナーを設定します。</p>
+            <h2 class="title">サイドバー固定バナー</h2>
+            <p class="description">PC表示時にサイドバーに固定表示するバナー広告を設定します。画像URLとリンク先を入力してください。</p>
 
-            <table class="widefat striped" style="max-width:900px; margin-top:10px;" id="affiliate-banners">
+            <table class="widefat striped" style="max-width:900px; margin-top:10px;" id="sidebar-banners">
                 <thead>
                     <tr>
-                        <th>サービス名</th>
-                        <th>URL</th>
-                        <th>CTAテキスト</th>
-                        <th>背景グラデーション</th>
+                        <th style="width:35%">画像URL</th>
+                        <th style="width:35%">リンク先URL</th>
+                        <th style="width:20%">ラベル（任意）</th>
+                        <th style="width:10%">削除</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($banners as $i => $banner) : ?>
+                    <?php foreach ($sidebar_banners as $i => $sb) : ?>
                     <tr>
-                        <td><input type="text" name="affiliate_name[]" value="<?php echo esc_attr($banner['name']); ?>" class="regular-text"></td>
-                        <td><input type="url" name="affiliate_url[]" value="<?php echo esc_attr($banner['url']); ?>" class="regular-text" placeholder="https://..."></td>
-                        <td><input type="text" name="affiliate_cta[]" value="<?php echo esc_attr($banner['cta']); ?>" class="regular-text"></td>
-                        <td><input type="text" name="affiliate_color[]" value="<?php echo esc_attr($banner['color']); ?>" class="regular-text" placeholder="linear-gradient(135deg, #xxx, #yyy)"></td>
+                        <td>
+                            <input type="url" name="sidebar_banner_image[]" value="<?php echo esc_attr($sb['image']); ?>" class="regular-text" placeholder="https://example.com/banner.jpg">
+                            <button type="button" class="button koi-media-upload" style="margin-top:4px;">画像を選択</button>
+                        </td>
+                        <td><input type="url" name="sidebar_banner_url[]" value="<?php echo esc_attr($sb['url']); ?>" class="regular-text" placeholder="https://..."></td>
+                        <td><input type="text" name="sidebar_banner_label[]" value="<?php echo esc_attr($sb['label']); ?>" class="regular-text" placeholder="PR"></td>
+                        <td><button type="button" class="button koi-remove-row" style="color:#d63638;">削除</button></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
             <p>
-                <button type="button" class="button" onclick="addBannerRow()">+ バナーを追加</button>
+                <button type="button" class="button" id="add-sidebar-banner">+ バナーを追加</button>
             </p>
+
+            <?php if (!empty($sidebar_banners[0]['image'])) : ?>
+            <h3>プレビュー</h3>
+            <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+                <?php foreach ($sidebar_banners as $sb) : if (empty($sb['image'])) continue; ?>
+                <div style="border:1px solid #ddd;border-radius:8px;overflow:hidden;max-width:300px;">
+                    <img src="<?php echo esc_url($sb['image']); ?>" style="width:100%;height:auto;">
+                    <?php if (!empty($sb['label'])) : ?>
+                        <div style="padding:4px 8px;font-size:11px;color:#666;"><?php echo esc_html($sb['label']); ?></div>
+                    <?php endif; ?>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
 
             <?php submit_button('広告設定を保存'); ?>
         </form>
     </div>
     <script>
-    function addBannerRow() {
-        var tbody = document.querySelector('#affiliate-banners tbody');
-        var row = document.createElement('tr');
-        row.innerHTML = '<td><input type="text" name="affiliate_name[]" class="regular-text"></td>' +
-            '<td><input type="url" name="affiliate_url[]" class="regular-text" placeholder="https://..."></td>' +
-            '<td><input type="text" name="affiliate_cta[]" class="regular-text"></td>' +
-            '<td><input type="text" name="affiliate_color[]" class="regular-text" placeholder="linear-gradient(135deg, #xxx, #yyy)"></td>';
-        tbody.appendChild(row);
-    }
+    jQuery(function($) {
+        // バナー追加
+        $('#add-sidebar-banner').on('click', function() {
+            var row = '<tr>' +
+                '<td><input type="url" name="sidebar_banner_image[]" class="regular-text" placeholder="https://example.com/banner.jpg">' +
+                '<button type="button" class="button koi-media-upload" style="margin-top:4px;">画像を選択</button></td>' +
+                '<td><input type="url" name="sidebar_banner_url[]" class="regular-text" placeholder="https://..."></td>' +
+                '<td><input type="text" name="sidebar_banner_label[]" class="regular-text" placeholder="PR"></td>' +
+                '<td><button type="button" class="button koi-remove-row" style="color:#d63638;">削除</button></td>' +
+                '</tr>';
+            $('#sidebar-banners tbody').append(row);
+        });
+
+        // 行削除
+        $(document).on('click', '.koi-remove-row', function() {
+            $(this).closest('tr').remove();
+        });
+
+        // メディアライブラリから画像選択
+        $(document).on('click', '.koi-media-upload', function(e) {
+            e.preventDefault();
+            var $btn = $(this);
+            var $input = $btn.siblings('input[type="url"]');
+            var frame = wp.media({
+                title: 'バナー画像を選択',
+                button: { text: '選択' },
+                multiple: false,
+                library: { type: 'image' }
+            });
+            frame.on('select', function() {
+                var attachment = frame.state().get('selection').first().toJSON();
+                $input.val(attachment.url);
+            });
+            frame.open();
+        });
+    });
     </script>
     <?php
+    // メディアライブラリスクリプトを読み込み
+    wp_enqueue_media();
 }
 
 /**
@@ -1038,8 +1077,6 @@ function koi_ria_display_page(): void {
         'column'         => '恋愛コラム',
         'news'           => '最新ニュース',
         'shindan'        => '番組診断バナー',
-        'vod_search'     => 'VOD検索バナー',
-        'affiliate'      => 'アフィリエイトバナー',
         'adsense'        => 'AdSenseスロット',
     ];
 

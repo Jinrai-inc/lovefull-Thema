@@ -228,40 +228,6 @@ add_action('enqueue_block_editor_assets', function () {
 });
 
 /**
- * 記事下にVODウィジェット自動挿入
- */
-add_filter('the_content', function (string $content): string {
-    if (!is_singular('post') || !in_the_loop() || !is_main_query()) {
-        return $content;
-    }
-
-    // タグから番組を特定
-    $tags = get_the_tags();
-    if (!$tags) return $content;
-
-    $show_id = 0;
-    foreach ($tags as $tag) {
-        $found = get_posts([
-            'post_type'      => 'show',
-            'posts_per_page' => 1,
-            'meta_query'     => [['key' => 'short_name', 'value' => $tag->name]],
-        ]);
-        if ($found) {
-            $show_id = $found[0]->ID;
-            break;
-        }
-    }
-
-    if (!$show_id) return $content;
-
-    ob_start();
-    get_template_part('template-parts/vod-auto-insert', null, ['show_id' => $show_id]);
-    $widget = ob_get_clean();
-
-    return $content . $widget;
-}, 20);
-
-/**
  * Preconnect / DNS Prefetch（パフォーマンス最適化）
  */
 add_action('wp_head', function () {

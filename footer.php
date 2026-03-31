@@ -102,13 +102,9 @@ defined('ABSPATH') || exit;
             <a href="<?php echo esc_url(get_post_type_archive_link('poll')); ?>"><?php echo koi_ria_icon('chart', 20); ?> みんなの予想</a>
             <?php
             $shindan_page = get_page_by_path('shindan');
-            $vod_page     = get_page_by_path('vod-search');
             ?>
             <?php if ($shindan_page) : ?>
             <a href="<?php echo esc_url(get_permalink($shindan_page)); ?>"><?php echo koi_ria_icon('sparkle', 20); ?> 番組診断</a>
-            <?php endif; ?>
-            <?php if ($vod_page) : ?>
-            <a href="<?php echo esc_url(get_permalink($vod_page)); ?>"><?php echo koi_ria_icon('compass', 20); ?> VOD検索</a>
             <?php endif; ?>
             <a href="<?php echo esc_url(home_url('/?s=')); ?>"><?php echo koi_ria_icon('search', 20); ?> 検索</a>
         </nav>

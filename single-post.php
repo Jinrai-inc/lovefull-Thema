@@ -18,6 +18,7 @@ while (have_posts()) :
     $default_eyecatch = get_theme_mod('koi_ria_default_eyecatch', '');
 
     // アイキャッチURL取得（個別 → デフォルト）
+    $has_own_eyecatch = has_post_thumbnail(get_the_ID());
     $eyecatch_url = get_the_post_thumbnail_url(get_the_ID(), 'large');
     if (!$eyecatch_url) {
         $eyecatch_url = $default_eyecatch;
@@ -31,6 +32,11 @@ while (have_posts()) :
 <!-- ========== ニュース記事テンプレート ========== -->
 
 <?php if ($eyecatch_url) : ?>
+<?php if ($has_own_eyecatch) : ?>
+<div class="eyecatch-hero eyecatch-hero--plain">
+    <img src="<?php echo esc_url($eyecatch_url); ?>" alt="" class="eyecatch-hero__img">
+</div>
+<?php else : ?>
 <div class="eyecatch-hero">
     <img src="<?php echo esc_url($eyecatch_url); ?>" alt="" class="eyecatch-hero__img">
     <div class="eyecatch-hero__overlay"></div>
@@ -38,6 +44,7 @@ while (have_posts()) :
         <h1><?php the_title(); ?></h1>
     </div>
 </div>
+<?php endif; ?>
 <?php endif; ?>
 
 <article class="section news-article">
@@ -59,7 +66,7 @@ while (have_posts()) :
                 ?>
             </div>
 
-            <?php if (!$eyecatch_url) : ?>
+            <?php if ($has_own_eyecatch || !$eyecatch_url) : ?>
             <h1 class="news-article__title"><?php the_title(); ?></h1>
             <?php endif; ?>
 
@@ -118,6 +125,11 @@ while (have_posts()) :
 <!-- ========== 恋愛コラム記事テンプレート ========== -->
 
 <?php if ($eyecatch_url) : ?>
+<?php if ($has_own_eyecatch) : ?>
+<div class="eyecatch-hero eyecatch-hero--plain">
+    <img src="<?php echo esc_url($eyecatch_url); ?>" alt="" class="eyecatch-hero__img">
+</div>
+<?php else : ?>
 <div class="eyecatch-hero">
     <img src="<?php echo esc_url($eyecatch_url); ?>" alt="" class="eyecatch-hero__img">
     <div class="eyecatch-hero__overlay"></div>
@@ -125,6 +137,7 @@ while (have_posts()) :
         <h1><?php the_title(); ?></h1>
     </div>
 </div>
+<?php endif; ?>
 <?php endif; ?>
 
 <article class="section column-article">
@@ -143,7 +156,7 @@ while (have_posts()) :
                 <?php endforeach; ?>
             </div>
 
-            <?php if (!$eyecatch_url) : ?>
+            <?php if ($has_own_eyecatch || !$eyecatch_url) : ?>
             <h1 class="column-article__title"><?php the_title(); ?></h1>
             <?php endif; ?>
 

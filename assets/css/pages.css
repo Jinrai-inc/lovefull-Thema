@@ -1688,6 +1688,16 @@
         0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
+/* カスタムアイキャッチ: オーバーレイなし */
+.eyecatch-hero--plain {
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.eyecatch-hero--plain .eyecatch-hero__img {
+    min-height: auto;
+    max-height: 480px;
+}
+
 @media (min-width: 769px) {
     .eyecatch-hero {
         border-radius: var(--radius-lg);
@@ -1699,6 +1709,17 @@
     }
     .eyecatch-hero__title-box h1 {
         font-size: 1.75rem;
+    }
+
+    /* 2カラムレイアウト内ではメインカラム幅に合わせる */
+    .article-layout__main .eyecatch-hero {
+        max-width: none;
+        margin: 0;
+    }
+
+    .eyecatch-hero--plain .eyecatch-hero__img {
+        min-height: auto;
+        max-height: 500px;
     }
 }
 

@@ -39,6 +39,7 @@ $koi_sections = [
     'stories_cast'   => 'koi_ria_render_stories_cast',
     'koiria_news'    => 'koi_ria_render_koiria_news',
     'column'         => 'koi_ria_render_column',
+    'affiliate'      => 'koi_ria_render_affiliate',
     'shindan'        => 'koi_ria_render_shindan',
     'adsense'        => 'koi_ria_render_adsense',
 ];
@@ -53,8 +54,8 @@ usort($koi_section_keys, function ($a, $b) use ($koi_display, &$default_order) {
             'hero_carousel' => 1, 'search_bar' => 2, 'weekly_schedule' => 3,
             'breaking_bar' => 4, 'shows' => 5, 'popular_posts' => 6,
             'couple_tracker' => 7, 'poll' => 8, 'stories_cast' => 9,
-            'koiria_news' => 10, 'column' => 11, 'shindan' => 12,
-            'adsense' => 13,
+            'koiria_news' => 10, 'column' => 11, 'affiliate' => 12,
+            'shindan' => 13, 'adsense' => 14,
         ];
     }
     $order_a = isset($koi_display[$a]['order']) ? (int) $koi_display[$a]['order'] : $defaults[$a];
@@ -294,6 +295,32 @@ function koi_ria_render_koiria_news(): void {
             endforeach;
             wp_reset_postdata();
             ?>
+        </div>
+    </section>
+    <?php
+}
+
+function koi_ria_render_affiliate(): void {
+    $abema_url = get_option('koi_ria_cta_url_abema', '');
+    $prime_url = get_option('koi_ria_cta_url_prime', '');
+    if (!$abema_url && !$prime_url) return;
+    ?>
+    <section class="section section--affiliate">
+        <div style="padding: 0 var(--space-md); display: flex; flex-direction: column; gap: var(--space-md);">
+            <?php if ($abema_url) : ?>
+            <a href="<?php echo esc_url($abema_url); ?>" class="affiliate-banner" style="background: linear-gradient(135deg, #00B900, #00D900);" target="_blank" rel="noopener sponsored">
+                <div class="affiliate-banner__title">ABEMA</div>
+                <span class="affiliate-banner__cta">ABEMAプレミアムで今すぐ視聴</span>
+                <small class="affiliate-banner__pr">PR</small>
+            </a>
+            <?php endif; ?>
+            <?php if ($prime_url) : ?>
+            <a href="<?php echo esc_url($prime_url); ?>" class="affiliate-banner" style="background: linear-gradient(135deg, #00A8E1, #0077B5);" target="_blank" rel="noopener sponsored">
+                <div class="affiliate-banner__title">Amazonプライム・ビデオ</div>
+                <span class="affiliate-banner__cta">プライム・ビデオで今すぐ視聴</span>
+                <small class="affiliate-banner__pr">PR</small>
+            </a>
+            <?php endif; ?>
         </div>
     </section>
     <?php

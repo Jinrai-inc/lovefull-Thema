@@ -1100,6 +1100,7 @@ function koi_ria_display_page(): void {
         'stories_cast'   => '話題の出演者',
         'koiria_news'    => '恋リア最新ニュース',
         'column'         => '恋愛コラム',
+        'affiliate'      => 'アフィリエイトCTA',
         'shindan'        => '番組診断バナー',
         'adsense'        => 'AdSenseスロット',
     ];

@@ -46,6 +46,18 @@ defined('ABSPATH') || exit;
     <?php // ── ナビバー（追尾sticky） ── ?>
     <div class="nav-bar" id="navBar">
         <div class="nav-bar__inner">
+            <?php // モバイル用ロゴ（ナビバー内・PCでは非表示） ?>
+            <?php if (has_custom_logo()) : ?>
+                <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-bar__logo">
+                    <img src="<?php echo esc_url(wp_get_attachment_image_url(get_theme_mod('custom_logo'), 'full')); ?>" alt="<?php echo esc_attr(get_bloginfo('name')); ?>" class="nav-bar__logo-img">
+                </a>
+            <?php else : ?>
+                <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-bar__logo">
+                    <span class="site-logo__icon"><?php echo koi_ria_icon('heart-filled', 22); ?></span>
+                    <span class="site-logo__text" style="font-size:1rem;"><?php bloginfo('name'); ?></span>
+                </a>
+            <?php endif; ?>
+
             <nav class="nav-bar__links" aria-label="メインナビゲーション">
                 <a href="<?php echo esc_url(home_url('/')); ?>" class="header-nav__link header-nav__link--home">
                     <span class="header-nav__icon"><?php echo koi_ria_icon('heart-filled', 14); ?></span>ホーム

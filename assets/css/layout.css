@@ -7,12 +7,18 @@
     background: #fff;
 }
 
-/* --- ロゴバー（センター配置・非追尾） --- */
+/* --- ロゴバー（センター配置・非追尾・PCのみ表示） --- */
 .site-logo-bar {
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     padding: var(--space-md) var(--space-md);
+}
+
+@media (min-width: 769px) {
+    .site-logo-bar {
+        display: flex;
+    }
 }
 
 .site-logo {
@@ -81,6 +87,27 @@
     padding: 0 var(--space-md);
 }
 
+/* --- ナビバー内ロゴ（モバイルのみ） --- */
+.nav-bar__logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    flex-shrink: 0;
+}
+
+.nav-bar__logo-img {
+    height: var(--logo-height-mobile, 50px);
+    width: auto;
+    max-width: 180px;
+    object-fit: contain;
+}
+
+@media (min-width: 769px) {
+    .nav-bar__logo {
+        display: none;
+    }
+}
+
 /* --- ナビリンク --- */
 .nav-bar__links {
     display: flex;
@@ -98,13 +125,13 @@
     display: none;
 }
 
-/* モバイル: ナビリンク非表示、ハンバーガーのみ */
+/* モバイル: ナビリンク非表示、ロゴ+ハンバーガー */
 @media (max-width: 768px) {
     .nav-bar__links {
         display: none;
     }
     .nav-bar__inner {
-        justify-content: flex-end;
+        justify-content: space-between;
     }
 }
 

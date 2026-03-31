@@ -430,12 +430,12 @@
     background: linear-gradient(135deg, #FFF5E6 0%, #FFE8F0 100%);
 }
 
-.section--column {
-    background: linear-gradient(135deg, #F8E8FF 0%, #FFE8F5 50%, #FFF0F0 100%);
+.section--koiria-news {
+    background: linear-gradient(135deg, #E8F8FF 0%, #F0E8FF 50%, #FFE8F5 100%);
 }
 
-.section--news {
-    background: linear-gradient(135deg, #E8F8FF 0%, #F0E8FF 100%);
+.section--column {
+    background: linear-gradient(135deg, #F8E8FF 0%, #FFE8F5 50%, #FFF0F0 100%);
 }
 
 .section--shindan {

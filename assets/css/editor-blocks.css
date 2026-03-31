@@ -2,6 +2,9 @@
  * 恋リアポータル エディターブロックスタイル
  * 女子高生向けのかわいいデザインパターン
  *
+ * register_block_style() で登録した is-style-koi-* クラスに対応。
+ * 従来の heading--*, box--* クラスも後方互換として維持。
+ *
  * @package KoiRiaPortal
  */
 
@@ -9,13 +12,14 @@
    A. 見出しスタイル
    ============================================= */
 
-/* リボン型見出し */
+/* --- リボン型見出し --- */
+.is-style-koi-ribbon,
 .heading--ribbon {
     position: relative;
     display: inline-block;
     padding: 0.5em 1.5em 0.5em 1.8em;
     background: linear-gradient(135deg, #FFB6D5, #E8619A);
-    color: #fff;
+    color: #fff !important;
     font-family: 'M PLUS Rounded 1c', sans-serif;
     font-weight: 700;
     border-radius: 0 8px 8px 0;
@@ -24,32 +28,27 @@
     box-shadow: 0 3px 10px rgba(232, 97, 154, 0.25);
     line-height: 1.6;
 }
-
+.is-style-koi-ribbon::before,
 .heading--ribbon::before {
     content: '';
     position: absolute;
-    left: 0;
-    top: 0;
-    width: 0;
-    height: 0;
+    left: 0; top: 0;
     border-style: solid;
     border-width: 0 16px 50% 0;
     border-color: transparent #fff transparent transparent;
 }
-
+.is-style-koi-ribbon::after,
 .heading--ribbon::after {
     content: '';
     position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 0;
-    height: 0;
+    left: 0; bottom: 0;
     border-style: solid;
     border-width: 50% 16px 0 0;
     border-color: transparent #fff transparent transparent;
 }
 
-/* ハートアイコン付き見出し */
+/* --- ハートアイコン付き見出し --- */
+.is-style-koi-heart,
 .heading--heart {
     position: relative;
     padding: 0.5em 0.5em 0.5em 2.2em;
@@ -60,23 +59,23 @@
     margin-bottom: 1.2em;
     line-height: 1.6;
 }
-
+.is-style-koi-heart::before,
 .heading--heart::before {
     content: '\2665';
     position: absolute;
-    left: 0;
-    top: 50%;
+    left: 0; top: 50%;
     transform: translateY(-50%);
     font-size: 1.4em;
     color: #E8619A;
     line-height: 1;
 }
 
-/* グラデーション背景見出し */
+/* --- グラデーション背景見出し --- */
+.is-style-koi-gradient,
 .heading--gradient {
     padding: 0.6em 1.2em;
     background: linear-gradient(135deg, #FFB6D5 0%, #C084FC 50%, #93C5FD 100%);
-    color: #fff;
+    color: #fff !important;
     font-family: 'M PLUS Rounded 1c', sans-serif;
     font-weight: 700;
     border-radius: 12px;
@@ -86,7 +85,8 @@
     line-height: 1.6;
 }
 
-/* 吹き出し型見出し */
+/* --- 吹き出し型見出し --- */
+.is-style-koi-bubble,
 .heading--bubble {
     position: relative;
     padding: 0.6em 1.2em;
@@ -100,38 +100,150 @@
     text-align: center;
     line-height: 1.6;
 }
-
+.is-style-koi-bubble::after,
 .heading--bubble::after {
     content: '';
     position: absolute;
-    bottom: -14px;
-    left: 50%;
+    bottom: -14px; left: 50%;
     transform: translateX(-50%);
-    width: 0;
-    height: 0;
     border-style: solid;
     border-width: 14px 10px 0;
     border-color: #FFF0F5 transparent transparent;
 }
-
+.is-style-koi-bubble::before,
 .heading--bubble::before {
     content: '';
     position: absolute;
-    bottom: -17px;
-    left: 50%;
+    bottom: -17px; left: 50%;
     transform: translateX(-50%);
-    width: 0;
-    height: 0;
     border-style: solid;
     border-width: 16px 12px 0;
     border-color: #FFB6D5 transparent transparent;
+}
+
+/* --- キラキラ見出し --- */
+.is-style-koi-star {
+    position: relative;
+    padding: 0.5em 0.5em 0.5em 2.4em;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 700;
+    color: #C084FC;
+    border-bottom: 2px dashed #DDD6FE;
+    margin-bottom: 1.2em;
+    line-height: 1.6;
+}
+.is-style-koi-star::before {
+    content: '\2728';
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.3em;
+    line-height: 1;
+}
+
+/* --- ストライプ見出し --- */
+.is-style-koi-stripe {
+    padding: 0.6em 1.2em;
+    background: repeating-linear-gradient(
+        -45deg,
+        #FFF0F5,
+        #FFF0F5 6px,
+        #FFE4F0 6px,
+        #FFE4F0 12px
+    );
+    color: #E8619A;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 700;
+    border-left: 5px solid #E8619A;
+    border-radius: 0 10px 10px 0;
+    margin-bottom: 1.2em;
+    line-height: 1.6;
+}
+
+/* --- カギ括弧見出し --- */
+.is-style-koi-bracket {
+    position: relative;
+    padding: 0.6em 1.4em;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 700;
+    color: #E8619A;
+    margin-bottom: 1.2em;
+    line-height: 1.6;
+}
+.is-style-koi-bracket::before,
+.is-style-koi-bracket::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: #E8619A;
+    border-style: solid;
+}
+.is-style-koi-bracket::before {
+    top: 0; left: 0;
+    border-width: 3px 0 0 3px;
+    border-radius: 4px 0 0 0;
+}
+.is-style-koi-bracket::after {
+    bottom: 0; right: 0;
+    border-width: 0 3px 3px 0;
+    border-radius: 0 0 4px 0;
+}
+
+/* --- ドット下線見出し --- */
+.is-style-koi-underline {
+    padding: 0.4em 0 0.5em;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 700;
+    color: #E8619A;
+    border-bottom: 4px dotted #FFB6D5;
+    margin-bottom: 1.2em;
+    line-height: 1.6;
+}
+
+/* --- バルーン見出し --- */
+.is-style-koi-balloon {
+    display: inline-block;
+    padding: 0.5em 1.8em;
+    background: linear-gradient(135deg, #E8619A, #FF6B9D);
+    color: #fff !important;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 700;
+    border-radius: 50px;
+    margin-bottom: 1.2em;
+    box-shadow: 0 4px 12px rgba(232, 97, 154, 0.3);
+    line-height: 1.6;
+}
+
+/* --- ラベル見出し --- */
+.is-style-koi-label {
+    position: relative;
+    display: inline-block;
+    padding: 0.5em 1.5em 0.5em 1.2em;
+    background: #FFF0F5;
+    color: #E8619A;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 700;
+    border: 2px solid #FFB6D5;
+    border-radius: 4px 4px 4px 0;
+    margin-bottom: 1.4em;
+    line-height: 1.6;
+}
+.is-style-koi-label::after {
+    content: '';
+    position: absolute;
+    bottom: -10px; left: 0;
+    border-style: solid;
+    border-width: 10px 10px 0 0;
+    border-color: #FFB6D5 transparent transparent transparent;
 }
 
 /* =============================================
    B. ボックスデザイン
    ============================================= */
 
-/* ピンクボーダー丸角ボックス */
+/* --- ピンクボーダー丸角ボックス --- */
+.is-style-koi-box-pink,
 .box--pink {
     border: 2px solid #FFB6D5;
     border-radius: 14px;
@@ -143,7 +255,8 @@
     line-height: 1.8;
 }
 
-/* POINTラベル付きボックス */
+/* --- POINTラベル付きボックス --- */
+.is-style-koi-box-point,
 .box--point {
     position: relative;
     border: 2px solid #E8619A;
@@ -155,12 +268,11 @@
     font-family: 'M PLUS Rounded 1c', sans-serif;
     line-height: 1.8;
 }
-
+.is-style-koi-box-point::before,
 .box--point::before {
     content: '\2605 POINT';
     position: absolute;
-    top: -0.85em;
-    left: 1.2em;
+    top: -0.85em; left: 1.2em;
     display: inline-block;
     padding: 0.15em 1em;
     background: linear-gradient(135deg, #E8619A, #C084FC);
@@ -172,7 +284,8 @@
     font-family: 'M PLUS Rounded 1c', sans-serif;
 }
 
-/* 注意ラベル付きボックス */
+/* --- 注意ラベル付きボックス --- */
+.is-style-koi-box-caution,
 .box--caution {
     position: relative;
     border: 2px solid #F59E0B;
@@ -184,12 +297,11 @@
     font-family: 'M PLUS Rounded 1c', sans-serif;
     line-height: 1.8;
 }
-
+.is-style-koi-box-caution::before,
 .box--caution::before {
     content: '\26A0 注意';
     position: absolute;
-    top: -0.85em;
-    left: 1.2em;
+    top: -0.85em; left: 1.2em;
     display: inline-block;
     padding: 0.15em 1em;
     background: linear-gradient(135deg, #F59E0B, #FB923C);
@@ -201,7 +313,8 @@
     font-family: 'M PLUS Rounded 1c', sans-serif;
 }
 
-/* チェックリスト風ボックス */
+/* --- チェックリスト風ボックス --- */
+.is-style-koi-box-check,
 .box--check {
     border: 2px solid #FFB6D5;
     border-radius: 14px;
@@ -212,30 +325,30 @@
     font-family: 'M PLUS Rounded 1c', sans-serif;
     line-height: 1.8;
 }
-
+.is-style-koi-box-check ul,
 .box--check ul {
     list-style: none;
     padding-left: 0;
     margin: 0;
 }
-
+.is-style-koi-box-check ul li,
 .box--check ul li {
     position: relative;
     padding-left: 1.8em;
     margin-bottom: 0.5em;
 }
-
+.is-style-koi-box-check ul li::before,
 .box--check ul li::before {
     content: '\2714';
     position: absolute;
-    left: 0;
-    top: 0;
+    left: 0; top: 0;
     color: #E8619A;
     font-size: 1.1em;
     font-weight: 700;
 }
 
-/* おしゃれ引用ボックス */
+/* --- おしゃれ引用ボックス --- */
+.is-style-koi-box-quote,
 .box--quote {
     position: relative;
     border: none;
@@ -250,12 +363,11 @@
     line-height: 1.8;
     color: #6B21A8;
 }
-
+.is-style-koi-box-quote::before,
 .box--quote::before {
     content: '\201C';
     position: absolute;
-    top: 0.1em;
-    left: 0.3em;
+    top: 0.1em; left: 0.3em;
     font-size: 3em;
     color: #C084FC;
     font-family: Georgia, serif;
@@ -263,7 +375,8 @@
     opacity: 0.5;
 }
 
-/* ランキング風ボックス */
+/* --- ランキング風ボックス --- */
+.is-style-koi-box-ranking,
 .box--ranking {
     counter-reset: ranking;
     border: 2px solid #FFB6D5;
@@ -275,28 +388,26 @@
     font-family: 'M PLUS Rounded 1c', sans-serif;
     line-height: 1.8;
 }
-
+.is-style-koi-box-ranking ol,
 .box--ranking ol {
     list-style: none;
     padding-left: 0;
     margin: 0;
     counter-reset: ranking;
 }
-
+.is-style-koi-box-ranking ol li,
 .box--ranking ol li {
     position: relative;
     padding-left: 2.6em;
     margin-bottom: 0.8em;
     counter-increment: ranking;
 }
-
+.is-style-koi-box-ranking ol li::before,
 .box--ranking ol li::before {
     content: counter(ranking);
     position: absolute;
-    left: 0;
-    top: 0.1em;
-    width: 1.8em;
-    height: 1.8em;
+    left: 0; top: 0.1em;
+    width: 1.8em; height: 1.8em;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -307,18 +418,146 @@
     border-radius: 50%;
     line-height: 1;
 }
-
+.is-style-koi-box-ranking ol li:first-child::before,
 .box--ranking ol li:first-child::before {
     background: linear-gradient(135deg, #F59E0B, #FBBF24);
     box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
 }
-
+.is-style-koi-box-ranking ol li:nth-child(2)::before,
 .box--ranking ol li:nth-child(2)::before {
     background: linear-gradient(135deg, #9CA3AF, #D1D5DB);
 }
-
+.is-style-koi-box-ranking ol li:nth-child(3)::before,
 .box--ranking ol li:nth-child(3)::before {
     background: linear-gradient(135deg, #CD7F32, #DEB887);
+}
+
+/* --- メモボックス --- */
+.is-style-koi-box-memo {
+    position: relative;
+    border: 2px solid #93C5FD;
+    border-radius: 14px;
+    padding: 2.4em 1.4em 1.2em;
+    margin: 2em 0 1.5em;
+    background: #F0F9FF;
+    box-shadow: 0 2px 10px rgba(147, 197, 253, 0.15);
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    line-height: 1.8;
+}
+.is-style-koi-box-memo::before {
+    content: '\1F4DD MEMO';
+    position: absolute;
+    top: -0.85em; left: 1.2em;
+    display: inline-block;
+    padding: 0.15em 1em;
+    background: linear-gradient(135deg, #3B82F6, #60A5FA);
+    color: #fff;
+    font-size: 0.85em;
+    font-weight: 700;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+}
+
+/* --- ラブボックス --- */
+.is-style-koi-box-love {
+    position: relative;
+    border: 2px solid #F9A8D4;
+    border-radius: 14px;
+    padding: 2.4em 1.4em 1.2em;
+    margin: 2em 0 1.5em;
+    background: linear-gradient(135deg, #FFF0F5, #FFF5F8);
+    box-shadow: 0 2px 10px rgba(249, 168, 212, 0.2);
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    line-height: 1.8;
+}
+.is-style-koi-box-love::before {
+    content: '\2764 LOVE';
+    position: absolute;
+    top: -0.85em; left: 1.2em;
+    display: inline-block;
+    padding: 0.15em 1em;
+    background: linear-gradient(135deg, #EC4899, #F472B6);
+    color: #fff;
+    font-size: 0.85em;
+    font-weight: 700;
+    border-radius: 20px;
+    letter-spacing: 0.1em;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+}
+
+/* --- ステップボックス --- */
+.is-style-koi-box-step {
+    position: relative;
+    border: 2px solid #A78BFA;
+    border-radius: 14px;
+    padding: 2.4em 1.4em 1.2em;
+    margin: 2em 0 1.5em;
+    background: #FAF5FF;
+    box-shadow: 0 2px 10px rgba(167, 139, 250, 0.12);
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    line-height: 1.8;
+    counter-reset: step;
+}
+.is-style-koi-box-step::before {
+    content: '\1F4A1 STEP';
+    position: absolute;
+    top: -0.85em; left: 1.2em;
+    display: inline-block;
+    padding: 0.15em 1em;
+    background: linear-gradient(135deg, #8B5CF6, #A78BFA);
+    color: #fff;
+    font-size: 0.85em;
+    font-weight: 700;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+}
+.is-style-koi-box-step ol {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    counter-reset: step;
+}
+.is-style-koi-box-step ol li {
+    position: relative;
+    padding-left: 2.6em;
+    margin-bottom: 0.8em;
+    counter-increment: step;
+}
+.is-style-koi-box-step ol li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0; top: 0.15em;
+    width: 1.7em; height: 1.7em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #8B5CF6, #A78BFA);
+    color: #fff;
+    font-size: 0.85em;
+    font-weight: 700;
+    border-radius: 50%;
+    line-height: 1;
+}
+
+/* --- プロフィールボックス --- */
+.is-style-koi-box-profile {
+    border: 2px solid #F9A8D4;
+    border-radius: 18px;
+    padding: 1.4em;
+    margin: 1.5em 0;
+    background: linear-gradient(180deg, #FFF0F5 0%, #fff 40%);
+    box-shadow: 0 4px 16px rgba(249, 168, 212, 0.15);
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    line-height: 1.8;
+    text-align: center;
+}
+.is-style-koi-box-profile img {
+    border-radius: 50%;
+    border: 3px solid #FFB6D5;
+    box-shadow: 0 4px 12px rgba(255, 182, 213, 0.25);
+    max-width: 120px;
 }
 
 /* =============================================
@@ -326,6 +565,7 @@
    ============================================= */
 
 /* 左からのフキダシ */
+.is-style-koi-balloon-left,
 .balloon--left {
     position: relative;
     display: inline-block;
@@ -339,32 +579,27 @@
     line-height: 1.7;
     box-shadow: 0 2px 8px rgba(255, 182, 213, 0.15);
 }
-
+.is-style-koi-balloon-left::before,
 .balloon--left::before {
     content: '';
     position: absolute;
-    left: -12px;
-    bottom: 12px;
-    width: 0;
-    height: 0;
+    left: -12px; bottom: 12px;
     border-style: solid;
     border-width: 0 12px 12px 0;
     border-color: transparent #FFB6D5 transparent transparent;
 }
-
+.is-style-koi-balloon-left::after,
 .balloon--left::after {
     content: '';
     position: absolute;
-    left: -8px;
-    bottom: 14px;
-    width: 0;
-    height: 0;
+    left: -8px; bottom: 14px;
     border-style: solid;
     border-width: 0 10px 10px 0;
     border-color: transparent #FFF0F5 transparent transparent;
 }
 
 /* 右からのフキダシ */
+.is-style-koi-balloon-right,
 .balloon--right {
     position: relative;
     display: inline-block;
@@ -379,32 +614,27 @@
     line-height: 1.7;
     box-shadow: 0 2px 8px rgba(192, 132, 252, 0.15);
 }
-
+.is-style-koi-balloon-right::before,
 .balloon--right::before {
     content: '';
     position: absolute;
-    right: -12px;
-    bottom: 12px;
-    width: 0;
-    height: 0;
+    right: -12px; bottom: 12px;
     border-style: solid;
     border-width: 12px 12px 0 0;
     border-color: #C084FC transparent transparent transparent;
 }
-
+.is-style-koi-balloon-right::after,
 .balloon--right::after {
     content: '';
     position: absolute;
-    right: -8px;
-    bottom: 14px;
-    width: 0;
-    height: 0;
+    right: -8px; bottom: 14px;
     border-style: solid;
     border-width: 10px 10px 0 0;
     border-color: #F5F0FF transparent transparent transparent;
 }
 
 /* 考え中フキダシ */
+.is-style-koi-balloon-think,
 .balloon--think {
     position: relative;
     display: inline-block;
@@ -418,65 +648,189 @@
     line-height: 1.7;
     box-shadow: 0 2px 8px rgba(147, 197, 253, 0.15);
 }
-
+.is-style-koi-balloon-think::before,
 .balloon--think::before {
     content: '';
     position: absolute;
-    left: 12px;
-    bottom: -18px;
-    width: 14px;
-    height: 14px;
+    left: 12px; bottom: -18px;
+    width: 14px; height: 14px;
     background: #F0F9FF;
     border: 2px solid #93C5FD;
     border-radius: 50%;
 }
-
+.is-style-koi-balloon-think::after,
 .balloon--think::after {
     content: '';
     position: absolute;
-    left: 4px;
-    bottom: -30px;
-    width: 8px;
-    height: 8px;
+    left: 4px; bottom: -30px;
+    width: 8px; height: 8px;
     background: #F0F9FF;
     border: 2px solid #93C5FD;
     border-radius: 50%;
 }
 
 /* =============================================
-   D. マーカー / 装飾
+   D. リストスタイル
    ============================================= */
 
-/* ピンクマーカー */
+/* チェックリスト */
+.is-style-koi-check {
+    list-style: none !important;
+    padding-left: 0 !important;
+}
+.is-style-koi-check li {
+    position: relative;
+    padding-left: 1.8em;
+    margin-bottom: 0.5em;
+}
+.is-style-koi-check li::before {
+    content: '\2714';
+    position: absolute;
+    left: 0; top: 0;
+    color: #E8619A;
+    font-size: 1.1em;
+    font-weight: 700;
+}
+
+/* ハートリスト */
+.is-style-koi-heart {
+    list-style: none !important;
+    padding-left: 0 !important;
+}
+.is-style-koi-heart li {
+    position: relative;
+    padding-left: 1.8em;
+    margin-bottom: 0.5em;
+}
+.is-style-koi-heart li::before {
+    content: '\2665';
+    position: absolute;
+    left: 0; top: 0;
+    color: #E8619A;
+    font-size: 0.9em;
+}
+
+/* スターリスト */
+.is-style-koi-star {
+    list-style: none !important;
+    padding-left: 0 !important;
+}
+.is-style-koi-star:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) li {
+    position: relative;
+    padding-left: 1.8em;
+    margin-bottom: 0.5em;
+}
+.is-style-koi-star:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) li::before {
+    content: '\2B50';
+    position: absolute;
+    left: 0; top: 0;
+    font-size: 0.9em;
+}
+
+/* ナンバーリスト */
+ol.is-style-koi-number {
+    list-style: none !important;
+    padding-left: 0 !important;
+    counter-reset: koi-num;
+}
+ol.is-style-koi-number li {
+    position: relative;
+    padding-left: 2.4em;
+    margin-bottom: 0.6em;
+    counter-increment: koi-num;
+}
+ol.is-style-koi-number li::before {
+    content: counter(koi-num);
+    position: absolute;
+    left: 0; top: 0.15em;
+    width: 1.6em; height: 1.6em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #E8619A, #C084FC);
+    color: #fff;
+    font-size: 0.8em;
+    font-weight: 700;
+    border-radius: 50%;
+    line-height: 1;
+}
+
+/* =============================================
+   E. 引用スタイル
+   ============================================= */
+
+.is-style-koi-cute {
+    position: relative;
+    border: none !important;
+    border-left: 4px solid #C084FC !important;
+    border-radius: 0 14px 14px 0;
+    padding: 1.8em 1.4em 1.2em 2.8em;
+    background: linear-gradient(135deg, #FAF5FF, #FFF0F5);
+    box-shadow: 0 2px 10px rgba(192, 132, 252, 0.12);
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-style: normal;
+    line-height: 1.8;
+    color: #6B21A8;
+}
+.is-style-koi-cute::before {
+    content: '\201C';
+    position: absolute;
+    top: 0.1em; left: 0.3em;
+    font-size: 3em;
+    color: #C084FC;
+    font-family: Georgia, serif;
+    line-height: 1;
+    opacity: 0.5;
+}
+
+/* =============================================
+   F. マーカー / 装飾（段落スタイル）
+   ============================================= */
+
+/* ピンクマーカー（段落全体） */
+.is-style-koi-marker-pink {
+    background: linear-gradient(transparent 60%, rgba(255, 182, 213, 0.4) 60%);
+    display: inline;
+    padding: 0 0.2em;
+}
+/* 従来のspanマーカー */
 .marker--pink {
     background: linear-gradient(transparent 60%, rgba(255, 182, 213, 0.4) 60%);
     padding: 0 0.2em;
 }
 
 /* 黄色マーカー */
+.is-style-koi-marker-yellow {
+    background: linear-gradient(transparent 60%, rgba(253, 224, 71, 0.5) 60%);
+    display: inline;
+    padding: 0 0.2em;
+}
 .marker--yellow {
     background: linear-gradient(transparent 60%, rgba(253, 224, 71, 0.5) 60%);
     padding: 0 0.2em;
 }
 
 /* グラデーションマーカー */
+.is-style-koi-marker-gradient {
+    background: linear-gradient(transparent 60%, rgba(255, 182, 213, 0.4) 60%, rgba(192, 132, 252, 0.3) 100%);
+    display: inline;
+    padding: 0 0.2em;
+}
 .marker--gradient {
-    background: linear-gradient(
-        transparent 60%,
-        rgba(255, 182, 213, 0.4) 60%,
-        rgba(192, 132, 252, 0.3) 100%
-    );
+    background: linear-gradient(transparent 60%, rgba(255, 182, 213, 0.4) 60%, rgba(192, 132, 252, 0.3) 100%);
     padding: 0 0.2em;
 }
 
 /* 大きめテキスト */
+.is-style-koi-large,
 .text--large {
     font-size: 1.25em;
     font-weight: 500;
     line-height: 1.8;
 }
 
-/* 小さめテキスト（注釈用） */
+/* 小さめテキスト */
+.is-style-koi-small,
 .text--small {
     font-size: 0.85em;
     color: #9CA3AF;
@@ -484,29 +838,167 @@
 }
 
 /* =============================================
+   G. 記事内のデフォルト見出しスタイリング
+   ============================================= */
+
+.entry-content h2 {
+    position: relative;
+    padding: 0.6em 0 0.6em 1.2em;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #E8619A;
+    border-left: 5px solid #E8619A;
+    border-bottom: 2px solid #FFE4F0;
+    margin: 2em 0 1.2em;
+    line-height: 1.6;
+    background: linear-gradient(90deg, #FFF0F5 0%, transparent 100%);
+}
+
+.entry-content h3 {
+    position: relative;
+    padding: 0.4em 0 0.4em 1.6em;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: #C084FC;
+    margin: 1.8em 0 1em;
+    line-height: 1.6;
+    border-bottom: 2px dashed #DDD6FE;
+}
+.entry-content h3::before {
+    content: '\2665';
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    font-size: 1em;
+    color: #C084FC;
+}
+
+.entry-content h4 {
+    position: relative;
+    padding: 0.3em 0 0.3em 1.4em;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #E8619A;
+    margin: 1.5em 0 0.8em;
+    line-height: 1.6;
+}
+.entry-content h4::before {
+    content: '\25C6';
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.7em;
+    color: #FFB6D5;
+}
+
+/* エディターで選択したスタイルが entry-content 内でも正しく表示されるよう、
+   is-style-* がある場合はデフォルトスタイルを解除 */
+.entry-content h2[class*="is-style-koi-"] {
+    border-left: none;
+    border-bottom: none;
+    background: none;
+    padding: revert;
+}
+.entry-content h3[class*="is-style-koi-"] {
+    border-bottom: none;
+}
+.entry-content h3[class*="is-style-koi-"]::before {
+    content: none;
+}
+.entry-content h4[class*="is-style-koi-"]::before {
+    content: none;
+}
+
+/* =============================================
+   H. コラムカード・記事カード可愛いスタイル
+   ============================================= */
+
+/* セクション--column 内のカード */
+.section--column .card {
+    border-radius: 16px;
+    border: 1.5px solid #FFE4F0;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.section--column .card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 12px 32px rgba(232, 97, 154, 0.18);
+    border-color: #FFB6D5;
+}
+.section--column .card__thumb {
+    position: relative;
+}
+.section--column .card__body {
+    padding: 12px 14px 16px;
+    position: relative;
+}
+.section--column .card__body::before {
+    content: '\2665 コラム';
+    display: inline-block;
+    padding: 2px 10px;
+    background: linear-gradient(135deg, #FF6B9D, #C084FC);
+    color: #fff;
+    font-size: 0.625rem;
+    font-weight: 700;
+    border-radius: 20px;
+    margin-bottom: 6px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    letter-spacing: 0.05em;
+}
+
+/* 関連コラムセクションのカードも同様 */
+.column-article ~ .section .card {
+    border-radius: 16px;
+    border: 1.5px solid #FFE4F0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.column-article ~ .section .card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 12px 32px rgba(232, 97, 154, 0.18);
+}
+
+/* =============================================
    レスポンシブ
    ============================================= */
 
 @media (max-width: 768px) {
+    .is-style-koi-ribbon,
     .heading--ribbon {
         display: block;
         font-size: 1em;
         padding: 0.5em 1em 0.5em 1.6em;
     }
-
+    .is-style-koi-gradient,
     .heading--gradient {
         font-size: 1em;
         padding: 0.5em 1em;
         border-radius: 10px;
     }
-
+    .is-style-koi-bubble,
     .heading--bubble {
         font-size: 1em;
     }
+    .is-style-koi-stripe {
+        font-size: 1em;
+        padding: 0.5em 1em;
+    }
+    .is-style-koi-balloon {
+        font-size: 1em;
+        padding: 0.4em 1.2em;
+    }
 
+    .is-style-koi-box-pink,
+    .is-style-koi-box-check,
+    .is-style-koi-box-quote,
+    .is-style-koi-box-ranking,
+    .is-style-koi-box-memo,
+    .is-style-koi-box-love,
+    .is-style-koi-box-step,
+    .is-style-koi-box-profile,
     .box--pink,
-    .box--point,
-    .box--caution,
     .box--check,
     .box--quote,
     .box--ranking {
@@ -514,12 +1006,19 @@
         margin: 1em 0;
         border-radius: 10px;
     }
-
+    .is-style-koi-box-point,
+    .is-style-koi-box-caution,
+    .is-style-koi-box-memo,
+    .is-style-koi-box-love,
+    .is-style-koi-box-step,
     .box--point,
     .box--caution {
         padding-top: 2em;
     }
 
+    .is-style-koi-balloon-left,
+    .is-style-koi-balloon-right,
+    .is-style-koi-balloon-think,
     .balloon--left,
     .balloon--right,
     .balloon--think {
@@ -527,16 +1026,23 @@
         padding: 0.8em 1em;
         font-size: 0.95em;
     }
-
+    .is-style-koi-balloon-right,
     .balloon--right {
         margin-right: 0.5em;
     }
-
+    .is-style-koi-balloon-left,
     .balloon--left {
         margin-left: 0.8em;
     }
-
+    .is-style-koi-balloon-think,
     .balloon--think {
         margin-left: 1em;
+    }
+
+    .entry-content h2 {
+        font-size: 1.15rem;
+    }
+    .entry-content h3 {
+        font-size: 1.05rem;
     }
 }

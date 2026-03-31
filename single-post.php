@@ -156,7 +156,7 @@ while (have_posts()) :
     <div class="section-header">
         <h2><?php echo koi_ria_icon('column', 20); ?> 関連コラム</h2>
     </div>
-    <div class="grid-2" style="padding: 0 var(--space-md);">
+    <div class="column-cards" style="padding: 0 var(--space-md);">
         <?php
         $related_columns = get_posts([
             'post_type'      => 'post',
@@ -166,14 +166,28 @@ while (have_posts()) :
         ]);
         foreach ($related_columns as $post) :
             setup_postdata($post);
+            $cats = get_the_category($post->ID);
+            $cat_name = '';
+            foreach ($cats as $c) {
+                if ($c->slug !== 'column') { $cat_name = $c->name; break; }
+            }
+            if (!$cat_name && $cats) $cat_name = $cats[0]->name;
         ?>
-        <a href="<?php echo esc_url(get_permalink($post)); ?>" class="card" style="text-decoration: none; color: inherit;">
-            <?php if (has_post_thumbnail($post)) : ?>
-                <?php echo get_the_post_thumbnail($post, 'show-card', ['class' => 'card__thumb', 'loading' => 'lazy']); ?>
-            <?php endif; ?>
-            <div class="card__body">
-                <div style="font-size: 0.875rem; font-weight: 600; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"><?php echo esc_html($post->post_title); ?></div>
-                <p style="font-size: 0.75rem; color: var(--color-text-sub); margin-top: var(--space-xs);"><?php echo esc_html(wp_trim_words(get_the_excerpt($post), 30, '…')); ?></p>
+        <a href="<?php echo esc_url(get_permalink($post)); ?>" class="column-card">
+            <div class="column-card__thumb-wrap">
+                <?php if (has_post_thumbnail($post)) : ?>
+                    <?php echo get_the_post_thumbnail($post, 'show-card', ['class' => 'column-card__thumb', 'loading' => 'lazy']); ?>
+                <?php else : ?>
+                    <div class="column-card__thumb column-card__thumb--empty"></div>
+                <?php endif; ?>
+                <?php if ($cat_name) : ?>
+                    <span class="column-card__cat"><?php echo esc_html($cat_name); ?></span>
+                <?php endif; ?>
+            </div>
+            <div class="column-card__body">
+                <h3 class="column-card__title"><?php echo esc_html($post->post_title); ?></h3>
+                <p class="column-card__excerpt"><?php echo esc_html(wp_trim_words(get_the_excerpt($post), 30, '…')); ?></p>
+                <time class="column-card__date" datetime="<?php echo esc_attr(get_the_date('c', $post)); ?>"><?php echo esc_html(get_the_date('Y.m.d', $post)); ?></time>
             </div>
         </a>
         <?php

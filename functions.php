@@ -419,6 +419,7 @@ $koi_ria_includes = [
     'inc/customizer.php',
     'inc/popular-posts.php',
     'inc/block-patterns.php',
+    'inc/block-styles.php',
 ];
 
 foreach ($koi_ria_includes as $file) {

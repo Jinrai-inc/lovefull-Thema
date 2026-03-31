@@ -9,7 +9,7 @@ defined('ABSPATH') || exit;
 
 $popular_cast = get_posts([
     'post_type'      => 'cast',
-    'posts_per_page' => 15,
+    'posts_per_page' => 8,
     'meta_key'       => 'followers_count',
     'orderby'        => 'meta_value_num',
     'order'          => 'DESC',
@@ -19,7 +19,7 @@ if (empty($popular_cast)) {
     // フォロワー数未設定の場合は最新の出演者を取得
     $popular_cast = get_posts([
         'post_type'      => 'cast',
-        'posts_per_page' => 15,
+        'posts_per_page' => 8,
         'orderby'        => 'date',
         'order'          => 'DESC',
     ]);

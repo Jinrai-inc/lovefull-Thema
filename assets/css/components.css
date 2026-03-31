@@ -279,8 +279,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
-    min-width: 72px;
+    gap: 6px;
+    min-width: 90px;
     text-align: center;
     text-decoration: none;
 }
@@ -293,10 +293,15 @@
     transition: transform 0.2s ease;
 }
 
+.stories-item .ig-avatar__img {
+    width: 76px;
+    height: 76px;
+}
+
 /* 番組ロゴ（プロフィール画像未設定時） */
 .stories-item__show-logo {
-    width: 60px;
-    height: 60px;
+    width: 76px;
+    height: 76px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -308,13 +313,13 @@
 
 .stories-item__show-logo-img {
     display: block;
-    width: 54px;
-    height: 54px;
+    width: 70px;
+    height: 70px;
     border-radius: var(--radius-circle);
     object-fit: contain;
     background: #fff;
     border: 3px solid var(--color-card);
-    padding: 4px;
+    padding: 6px;
 }
 
 .stories-item:active .stories-item__show-logo {
@@ -322,10 +327,10 @@
 }
 
 .stories-item__name {
-    font-size: 0.6875rem;
-    font-weight: 500;
+    font-size: 0.75rem;
+    font-weight: 600;
     color: var(--color-text);
-    max-width: 72px;
+    max-width: 90px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

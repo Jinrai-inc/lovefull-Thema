@@ -213,21 +213,26 @@ function koi_ria_render_column(): void {
                 }
                 if (!$cat_name && $cats) $cat_name = $cats[0]->name;
             ?>
+            <?php
+                $card_thumb = get_the_post_thumbnail_url($post, 'show-card');
+                if (!$card_thumb) $card_thumb = get_theme_mod('koi_ria_default_eyecatch', '');
+            ?>
             <a href="<?php echo esc_url(get_permalink($post)); ?>" class="column-card">
                 <div class="column-card__thumb-wrap">
-                    <?php if (has_post_thumbnail($post)) : ?>
-                        <?php echo get_the_post_thumbnail($post, 'show-card', ['class' => 'column-card__thumb', 'loading' => 'lazy']); ?>
+                    <?php if ($card_thumb) : ?>
+                        <img src="<?php echo esc_url($card_thumb); ?>" alt="" class="column-card__thumb" loading="lazy">
                     <?php else : ?>
                         <div class="column-card__thumb column-card__thumb--empty"></div>
                     <?php endif; ?>
+                    <div class="column-card__overlay"></div>
+                    <span class="column-card__overlay-title"><?php echo esc_html($post->post_title); ?></span>
+                </div>
+                <div class="column-card__body">
                     <?php if ($cat_name) : ?>
                         <span class="column-card__cat"><?php echo esc_html($cat_name); ?></span>
                     <?php endif; ?>
-                </div>
-                <div class="column-card__body">
-                    <h3 class="column-card__title"><?php echo esc_html($post->post_title); ?></h3>
-                    <p class="column-card__excerpt"><?php echo esc_html(wp_trim_words(get_the_excerpt($post), 30, '…')); ?></p>
                     <time class="column-card__date" datetime="<?php echo esc_attr(get_the_date('c', $post)); ?>"><?php echo esc_html(get_the_date('Y.m.d', $post)); ?></time>
+                    <h3 class="column-card__title"><?php echo esc_html($post->post_title); ?></h3>
                 </div>
             </a>
             <?php

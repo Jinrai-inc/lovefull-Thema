@@ -20,8 +20,27 @@ while (have_posts()) :
 $default_eyecatch = get_theme_mod('koi_ria_default_eyecatch', '');
 ?>
 
+<?php
+// アイキャッチURL取得（個別 → デフォルト）
+$eyecatch_url = get_the_post_thumbnail_url(get_the_ID(), 'large');
+if (!$eyecatch_url) {
+    $eyecatch_url = $default_eyecatch;
+}
+?>
+
 <?php if ($is_news) : ?>
 <!-- ========== ニュース記事テンプレート ========== -->
+
+<?php if ($eyecatch_url) : ?>
+<div class="eyecatch-hero">
+    <img src="<?php echo esc_url($eyecatch_url); ?>" alt="" class="eyecatch-hero__img">
+    <div class="eyecatch-hero__overlay"></div>
+    <div class="eyecatch-hero__title-box">
+        <h1><?php the_title(); ?></h1>
+    </div>
+</div>
+<?php endif; ?>
+
 <article class="section news-article">
     <div style="padding: 0 var(--space-md);">
         <a href="<?php echo esc_url(home_url('/')); ?>" class="back-link"><?php echo koi_ria_icon('arrow-right', 14); ?> トップに戻る</a>
@@ -41,7 +60,9 @@ $default_eyecatch = get_theme_mod('koi_ria_default_eyecatch', '');
                 ?>
             </div>
 
+            <?php if (!$eyecatch_url) : ?>
             <h1 class="news-article__title"><?php the_title(); ?></h1>
+            <?php endif; ?>
 
             <div class="news-article__meta">
                 <time datetime="<?php echo esc_attr(get_the_date('c')); ?>">
@@ -52,16 +73,6 @@ $default_eyecatch = get_theme_mod('koi_ria_default_eyecatch', '');
                 <?php endif; ?>
             </div>
         </div>
-
-        <?php if (has_post_thumbnail()) : ?>
-            <div class="news-article__eyecatch">
-                <?php the_post_thumbnail('large', ['style' => 'width:100%;height:auto;']); ?>
-            </div>
-        <?php elseif ($default_eyecatch) : ?>
-            <div class="news-article__eyecatch">
-                <img src="<?php echo esc_url($default_eyecatch); ?>" alt="<?php the_title_attribute(); ?>" style="width:100%;height:auto;">
-            </div>
-        <?php endif; ?>
 
         <div class="entry-content" style="margin-top: var(--space-lg); line-height: 1.9; font-size: 0.9375rem;">
             <?php the_content(); ?>
@@ -104,6 +115,17 @@ $default_eyecatch = get_theme_mod('koi_ria_default_eyecatch', '');
 
 <?php else : ?>
 <!-- ========== 恋愛コラム記事テンプレート ========== -->
+
+<?php if ($eyecatch_url) : ?>
+<div class="eyecatch-hero">
+    <img src="<?php echo esc_url($eyecatch_url); ?>" alt="" class="eyecatch-hero__img">
+    <div class="eyecatch-hero__overlay"></div>
+    <div class="eyecatch-hero__title-box">
+        <h1><?php the_title(); ?></h1>
+    </div>
+</div>
+<?php endif; ?>
+
 <article class="section column-article">
     <div style="padding: 0 var(--space-md);">
         <a href="<?php echo esc_url(home_url('/')); ?>" class="back-link"><?php echo koi_ria_icon('arrow-right', 14); ?> トップに戻る</a>
@@ -120,7 +142,9 @@ $default_eyecatch = get_theme_mod('koi_ria_default_eyecatch', '');
                 <?php endforeach; ?>
             </div>
 
+            <?php if (!$eyecatch_url) : ?>
             <h1 class="column-article__title"><?php the_title(); ?></h1>
+            <?php endif; ?>
 
             <div class="column-article__meta">
                 <time datetime="<?php echo esc_attr(get_the_date('c')); ?>">
@@ -134,16 +158,6 @@ $default_eyecatch = get_theme_mod('koi_ria_default_eyecatch', '');
                 </span>
             </div>
         </div>
-
-        <?php if (has_post_thumbnail()) : ?>
-            <div class="column-article__eyecatch">
-                <?php the_post_thumbnail('large', ['style' => 'width:100%;height:auto;']); ?>
-            </div>
-        <?php elseif ($default_eyecatch) : ?>
-            <div class="column-article__eyecatch">
-                <img src="<?php echo esc_url($default_eyecatch); ?>" alt="<?php the_title_attribute(); ?>" style="width:100%;height:auto;">
-            </div>
-        <?php endif; ?>
 
         <div class="entry-content" style="margin-top: var(--space-lg); line-height: 1.9; font-size: 0.9375rem;">
             <?php the_content(); ?>
@@ -184,21 +198,26 @@ $default_eyecatch = get_theme_mod('koi_ria_default_eyecatch', '');
             }
             if (!$cat_name && $cats) $cat_name = $cats[0]->name;
         ?>
+        <?php
+            $card_thumb = get_the_post_thumbnail_url($post, 'show-card');
+            if (!$card_thumb) $card_thumb = get_theme_mod('koi_ria_default_eyecatch', '');
+        ?>
         <a href="<?php echo esc_url(get_permalink($post)); ?>" class="column-card">
             <div class="column-card__thumb-wrap">
-                <?php if (has_post_thumbnail($post)) : ?>
-                    <?php echo get_the_post_thumbnail($post, 'show-card', ['class' => 'column-card__thumb', 'loading' => 'lazy']); ?>
+                <?php if ($card_thumb) : ?>
+                    <img src="<?php echo esc_url($card_thumb); ?>" alt="" class="column-card__thumb" loading="lazy">
                 <?php else : ?>
                     <div class="column-card__thumb column-card__thumb--empty"></div>
                 <?php endif; ?>
+                <div class="column-card__overlay"></div>
+                <span class="column-card__overlay-title"><?php echo esc_html($post->post_title); ?></span>
+            </div>
+            <div class="column-card__body">
                 <?php if ($cat_name) : ?>
                     <span class="column-card__cat"><?php echo esc_html($cat_name); ?></span>
                 <?php endif; ?>
-            </div>
-            <div class="column-card__body">
-                <h3 class="column-card__title"><?php echo esc_html($post->post_title); ?></h3>
-                <p class="column-card__excerpt"><?php echo esc_html(wp_trim_words(get_the_excerpt($post), 30, '…')); ?></p>
                 <time class="column-card__date" datetime="<?php echo esc_attr(get_the_date('c', $post)); ?>"><?php echo esc_html(get_the_date('Y.m.d', $post)); ?></time>
+                <h3 class="column-card__title"><?php echo esc_html($post->post_title); ?></h3>
             </div>
         </a>
         <?php

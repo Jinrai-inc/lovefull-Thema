@@ -125,6 +125,11 @@ function koi_ria_settings_page(): void {
         update_option('koi_ria_avatar_cache_days', $avatar_cache_days);
         update_option('koi_ria_unavatar_api_key', sanitize_text_field($_POST['unavatar_api_key'] ?? ''));
 
+        // ロゴの高さ（20〜120、デフォルト40）
+        $logo_height = intval($_POST['logo_height'] ?? 40);
+        $logo_height = max(20, min(120, $logo_height));
+        update_option('koi_ria_logo_height', $logo_height);
+
         // スライダー表示件数（1〜30、デフォルト10）
         $slider_max = intval($_POST['slider_max_slides'] ?? 10);
         $slider_max = max(1, min(30, $slider_max));
@@ -149,6 +154,7 @@ function koi_ria_settings_page(): void {
         echo '<div class="notice notice-success"><p>設定を保存しました。</p></div>';
     }
 
+    $logo_height    = get_option('koi_ria_logo_height', 40);
     $youtube_key    = get_option('koi_ria_youtube_api_key', '');
     $avatar_cache_days  = get_option('koi_ria_avatar_cache_days', 7);
     $unavatar_api_key   = get_option('koi_ria_unavatar_api_key', '');
@@ -173,6 +179,31 @@ function koi_ria_settings_page(): void {
         <h1>API設定</h1>
         <form method="post">
             <?php wp_nonce_field('koi_ria_save_settings', 'koi_ria_settings_nonce'); ?>
+
+            <h2 class="title">サイトロゴ</h2>
+            <table class="form-table">
+                <tr>
+                    <th><label for="logo_height">ロゴの高さ</label></th>
+                    <td>
+                        <input type="range" id="logo_height" name="logo_height" value="<?php echo esc_attr($logo_height); ?>" min="20" max="120" step="5" style="vertical-align: middle; width: 200px;"
+                            oninput="document.getElementById('logo_height_val').textContent=this.value; document.getElementById('logo_preview_img').style.height=this.value+'px';">
+                        <span id="logo_height_val" style="font-weight:bold; margin-left: 8px;"><?php echo esc_html($logo_height); ?></span> px（20〜120）
+                        <p class="description">ヘッダーに表示するロゴ画像の高さ。カスタマイザーでロゴを設定している場合に反映されます。</p>
+                        <?php
+                        $custom_logo_id = get_theme_mod('custom_logo');
+                        if ($custom_logo_id) :
+                            $logo_url = wp_get_attachment_image_url($custom_logo_id, 'full');
+                        ?>
+                        <div style="margin-top: 12px; padding: 12px; background: #f9f9f9; border-radius: 8px; display: inline-block;">
+                            <small style="display:block; color:#666; margin-bottom: 6px;">プレビュー:</small>
+                            <img id="logo_preview_img" src="<?php echo esc_url($logo_url); ?>" style="height: <?php echo esc_attr($logo_height); ?>px; width: auto;" alt="ロゴプレビュー">
+                        </div>
+                        <?php else : ?>
+                        <p style="color: #999; margin-top: 8px;">※ カスタマイザーでロゴが設定されていません。外観 → カスタマイズ → サイト基本情報 → ロゴ から設定してください。</p>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            </table>
 
             <h2 class="title">YouTube Data API</h2>
             <table class="form-table">

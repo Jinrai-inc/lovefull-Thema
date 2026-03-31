@@ -106,6 +106,12 @@ add_action('after_setup_theme', function () {
         'unlink-homepage-logo' => false,
     ]);
 
+    // ロゴの高さをCSS変数で出力
+    add_action('wp_head', function () {
+        $logo_height = intval(get_option('koi_ria_logo_height', 40));
+        echo '<style>:root{--logo-height:' . $logo_height . 'px;}</style>' . "\n";
+    }, 5);
+
     // サムネイルサイズ
     add_image_size('cast-avatar', 120, 120, true);
     add_image_size('show-card', 260, 160, true);

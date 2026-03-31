@@ -1243,6 +1243,55 @@
     padding: 10px 32px;
 }
 
+/* --- Instagram 埋め込み --- */
+.ig-embed {
+    max-width: 540px;
+    margin: var(--space-lg) auto;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid #DBDBDB;
+    background: #fff;
+}
+.ig-embed iframe {
+    width: 100%;
+    min-height: 480px;
+    border: none;
+    display: block;
+}
+.ig-embed--profile iframe {
+    min-height: 540px;
+}
+.ig-embed__header {
+    padding: 12px 16px;
+    border-bottom: 1px solid #EFEFEF;
+    background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 100%);
+}
+.ig-embed__profile-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--color-text);
+    font-weight: 700;
+    font-size: 0.9375rem;
+}
+.ig-embed__profile-link:hover {
+    color: var(--color-primary);
+}
+.ig-embed__icon {
+    display: flex;
+    align-items: center;
+    color: #E1306C;
+}
+.ig-embed__username {
+    flex: 1;
+}
+.ig-embed__footer {
+    padding: 12px 16px;
+    text-align: center;
+    border-top: 1px solid #EFEFEF;
+}
+
 /* --- AdSense --- */
 .adsense-slot {
     padding: var(--space-md);

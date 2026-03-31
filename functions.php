@@ -386,6 +386,7 @@ $koi_ria_includes = [
     'inc/popular-posts.php',
     'inc/block-patterns.php',
     'inc/block-styles.php',
+    'inc/instagram-embed.php',
 ];
 
 foreach ($koi_ria_includes as $file) {

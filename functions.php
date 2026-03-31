@@ -120,6 +120,25 @@ add_action('after_setup_theme', function () {
 });
 
 /**
+ * ウィジェットエリア登録
+ */
+add_action('widgets_init', function () {
+    register_sidebar([
+        'name'          => '記事サイドバー',
+        'id'            => 'article-sidebar',
+        'description'   => '記事ページの右サイドバーに表示されるウィジェットエリアです。',
+        'before_widget' => '<div id="%1$s" class="sidebar-widget %2$s">',
+        'after_widget'  => '</div>',
+        'before_title'  => '<h3 class="sidebar-widget__title">',
+        'after_title'   => '</h3>',
+    ]);
+
+    // カスタムウィジェット登録
+    register_widget('Koi_Ria_Banner_Widget');
+    register_widget('Koi_Ria_Ad_Code_Widget');
+});
+
+/**
  * デフォルトカテゴリの自動登録
  */
 add_action('init', function() {
@@ -387,6 +406,7 @@ $koi_ria_includes = [
     'inc/block-patterns.php',
     'inc/block-styles.php',
     'inc/instagram-embed.php',
+    'inc/widgets.php',
 ];
 
 foreach ($koi_ria_includes as $file) {

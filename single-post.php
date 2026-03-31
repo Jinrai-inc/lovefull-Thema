@@ -13,20 +13,19 @@ while (have_posts()) :
     // カテゴリからコラムかニュースかを判定
     $is_column = has_category('column');
     $is_news   = has_category('news');
+
+    // デフォルトアイキャッチ画像URL（カスタマイザーで設定）
+    $default_eyecatch = get_theme_mod('koi_ria_default_eyecatch', '');
+
+    // アイキャッチURL取得（個別 → デフォルト）
+    $eyecatch_url = get_the_post_thumbnail_url(get_the_ID(), 'large');
+    if (!$eyecatch_url) {
+        $eyecatch_url = $default_eyecatch;
+    }
 ?>
 
-<?php
-// デフォルトアイキャッチ画像URL（カスタマイザーで設定）
-$default_eyecatch = get_theme_mod('koi_ria_default_eyecatch', '');
-?>
-
-<?php
-// アイキャッチURL取得（個別 → デフォルト）
-$eyecatch_url = get_the_post_thumbnail_url(get_the_ID(), 'large');
-if (!$eyecatch_url) {
-    $eyecatch_url = $default_eyecatch;
-}
-?>
+<div class="article-layout">
+<div class="article-layout__main">
 
 <?php if ($is_news) : ?>
 <!-- ========== ニュース記事テンプレート ========== -->
@@ -233,11 +232,13 @@ if (!$eyecatch_url) {
 
 <?php endif; ?>
 
+</div><!-- /.article-layout__main -->
+
+<?php get_template_part('template-parts/article-sidebar'); ?>
+
+</div><!-- /.article-layout -->
+
 <?php
 endwhile;
-?>
 
-<?php get_template_part('template-parts/sidebar-banners'); ?>
-
-<?php
 get_footer();

@@ -523,6 +523,10 @@ function koi_ria_ads_page(): void {
             </table>
 
             <h2 class="title">サイドバー固定バナー</h2>
+            <div class="notice notice-info" style="margin:10px 0;">
+                <p><strong>ウィジェットでも管理できます</strong> — <a href="<?php echo esc_url(admin_url('widgets.php')); ?>">外観 → ウィジェット</a> から「記事サイドバー」エリアにバナー広告やHTMLコードを追加できます。<br>
+                ウィジェットで追加したものが上に、ここで設定したバナーが下に表示されます。</p>
+            </div>
             <p class="description">PC表示時にサイドバーに固定表示するバナー広告を設定します。画像URLとリンク先を入力してください。</p>
 
             <table class="widefat striped" style="max-width:900px; margin-top:10px;" id="sidebar-banners">

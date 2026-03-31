@@ -340,6 +340,28 @@ $related_posts = get_posts([
 </div>
 <?php endif; ?>
 
+<?php // アフィリエイトCTAバナー ?>
+<?php if ($affiliate_url) : ?>
+<section class="section" style="padding: 0 var(--space-md);">
+    <a href="<?php echo esc_url($affiliate_url); ?>" class="affiliate-banner" style="background: <?php
+        $af_color = 'linear-gradient(135deg, #667eea, #764ba2)';
+        $pf_lower = strtolower($platform);
+        if (str_contains($pf_lower, 'abema')) {
+            $af_color = 'linear-gradient(135deg, #00B900, #00D900)';
+        } elseif (str_contains($pf_lower, 'prime') || str_contains($pf_lower, 'amazon')) {
+            $af_color = 'linear-gradient(135deg, #00A8E1, #0077B5)';
+        } elseif (str_contains($pf_lower, 'netflix')) {
+            $af_color = 'linear-gradient(135deg, #E50914, #B20710)';
+        }
+        echo esc_attr($af_color);
+    ?>;" target="_blank" rel="noopener sponsored">
+        <div class="affiliate-banner__title"><?php echo esc_html($platform); ?>で視聴する</div>
+        <span class="affiliate-banner__cta">今すぐチェック →</span>
+        <small class="affiliate-banner__pr">PR</small>
+    </a>
+</section>
+<?php endif; ?>
+
 <?php
 get_template_part('template-parts/sidebar-banners');
 get_footer();

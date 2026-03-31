@@ -432,6 +432,10 @@ function koi_ria_ads_page(): void {
         update_option('koi_ria_adsense_slot_article', sanitize_text_field($_POST['adsense_slot_article'] ?? ''));
         update_option('koi_ria_adsense_slot_sidebar', sanitize_text_field($_POST['adsense_slot_sidebar'] ?? ''));
 
+        // アフィリエイトCTAデフォルトURL設定
+        update_option('koi_ria_cta_url_abema', esc_url_raw($_POST['cta_url_abema'] ?? ''));
+        update_option('koi_ria_cta_url_prime', esc_url_raw($_POST['cta_url_prime'] ?? ''));
+
         // サイドバー固定バナー設定
         $sidebar_banners = [];
         $sb_images = $_POST['sidebar_banner_image'] ?? [];
@@ -459,6 +463,9 @@ function koi_ria_ads_page(): void {
     $slot_top        = get_option('koi_ria_adsense_slot_top', '');
     $slot_article    = get_option('koi_ria_adsense_slot_article', '');
     $slot_sidebar    = get_option('koi_ria_adsense_slot_sidebar', '');
+    $cta_url_abema = get_option('koi_ria_cta_url_abema', 'https://abema.tv/subscription/lp/183c3ec2-c6d8-409e-80b6-caf5a8012f8a');
+    $cta_url_prime = get_option('koi_ria_cta_url_prime', 'https://www.amazon.co.jp/gp/video/primesignup/?irclickid=4b83a16cN2cb011f1a97dfdcde085170&sharedid=%7B%25vs%25%7D&irpid=6117120&ref=dvm_ass_acm_xx_mf_s_imp_4b83a16cN2cb011f1a97dfdcde085170&irgwc=1&afsrc=1');
+
     $sidebar_banners = get_option('koi_ria_sidebar_banners', []);
     if (empty($sidebar_banners)) {
         $sidebar_banners = [['image' => '', 'url' => '', 'label' => '']];
@@ -494,6 +501,23 @@ function koi_ria_ads_page(): void {
                     <th><label for="adsense_slot_sidebar">サイドバー広告スロット</label></th>
                     <td>
                         <input type="text" id="adsense_slot_sidebar" name="adsense_slot_sidebar" value="<?php echo esc_attr($slot_sidebar); ?>" class="regular-text" placeholder="1234567890">
+                    </td>
+                </tr>
+            </table>
+
+            <h2 class="title">アフィリエイトCTA デフォルトURL</h2>
+            <p class="description">記事編集画面でCTAタイプ（ABEMA / プライム・ビデオ）を選択すると、記事下にCTAバナーが表示されます。<br>個別記事でURLを上書きしない場合、ここで設定したURLが使われます。</p>
+            <table class="form-table">
+                <tr>
+                    <th><label for="cta_url_abema">ABEMA デフォルトURL</label></th>
+                    <td>
+                        <input type="url" id="cta_url_abema" name="cta_url_abema" value="<?php echo esc_attr($cta_url_abema); ?>" class="large-text">
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="cta_url_prime">プライム・ビデオ デフォルトURL</label></th>
+                    <td>
+                        <input type="url" id="cta_url_prime" name="cta_url_prime" value="<?php echo esc_attr($cta_url_prime); ?>" class="large-text">
                     </td>
                 </tr>
             </table>

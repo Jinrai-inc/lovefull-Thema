@@ -1884,6 +1884,23 @@
     font-family: 'M PLUS Rounded 1c', sans-serif;
 }
 
+/* アーカイブページ カードグリッド */
+.archive-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 0 var(--space-md);
+}
+
+@media (min-width: 769px) {
+    .archive-cards {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        max-width: var(--content-max-width);
+        margin: 0 auto;
+    }
+}
+
 @media (min-width: 769px) {
     .column-cards {
         grid-template-columns: repeat(4, 1fr);

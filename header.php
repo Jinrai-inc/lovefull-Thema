@@ -76,10 +76,10 @@ defined('ABSPATH') || exit;
                     </a>
                 <?php endif; ?>
                 <?php
-                $news_cat = get_category_by_slug('news');
-                if ($news_cat) : ?>
-                    <a href="<?php echo esc_url(get_category_link($news_cat->term_id)); ?>" class="header-nav__link header-nav__link--news">
-                        <span class="header-nav__icon"><?php echo koi_ria_icon('fire', 14); ?></span>ニュース
+                $koiria_cat = get_category_by_slug('koiria');
+                if ($koiria_cat) : ?>
+                    <a href="<?php echo esc_url(get_category_link($koiria_cat->term_id)); ?>" class="header-nav__link header-nav__link--news">
+                        <span class="header-nav__icon"><?php echo koi_ria_icon('fire', 14); ?></span>恋リアニュース
                     </a>
                 <?php endif; ?>
                 <a href="<?php echo esc_url(get_post_type_archive_link('cast')); ?>#relation" class="header-nav__link header-nav__link--relation">
@@ -105,8 +105,8 @@ defined('ABSPATH') || exit;
                 <?php if ($column_cat) : ?>
                     <li><a href="<?php echo esc_url(get_category_link($column_cat->term_id)); ?>"><?php echo koi_ria_icon('pen', 18); ?> 恋愛コラム</a></li>
                 <?php endif; ?>
-                <?php if ($news_cat) : ?>
-                    <li><a href="<?php echo esc_url(get_category_link($news_cat->term_id)); ?>"><?php echo koi_ria_icon('fire', 18); ?> ニュース</a></li>
+                <?php if ($koiria_cat) : ?>
+                    <li><a href="<?php echo esc_url(get_category_link($koiria_cat->term_id)); ?>"><?php echo koi_ria_icon('fire', 18); ?> 恋リアニュース</a></li>
                 <?php endif; ?>
                 <li><a href="<?php echo esc_url(get_post_type_archive_link('cast')); ?>#relation"><?php echo koi_ria_icon('sparkles', 18); ?> 相関図</a></li>
                 <li><a href="<?php echo esc_url(home_url('/shindan/')); ?>"><?php echo koi_ria_icon('poll', 18); ?> 番組診断</a></li>

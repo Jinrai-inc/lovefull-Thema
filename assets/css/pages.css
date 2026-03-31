@@ -1576,20 +1576,21 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(180deg, transparent 30%, rgba(0, 0, 0, 0.45) 100%);
+    background: rgba(0, 0, 0, 0.35);
     pointer-events: none;
 }
 
 .eyecatch-hero__title-box {
     position: absolute;
+    top: 0;
     bottom: 0;
     left: 0;
     right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: var(--space-lg) var(--space-md);
     z-index: 2;
-}
-
-.eyecatch-hero__title-box {
     text-align: center;
 }
 .eyecatch-hero__title-box h1 {

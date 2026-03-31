@@ -61,14 +61,20 @@ function koi_ria_rest_vote(WP_REST_Request $request): WP_REST_Response {
         return new WP_REST_Response(['success' => false, 'message' => 'この投票は終了しています'], 403);
     }
 
-    $options = get_field('options', $poll_id) ?: [];
+    $options = koi_ria_parse_poll_options(get_field('options', $poll_id));
     if (!isset($options[$option_index])) {
         return new WP_REST_Response(['success' => false, 'message' => '無効な選択肢です'], 400);
     }
 
     // 投票数をインクリメント
     $options[$option_index]['option_votes'] = intval($options[$option_index]['option_votes']) + 1;
-    update_field('options', $options, $poll_id);
+
+    // テキストエリア形式で保存し直す
+    $lines = [];
+    foreach ($options as $opt) {
+        $lines[] = $opt['option_label'] . '|' . $opt['option_votes'];
+    }
+    update_field('options', implode("\n", $lines), $poll_id);
 
     // 合計計算
     $total = 0;

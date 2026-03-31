@@ -11,7 +11,7 @@ $poll = $args['poll'] ?? null;
 if (!$poll) return;
 
 $question  = get_field('question', $poll->ID) ?: $poll->post_title;
-$options   = get_field('options', $poll->ID) ?: [];
+$options   = koi_ria_parse_poll_options(get_field('options', $poll->ID));
 $is_active = get_field('is_active', $poll->ID);
 
 // 合計投票数

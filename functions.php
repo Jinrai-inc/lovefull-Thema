@@ -397,6 +397,34 @@ foreach ($koi_ria_includes as $file) {
 }
 
 /**
+ * 投票選択肢を正規化する
+ *
+ * ACF repeater 形式（配列）とテキストエリア形式（改行区切り文字列）の両方に対応。
+ * 返り値: [['option_label' => '...', 'option_votes' => N], ...]
+ */
+function koi_ria_parse_poll_options($raw): array {
+    if (empty($raw)) return [];
+
+    // 既に repeater 配列形式
+    if (is_array($raw) && isset($raw[0]) && is_array($raw[0])) {
+        return $raw;
+    }
+
+    // テキストエリア形式: "ラベル|投票数" を1行ごとにパース
+    $text = is_array($raw) ? implode("\n", $raw) : (string) $raw;
+    $lines = array_filter(array_map('trim', explode("\n", $text)));
+    $options = [];
+    foreach ($lines as $line) {
+        $parts = explode('|', $line, 2);
+        $options[] = [
+            'option_label' => trim($parts[0]),
+            'option_votes' => isset($parts[1]) ? intval(trim($parts[1])) : 0,
+        ];
+    }
+    return $options;
+}
+
+/**
  * フォロワー数の短縮表示（例: 12.3K, 1.5M）
  */
 function koi_ria_format_number(int $num): string {

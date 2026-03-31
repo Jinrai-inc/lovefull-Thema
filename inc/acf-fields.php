@@ -697,26 +697,13 @@ function koi_ria_register_acf_fields(): void {
                 'return_format' => 'id',
             ],
             [
-                'key'        => 'field_poll_options',
-                'label'      => '選択肢',
-                'name'       => 'options',
-                'type'       => 'repeater',
-                'layout'     => 'table',
-                'sub_fields' => [
-                    [
-                        'key'   => 'field_poll_option_label',
-                        'label' => 'ラベル',
-                        'name'  => 'option_label',
-                        'type'  => 'text',
-                    ],
-                    [
-                        'key'           => 'field_poll_option_votes',
-                        'label'         => '投票数',
-                        'name'          => 'option_votes',
-                        'type'          => 'number',
-                        'default_value' => 0,
-                    ],
-                ],
+                'key'           => 'field_poll_options',
+                'label'         => '選択肢',
+                'name'          => 'options',
+                'type'          => 'textarea',
+                'instructions'  => '1行に1つ。形式: ラベル|投票数（例: りんご|12）。投票数を省略すると0になります。',
+                'rows'          => 6,
+                'new_lines'     => '',
             ],
             [
                 'key'           => 'field_poll_is_active',

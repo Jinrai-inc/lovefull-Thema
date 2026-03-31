@@ -105,30 +105,12 @@ add_action('after_setup_theme', function () {
         'unlink-homepage-logo' => false,
     ]);
 
-    // CSS変数を出力（ロゴ + 背景設定）
+    // ロゴサイズをCSS変数で出力
     add_action('wp_head', function () {
-        $mobile   = intval(get_theme_mod('koi_ria_logo_height_mobile', 50));
-        $pc       = intval(get_theme_mod('koi_ria_logo_height_pc', 70));
-        $maxw     = intval(get_theme_mod('koi_ria_logo_max_width', 300));
-        $bg_image = esc_url(get_theme_mod('koi_ria_bg_image', ''));
-        $bg_color = sanitize_hex_color(get_theme_mod('koi_ria_bg_overlay_color', '#FDF8FA'));
-        $bg_opacity = intval(get_theme_mod('koi_ria_bg_overlay_opacity', 85)) / 100;
-        $bg_blur  = intval(get_theme_mod('koi_ria_bg_blur', 0));
-
-        $css = ':root{';
-        $css .= '--logo-height-mobile:' . $mobile . 'px;';
-        $css .= '--logo-height-pc:' . $pc . 'px;';
-        $css .= '--logo-max-width:' . $maxw . 'px;';
-        if ($bg_image) {
-            $css .= '--bg-image:url(' . $bg_image . ');';
-        } else {
-            $css .= '--bg-image:none;';
-        }
-        $css .= '--bg-overlay-color:' . $bg_color . ';';
-        $css .= '--bg-overlay-opacity:' . number_format($bg_opacity, 2) . ';';
-        $css .= '--bg-blur:' . $bg_blur . 'px;';
-        $css .= '}';
-        echo '<style>' . $css . '</style>' . "\n";
+        $mobile = intval(get_theme_mod('koi_ria_logo_height_mobile', 50));
+        $pc     = intval(get_theme_mod('koi_ria_logo_height_pc', 70));
+        $maxw   = intval(get_theme_mod('koi_ria_logo_max_width', 300));
+        echo '<style>:root{--logo-height-mobile:' . $mobile . 'px;--logo-height-pc:' . $pc . 'px;--logo-max-width:' . $maxw . 'px;}</style>' . "\n";
     }, 5);
 
     // サムネイルサイズ

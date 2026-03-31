@@ -15,12 +15,54 @@ while (have_posts()) :
     $is_news   = has_category('news');
 ?>
 
+<?php
+// アイキャッチ画像URL（個別 → デフォルト のフォールバック）
+$eyecatch_url = get_the_post_thumbnail_url(get_the_ID(), 'large');
+if (!$eyecatch_url) {
+    $eyecatch_url = get_theme_mod('koi_ria_default_eyecatch', '');
+}
+$overlay_color   = sanitize_hex_color(get_theme_mod('koi_ria_eyecatch_overlay_color', '#2D1B33'));
+$overlay_opacity = intval(get_theme_mod('koi_ria_eyecatch_overlay_opacity', 45)) / 100;
+?>
+
 <?php if ($is_news) : ?>
 <!-- ========== ニュース記事テンプレート ========== -->
+
+<?php if ($eyecatch_url) : ?>
+<div class="article-hero" style="background-image: url('<?php echo esc_url($eyecatch_url); ?>');">
+    <div class="article-hero__overlay" style="background-color: <?php echo esc_attr($overlay_color); ?>; opacity: <?php echo esc_attr($overlay_opacity); ?>;"></div>
+    <div class="article-hero__content">
+        <div class="article-hero__badges">
+            <span class="badge badge--news"><?php echo koi_ria_icon('news', 12); ?> ニュース</span>
+            <?php
+            $tags = get_the_tags();
+            if ($tags) :
+                foreach (array_slice($tags, 0, 3) as $tag) :
+            ?>
+                <a href="<?php echo esc_url(get_tag_link($tag)); ?>" class="badge badge--tag-light"><?php echo esc_html($tag->name); ?></a>
+            <?php
+                endforeach;
+            endif;
+            ?>
+        </div>
+        <h1 class="article-hero__title"><?php the_title(); ?></h1>
+        <div class="article-hero__meta">
+            <time datetime="<?php echo esc_attr(get_the_date('c')); ?>">
+                <?php echo koi_ria_icon('calendar', 14); ?> <?php echo get_the_date('Y年n月j日 H:i'); ?>
+            </time>
+            <?php if (get_the_date('c') !== get_the_modified_date('c')) : ?>
+                <span>(更新: <?php echo get_the_modified_date('Y年n月j日'); ?>)</span>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <article class="section news-article">
     <div style="padding: 0 var(--space-md);">
         <a href="<?php echo esc_url(home_url('/')); ?>" class="back-link"><?php echo koi_ria_icon('arrow-right', 14); ?> トップに戻る</a>
 
+        <?php if (!$eyecatch_url) : ?>
         <div class="news-article__header">
             <div class="news-article__badges">
                 <span class="badge badge--news"><?php echo koi_ria_icon('news', 12); ?> ニュース</span>
@@ -35,31 +77,22 @@ while (have_posts()) :
                 endif;
                 ?>
             </div>
-
             <h1 class="news-article__title"><?php the_title(); ?></h1>
-
             <div class="news-article__meta">
                 <time datetime="<?php echo esc_attr(get_the_date('c')); ?>">
                     <?php echo koi_ria_icon('calendar', 14); ?> <?php echo get_the_date('Y年n月j日 H:i'); ?>
                 </time>
-                <?php if (get_the_date('c') !== get_the_modified_date('c')) : ?>
-                    <span class="news-article__updated">(更新: <?php echo get_the_modified_date('Y年n月j日'); ?>)</span>
-                <?php endif; ?>
             </div>
         </div>
-
-        <?php if (has_post_thumbnail()) : ?>
-            <div class="news-article__eyecatch">
-                <?php the_post_thumbnail('large', ['style' => 'width:100%;height:auto;']); ?>
-            </div>
         <?php endif; ?>
 
         <div class="entry-content" style="margin-top: var(--space-lg); line-height: 1.9; font-size: 0.9375rem;">
             <?php the_content(); ?>
         </div>
 
-        <?php // タグ表示 ?>
-        <?php if ($tags) : ?>
+        <?php
+        $tags = $tags ?? get_the_tags();
+        if ($tags) : ?>
         <div class="news-article__tags">
             <?php foreach ($tags as $tag) : ?>
                 <a href="<?php echo esc_url(get_tag_link($tag)); ?>" class="pill-filter">#<?php echo esc_html($tag->name); ?></a>
@@ -96,10 +129,42 @@ while (have_posts()) :
 
 <?php else : ?>
 <!-- ========== 恋愛コラム記事テンプレート ========== -->
+
+<?php if ($eyecatch_url) : ?>
+<div class="article-hero" style="background-image: url('<?php echo esc_url($eyecatch_url); ?>');">
+    <div class="article-hero__overlay" style="background-color: <?php echo esc_attr($overlay_color); ?>; opacity: <?php echo esc_attr($overlay_opacity); ?>;"></div>
+    <div class="article-hero__content">
+        <div class="article-hero__badges">
+            <span class="badge badge--column"><?php echo koi_ria_icon('column', 12); ?> 恋愛コラム</span>
+            <?php
+            $categories = get_the_category();
+            foreach ($categories as $cat) :
+                if ($cat->slug === 'column') continue;
+            ?>
+                <span class="badge badge--cat-light"><?php echo esc_html($cat->name); ?></span>
+            <?php endforeach; ?>
+        </div>
+        <h1 class="article-hero__title"><?php the_title(); ?></h1>
+        <div class="article-hero__meta">
+            <time datetime="<?php echo esc_attr(get_the_date('c')); ?>">
+                <?php echo koi_ria_icon('calendar', 14); ?> <?php echo get_the_date('Y年n月j日'); ?>
+            </time>
+            <?php if (get_the_date('c') !== get_the_modified_date('c')) : ?>
+                <span>(更新: <?php echo get_the_modified_date('Y.m.d'); ?>)</span>
+            <?php endif; ?>
+            <span>
+                <?php echo koi_ria_icon('clock', 14); ?> <?php echo esc_html(ceil(mb_strlen(strip_tags(get_the_content())) / 600)); ?>分で読める
+            </span>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <article class="section column-article">
     <div style="padding: 0 var(--space-md);">
         <a href="<?php echo esc_url(home_url('/')); ?>" class="back-link"><?php echo koi_ria_icon('arrow-right', 14); ?> トップに戻る</a>
 
+        <?php if (!$eyecatch_url) : ?>
         <div class="column-article__header">
             <div class="column-article__badges">
                 <span class="badge badge--column"><?php echo koi_ria_icon('column', 12); ?> 恋愛コラム</span>
@@ -111,33 +176,22 @@ while (have_posts()) :
                     <span class="badge badge--cat"><?php echo esc_html($cat->name); ?></span>
                 <?php endforeach; ?>
             </div>
-
             <h1 class="column-article__title"><?php the_title(); ?></h1>
-
             <div class="column-article__meta">
                 <time datetime="<?php echo esc_attr(get_the_date('c')); ?>">
                     <?php echo koi_ria_icon('calendar', 14); ?> <?php echo get_the_date('Y年n月j日'); ?>
                 </time>
-                <?php if (get_the_date('c') !== get_the_modified_date('c')) : ?>
-                    <span class="column-article__updated">(更新: <?php echo get_the_modified_date('Y.m.d'); ?>)</span>
-                <?php endif; ?>
                 <span class="column-article__readtime">
                     <?php echo koi_ria_icon('clock', 14); ?> <?php echo esc_html(ceil(mb_strlen(strip_tags(get_the_content())) / 600)); ?>分で読める
                 </span>
             </div>
         </div>
-
-        <?php if (has_post_thumbnail()) : ?>
-            <div class="column-article__eyecatch">
-                <?php the_post_thumbnail('large', ['style' => 'width:100%;height:auto;']); ?>
-            </div>
         <?php endif; ?>
 
         <div class="entry-content" style="margin-top: var(--space-lg); line-height: 1.9; font-size: 0.9375rem;">
             <?php the_content(); ?>
         </div>
 
-        <?php // タグ表示 ?>
         <?php
         $tags = get_the_tags();
         if ($tags) :

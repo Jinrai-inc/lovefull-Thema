@@ -56,7 +56,13 @@ $related_posts = get_posts([
         <a href="<?php echo esc_url(get_post_type_archive_link('show')); ?>" style="font-size: 0.8125rem; color: var(--color-text-sub);">&larr; 番組一覧</a>
     </div>
 
-    <span style="font-size: 3rem; display: block;"><?php echo esc_html($emoji); ?></span>
+    <?php if (has_post_thumbnail($show_id)) : ?>
+        <div style="max-width: 120px; max-height: 80px; margin: 0 auto;">
+            <?php echo get_the_post_thumbnail($show_id, 'medium', ['style' => 'max-width:120px;max-height:80px;width:auto;height:auto;object-fit:contain;display:block;margin:0 auto;']); ?>
+        </div>
+    <?php else : ?>
+        <span style="font-size: 3rem; display: block;"><?php echo esc_html($emoji); ?></span>
+    <?php endif; ?>
     <h1 style="margin-top: var(--space-sm); font-size: 1.375rem;"><?php the_title(); ?></h1>
 
     <div style="margin-top: var(--space-sm); display: flex; justify-content: center; gap: var(--space-xs); flex-wrap: wrap;">

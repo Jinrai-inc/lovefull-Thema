@@ -495,8 +495,8 @@
 }
 
 .show-card__logo {
-    width: 64px;
-    height: 48px;
+    width: 56px;
+    height: 40px;
     margin: 0 auto var(--space-xs);
     display: flex;
     align-items: center;
@@ -504,8 +504,8 @@
 }
 
 .show-card__logo-img {
-    max-width: 64px;
-    max-height: 48px;
+    max-width: 56px;
+    max-height: 40px;
     width: auto;
     height: auto;
     object-fit: contain;
@@ -721,11 +721,10 @@
     opacity: 0.25;
 }
 
-/* --- Thumbnail / Emoji circle --- */
+/* --- Thumbnail / Logo --- */
 .schedule-card__thumb {
-    width: 52px;
-    height: 40px;
-    overflow: hidden;
+    width: 56px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -734,12 +733,11 @@
 }
 
 .schedule-card__img {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 56px;
+    max-height: 36px;
     width: auto;
     height: auto;
     object-fit: contain;
-    border-radius: var(--radius-sm);
 }
 
 .schedule-card__emoji {

@@ -136,6 +136,12 @@ add_action('widgets_init', function () {
     // カスタムウィジェット登録
     register_widget('Koi_Ria_Banner_Widget');
     register_widget('Koi_Ria_Ad_Code_Widget');
+    register_widget('Koi_Ria_Popular_Posts_Widget');
+    register_widget('Koi_Ria_Related_Posts_Widget');
+    register_widget('Koi_Ria_Show_Ranking_Widget');
+    register_widget('Koi_Ria_Search_Widget');
+    register_widget('Koi_Ria_Profile_Widget');
+    register_widget('Koi_Ria_Categories_Widget');
 });
 
 /**

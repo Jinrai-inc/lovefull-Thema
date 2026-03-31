@@ -7,6 +7,8 @@
     background: #fff;
 }
 
+
+
 /* --- ロゴバー（センター配置・非追尾・PCのみ表示） --- */
 .site-logo-bar {
     display: none;
@@ -506,31 +508,6 @@
 
     .hamburger {
         display: none;
-    }
-
-    /* PC: ヘッダーナビ */
-    .header-nav__inner {
-        justify-content: center;
-        gap: var(--space-md);
-        overflow-x: visible;
-    }
-
-    .header-nav__link {
-        font-size: 0.8rem;
-        padding: 5px 14px;
-        gap: 4px;
-    }
-
-    .global-nav {
-        display: block;
-        background: none;
-        border: none;
-        padding: 0;
-    }
-
-    .global-nav__list {
-        flex-direction: row;
-        gap: var(--space-lg);
     }
 
     .grid-2 {

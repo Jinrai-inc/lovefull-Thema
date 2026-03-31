@@ -12,6 +12,58 @@ defined('ABSPATH') || exit;
 add_action('customize_register', function (WP_Customize_Manager $wp_customize) {
 
     /* ========================================
+     * セクション: SEO / サイト基本情報
+     * ======================================== */
+    $wp_customize->add_section('koi_ria_seo', [
+        'title'       => 'SEO / サイト基本情報',
+        'description' => 'サイトタイトル・メタディスクリプションなど、検索結果に表示される情報を設定します。',
+        'priority'    => 20,
+    ]);
+
+    // --- サイトタイトル（WordPress標準設定を移動） ---
+    $wp_customize->get_setting('blogname')->transport = 'postMessage';
+    $wp_customize->get_control('blogname')->section  = 'koi_ria_seo';
+    $wp_customize->get_control('blogname')->priority  = 1;
+    $wp_customize->get_control('blogname')->label      = 'サイトタイトル';
+    $wp_customize->get_control('blogname')->description = '検索結果やブラウザタブに表示されるサイト名です。';
+
+    // --- キャッチフレーズ（WordPress標準設定を移動） ---
+    $wp_customize->get_setting('blogdescription')->transport = 'postMessage';
+    $wp_customize->get_control('blogdescription')->section  = 'koi_ria_seo';
+    $wp_customize->get_control('blogdescription')->priority  = 2;
+    $wp_customize->get_control('blogdescription')->label      = 'キャッチフレーズ';
+    $wp_customize->get_control('blogdescription')->description = 'タイトルタグに「サイト名 | キャッチフレーズ」として表示されます。';
+
+    // --- フロントページ meta description ---
+    $wp_customize->add_setting('koi_ria_meta_description', [
+        'default'           => '恋愛リアリティ番組の最新ニュース・出演者情報・番組まとめをお届けするポータルサイト。今日好き、あいのり、バチェラーなど人気番組を網羅。',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'postMessage',
+    ]);
+
+    $wp_customize->add_control('koi_ria_meta_description', [
+        'label'       => 'メタディスクリプション（トップページ）',
+        'description' => 'Google検索結果に表示される説明文です（160文字以内推奨）。',
+        'section'     => 'koi_ria_seo',
+        'type'        => 'textarea',
+        'priority'    => 3,
+        'input_attrs' => ['rows' => 3, 'maxlength' => 200],
+    ]);
+
+    // --- OGP デフォルト画像 ---
+    $wp_customize->add_setting('koi_ria_ogp_image', [
+        'default'           => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'koi_ria_ogp_image', [
+        'label'       => 'OGPデフォルト画像',
+        'description' => 'SNSでシェアされた際に表示されるデフォルト画像です。推奨: 1200x630px',
+        'section'     => 'koi_ria_seo',
+        'priority'    => 4,
+    ]));
+
+    /* ========================================
      * セクション: ヘッダー設定
      * ======================================== */
     $wp_customize->add_section('koi_ria_header', [

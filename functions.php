@@ -139,6 +139,31 @@ add_action('widgets_init', function () {
 });
 
 /**
+ * サイトタイトル・ディスクリプション移行（旧LOVEFULL→恋リアポータル）
+ */
+add_action('admin_init', function () {
+    if (get_option('koi_ria_migrated_site_info')) return;
+
+    $current_name = get_option('blogname', '');
+    $current_desc = get_option('blogdescription', '');
+
+    // 旧タイトルが残っている場合のみ更新
+    if (strpos($current_name, 'LOVEFULL') !== false || strpos($current_name, 'loveful') !== false) {
+        update_option('blogname', '恋リアポータル');
+    }
+
+    // 旧ディスクリプションが残っている場合のみ更新
+    if (strpos($current_desc, '結婚・恋愛メディア') !== false
+        || strpos($current_desc, 'LOVEFUL') !== false
+        || strpos($current_desc, 'How to') !== false
+    ) {
+        update_option('blogdescription', '恋愛リアリティ番組の最新情報ポータル');
+    }
+
+    update_option('koi_ria_migrated_site_info', true);
+});
+
+/**
  * デフォルトカテゴリの自動登録
  */
 add_action('init', function() {

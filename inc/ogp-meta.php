@@ -227,6 +227,8 @@ function koi_ria_ogp_meta(): void {
  */
 function koi_ria_get_page_description(): string {
     if (is_front_page()) {
+        $custom_desc = get_theme_mod('koi_ria_meta_description', '');
+        if ($custom_desc) return $custom_desc;
         return get_bloginfo('description') ?: get_bloginfo('name') . ' - 恋愛リアリティ番組の出演者・番組情報・最新ニュースをまとめたポータルサイト';
     }
 
@@ -313,6 +315,11 @@ function koi_ria_get_canonical_url(): string {
  * デフォルトOGP画像
  */
 function koi_ria_ogp_default_image(): string {
+    // カスタマイザーで設定したOGP画像を優先
+    $ogp_image = get_theme_mod('koi_ria_ogp_image', '');
+    if ($ogp_image) {
+        return $ogp_image;
+    }
     $custom_logo_id = get_theme_mod('custom_logo');
     if ($custom_logo_id) {
         $logo_url = wp_get_attachment_image_url($custom_logo_id, 'full');

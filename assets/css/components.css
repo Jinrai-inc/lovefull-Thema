@@ -293,6 +293,34 @@
     transition: transform 0.2s ease;
 }
 
+/* 番組ロゴ（プロフィール画像未設定時） */
+.stories-item__show-logo {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-circle);
+    padding: 3px;
+    background: linear-gradient(135deg, #FF6B9D, #C084FC, #FF6B9D);
+    transition: transform 0.2s ease;
+}
+
+.stories-item__show-logo-img {
+    display: block;
+    width: 54px;
+    height: 54px;
+    border-radius: var(--radius-circle);
+    object-fit: contain;
+    background: #fff;
+    border: 3px solid var(--color-card);
+    padding: 4px;
+}
+
+.stories-item:active .stories-item__show-logo {
+    transform: scale(0.95);
+}
+
 .stories-item__name {
     font-size: 0.6875rem;
     font-weight: 500;

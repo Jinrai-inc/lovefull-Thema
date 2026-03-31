@@ -42,33 +42,48 @@ if (empty($popular_cast)) {
             $tiktok_username = get_field('tiktok_username', $cast->ID) ?: '';
             $profile_image   = get_field('profile_image', $cast->ID);
 
-            // アバターURL: 手動アップロード > unavatar.ioキャッシュ > フォールバック
+            // アバターURL: 手動アップロード > 番組ロゴ > フォールバック
             $avatar_url = '';
+            $_use_show_logo = false;
             if ($profile_image && isset($profile_image['url'])) {
                 $avatar_url = $profile_image['url'];
-            } elseif ($ig_username) {
-                $avatar_url = koi_ria_get_ig_avatar($ig_username, 200);
             }
 
             $show_id = get_field('show', $cast->ID);
             $show_name = '';
+            $_show_logo_url = '';
             if ($show_id) {
-                $sp = is_array($show_id) ? get_post($show_id[0]) : get_post($show_id);
+                $_sid = $show_id;
+                if (is_array($_sid)) $_sid = $_sid[0];
+                if (is_object($_sid)) $_sid = $_sid->ID ?? 0;
+                $_sid = intval($_sid);
+                $sp = $_sid ? get_post($_sid) : null;
                 $show_name = $sp ? (get_field('short_name', $sp->ID) ?: '') : '';
+                $_show_logo_url = $sp ? get_the_post_thumbnail_url($sp->ID, 'medium') : '';
+            }
+
+            if (!$avatar_url && $_show_logo_url) {
+                $avatar_url = $_show_logo_url;
+                $_use_show_logo = true;
             }
         ?>
         <a href="<?php echo esc_url(get_permalink($cast)); ?>" class="stories-item">
-            <div class="ig-avatar">
-                <?php if ($avatar_url) : ?>
+            <?php if ($_use_show_logo) : ?>
+                <div class="stories-item__show-logo">
+                    <img src="<?php echo esc_url($avatar_url); ?>" alt="<?php echo esc_attr($show_name); ?>" class="stories-item__show-logo-img" loading="lazy">
+                </div>
+            <?php elseif ($avatar_url) : ?>
+                <div class="ig-avatar">
                     <img src="<?php echo esc_url($avatar_url); ?>" alt="<?php echo esc_attr($display_name); ?>" class="ig-avatar__img" loading="lazy">
-                <?php else : ?>
+                </div>
+            <?php else : ?>
+                <div class="ig-avatar">
                     <div class="ig-avatar__img" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:#f0f0f0;"><?php echo koi_ria_icon('users', 24); ?></div>
-                <?php endif; ?>
-            </div>
+                </div>
+            <?php endif; ?>
             <span class="stories-item__name"><?php echo esc_html($display_name); ?></span>
-            <?php if ($show_name) :
-                $show_post = is_array($show_id) ? get_post($show_id[0]) : get_post($show_id);
-                $show_platform = $show_post ? (get_field('platform', $show_post->ID) ?: '') : '';
+            <?php if ($show_name && $sp) :
+                $show_platform = get_field('platform', $sp->ID) ?: '';
                 $show_color = $show_platform ? koi_ria_get_platform_color($show_platform) : '#E8619A';
             ?>
                 <span class="stories-item__show" style="--show-color: <?php echo esc_attr($show_color); ?>;"><?php echo esc_html($show_name); ?></span>

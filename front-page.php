@@ -37,8 +37,8 @@ $koi_sections = [
     'couple_tracker' => 'koi_ria_render_couple_tracker',
     'poll'           => 'koi_ria_render_poll',
     'stories_cast'   => 'koi_ria_render_stories_cast',
+    'koiria_news'    => 'koi_ria_render_koiria_news',
     'column'         => 'koi_ria_render_column',
-    'news'           => 'koi_ria_render_news',
     'shindan'        => 'koi_ria_render_shindan',
     'adsense'        => 'koi_ria_render_adsense',
 ];
@@ -53,7 +53,7 @@ usort($koi_section_keys, function ($a, $b) use ($koi_display, &$default_order) {
             'hero_carousel' => 1, 'search_bar' => 2, 'weekly_schedule' => 3,
             'breaking_bar' => 4, 'shows' => 5, 'popular_posts' => 6,
             'couple_tracker' => 7, 'poll' => 8, 'stories_cast' => 9,
-            'column' => 10, 'news' => 11, 'shindan' => 12,
+            'koiria_news' => 10, 'column' => 11, 'shindan' => 12,
             'adsense' => 13,
         ];
     }
@@ -244,25 +244,53 @@ function koi_ria_render_column(): void {
     <?php
 }
 
-function koi_ria_render_news(): void {
-    // 5-11. 最新ニュース
+function koi_ria_render_koiria_news(): void {
+    // 恋愛リアリティーショー最新ニュース
+    $koiria_cat = get_category_by_slug('koiria');
+    if (!$koiria_cat) return;
     ?>
-    <section class="section section--news">
+    <section class="section section--koiria-news">
         <div class="section-header">
-            <h2><?php echo koi_ria_icon('news', 22); ?> 最新ニュース</h2>
-            <a href="<?php echo esc_url(get_permalink(get_option('page_for_posts'))); ?>" class="section-header__more">もっと見る →</a>
+            <h2><?php echo koi_ria_icon('tv', 22); ?> 恋リア最新ニュース</h2>
+            <a href="<?php echo esc_url(get_category_link($koiria_cat->term_id)); ?>" class="section-header__more">もっと見る →</a>
         </div>
-        <div>
+        <div class="column-cards" style="padding: 0 var(--space-md);">
             <?php
-            $news_args = [
+            $koiria_posts = get_posts([
                 'post_type'      => 'post',
-                'posts_per_page' => 3,
-                'category_name'  => 'news',
-            ];
-            $news = get_posts($news_args);
-            foreach ($news as $post) :
+                'posts_per_page' => 4,
+                'category_name'  => 'koiria',
+            ]);
+            foreach ($koiria_posts as $post) :
                 setup_postdata($post);
-                get_template_part('template-parts/news-card', null, ['post' => $post]);
+                $cats = get_the_category($post->ID);
+                $cat_name = '';
+                foreach ($cats as $c) {
+                    if ($c->slug !== 'koiria') { $cat_name = $c->name; break; }
+                }
+                if (!$cat_name && $cats) $cat_name = $cats[0]->name;
+                $card_thumb = get_the_post_thumbnail_url($post, 'show-card');
+                if (!$card_thumb) $card_thumb = get_theme_mod('koi_ria_default_eyecatch', '');
+            ?>
+            <a href="<?php echo esc_url(get_permalink($post)); ?>" class="column-card">
+                <div class="column-card__thumb-wrap">
+                    <?php if ($card_thumb) : ?>
+                        <img src="<?php echo esc_url($card_thumb); ?>" alt="" class="column-card__thumb" loading="lazy">
+                    <?php else : ?>
+                        <div class="column-card__thumb column-card__thumb--empty"></div>
+                    <?php endif; ?>
+                    <div class="column-card__overlay"></div>
+                    <span class="column-card__overlay-title"><?php echo esc_html($post->post_title); ?></span>
+                </div>
+                <div class="column-card__body">
+                    <?php if ($cat_name) : ?>
+                        <span class="column-card__cat"><?php echo esc_html($cat_name); ?></span>
+                    <?php endif; ?>
+                    <time class="column-card__date" datetime="<?php echo esc_attr(get_the_date('c', $post)); ?>"><?php echo esc_html(get_the_date('Y.m.d', $post)); ?></time>
+                    <h3 class="column-card__title"><?php echo esc_html($post->post_title); ?></h3>
+                </div>
+            </a>
+            <?php
             endforeach;
             wp_reset_postdata();
             ?>

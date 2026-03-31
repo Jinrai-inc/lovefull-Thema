@@ -1074,8 +1074,8 @@ function koi_ria_display_page(): void {
         'couple_tracker' => 'カップルその後',
         'poll'           => 'みんなの予想',
         'stories_cast'   => '話題の出演者',
+        'koiria_news'    => '恋リア最新ニュース',
         'column'         => '恋愛コラム',
-        'news'           => '最新ニュース',
         'shindan'        => '番組診断バナー',
         'adsense'        => 'AdSenseスロット',
     ];

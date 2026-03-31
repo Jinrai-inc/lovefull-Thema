@@ -21,28 +21,29 @@ if ($profile_image && isset($profile_image['url'])) {
     $avatar_url = $profile_image['url'];
 }
 
-// 番組情報取得（推しボタン用 + ロゴ画像）- 静的キャッシュで同一showの重複クエリ防止
-static $_show_cache = [];
+// 番組情報取得（推しボタン用 + ロゴ画像）
 $_show_id   = get_field('show', $cast->ID);
 $_show_title = '';
 $_show_logo_url = '';
 if ($_show_id) {
-    $_sid = is_array($_show_id) ? $_show_id[0] : $_show_id;
+    $_sid = $_show_id;
+    if (is_array($_sid)) $_sid = $_sid[0];
     if (is_object($_sid)) $_sid = $_sid->ID ?? 0;
-    if (!isset($_show_cache[$_sid])) {
+    $_sid = intval($_sid);
+    if ($_sid) {
         $_show_post = get_post($_sid);
-        $_show_cache[$_sid] = [
-            'title' => $_show_post ? (get_field('short_name', $_show_post->ID) ?: $_show_post->post_title) : '',
-            'logo'  => $_show_post ? get_the_post_thumbnail_url($_show_post->ID, 'cast-avatar') : '',
-        ];
+        if ($_show_post) {
+            $_show_title = get_field('short_name', $_show_post->ID) ?: $_show_post->post_title;
+            $_show_logo_url = get_the_post_thumbnail_url($_show_post->ID, 'medium') ?: '';
+        }
     }
-    $_show_title = $_show_cache[$_sid]['title'];
-    $_show_logo_url = $_show_cache[$_sid]['logo'];
 }
 
 // アバター: プロフィール画像 → 番組ロゴ → フォールバック
+$_use_show_logo = false;
 if (!$avatar_url && $_show_logo_url) {
     $avatar_url = $_show_logo_url;
+    $_use_show_logo = true;
 }
 ?>
 
@@ -53,7 +54,7 @@ if (!$avatar_url && $_show_logo_url) {
         'ig'         => $ig_username,
         'show_title' => $_show_title,
     ]); ?>
-    <?php if ($avatar_url && !$profile_image && $_show_logo_url) : ?>
+    <?php if ($_use_show_logo) : ?>
         <div class="cast-card__show-logo">
             <img src="<?php echo esc_url($avatar_url); ?>" alt="<?php echo esc_attr($_show_title); ?>" class="cast-card__show-logo-img" loading="lazy">
         </div>

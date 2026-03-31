@@ -1967,15 +1967,7 @@
 }
 
 .article-sidebar {
-    max-width: var(--content-max-width);
-    margin: 0 auto;
-    padding: var(--space-lg) var(--space-md);
-}
-
-.article-sidebar__inner {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    display: none;
 }
 
 /* PC: 2カラムレイアウト */
@@ -1999,14 +1991,17 @@
     }
 
     .article-sidebar {
+        display: block;
         max-width: none;
         margin: 0;
         padding: var(--space-xl) 0;
-        /* stretch（デフォルト）で記事本文と同じ高さにし、__inner の sticky を有効にする */
         align-self: stretch;
     }
 
     .article-sidebar__inner {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
         position: sticky;
         top: 70px;
         max-height: calc(100vh - 90px);

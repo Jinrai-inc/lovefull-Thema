@@ -61,24 +61,20 @@ function koi_ria_ig_post_embed(string $url): string {
 }
 
 /**
- * Instagram プロフィール 埋め込み HTML
+ * Instagram プロフィール リンクカード HTML
+ * ※ Instagramはプロフィールのiframe埋め込みを制限しているため、スタイリッシュなリンクカードで表示
  */
 function koi_ria_ig_profile_embed(string $username, string $url): string {
     $username = sanitize_text_field($username);
-    $embed_url = 'https://www.instagram.com/' . urlencode($username) . '/embed/';
 
     return '<div class="ig-embed ig-embed--profile">'
-        . '<div class="ig-embed__header">'
-        . '<a href="' . esc_url($url) . '" target="_blank" rel="noopener nofollow" class="ig-embed__profile-link">'
-        . '<span class="ig-embed__icon">' . koi_ria_icon('instagram', 20) . '</span>'
-        . '<span class="ig-embed__username">@' . esc_html($username) . '</span>'
-        . '</a>'
+        . '<a href="' . esc_url($url) . '" target="_blank" rel="noopener nofollow" class="ig-profile-card">'
+        . '<div class="ig-profile-card__icon">' . koi_ria_icon('instagram', 36) . '</div>'
+        . '<div class="ig-profile-card__info">'
+        . '<span class="ig-profile-card__username">@' . esc_html($username) . '</span>'
+        . '<span class="ig-profile-card__label">Instagramプロフィール</span>'
         . '</div>'
-        . '<iframe src="' . esc_url($embed_url) . '" frameborder="0" scrolling="no" allowtransparency="true" loading="lazy"></iframe>'
-        . '<div class="ig-embed__footer">'
-        . '<a href="' . esc_url($url) . '" class="btn btn--ig btn--sm" target="_blank" rel="noopener nofollow">'
-        . koi_ria_icon('instagram', 16) . ' Instagramで見る'
+        . '<span class="ig-profile-card__btn">Instagramで見る</span>'
         . '</a>'
-        . '</div>'
         . '</div>';
 }

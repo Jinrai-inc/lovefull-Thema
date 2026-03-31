@@ -91,7 +91,6 @@ add_action('after_setup_theme', function () {
     ]);
 
     register_nav_menus([
-        'primary'      => 'ヘッダーナビ',
         'footer'       => 'フッターナビ',
         'mobile_bottom' => 'モバイルボトムナビ',
     ]);

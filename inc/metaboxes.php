@@ -10,7 +10,101 @@
 
 defined('ABSPATH') || exit;
 
-// ACF PRO がアクティブなら、このファイルは何もしない
+/* =========================================================
+ * ACF の有無に関わらず常に登録するメタボックス
+ * ========================================================= */
+
+add_action('add_meta_boxes', 'koi_ria_register_always_metaboxes');
+
+function koi_ria_register_always_metaboxes(): void {
+    // 投稿 (post) — CTA設定
+    add_meta_box('koi_ria_post_cta_meta', 'アフィリエイトCTA設定', 'koi_ria_post_cta_metabox_cb', 'post', 'side', 'default');
+
+    // 投票 (poll) — 選択肢（ACF無料版ではrepeaterが使えないため独自実装）
+    add_meta_box('koi_ria_poll_options_meta', '選択肢（テキスト入力）', 'koi_ria_poll_options_metabox_cb', 'poll', 'normal', 'high');
+}
+
+/* --- 投稿CTA --- */
+function koi_ria_post_cta_metabox_cb(\WP_Post $post): void {
+    wp_nonce_field('koi_ria_post_cta_nonce_action', 'koi_ria_post_cta_nonce');
+
+    $cta_type = get_post_meta($post->ID, 'cta_type', true);
+    $cta_url_override = get_post_meta($post->ID, 'cta_url_override', true);
+    ?>
+    <p>
+        <label for="koi_ria_cta_type"><strong>表示するCTA</strong></label><br>
+        <select id="koi_ria_cta_type" name="koi_ria_cta_type" style="width: 100%;">
+            <option value="" <?php selected($cta_type, ''); ?>>なし（CTAを表示しない）</option>
+            <option value="abema" <?php selected($cta_type, 'abema'); ?>>ABEMA</option>
+            <option value="prime" <?php selected($cta_type, 'prime'); ?>>Amazonプライム・ビデオ</option>
+        </select>
+    </p>
+    <p class="description">記事の内容に合わせてCTAを選択してください。</p>
+    <p>
+        <label for="koi_ria_cta_url_override"><strong>URL上書き（任意）</strong></label><br>
+        <input type="url" id="koi_ria_cta_url_override" name="koi_ria_cta_url_override" value="<?php echo esc_attr($cta_url_override); ?>" style="width: 100%;" placeholder="空欄ならデフォルトURLを使用">
+    </p>
+    <p class="description">個別のアフィリエイトURLがある場合のみ入力。</p>
+    <?php
+}
+
+add_action('save_post_post', function (int $post_id): void {
+    if (!isset($_POST['koi_ria_post_cta_nonce']) || !wp_verify_nonce($_POST['koi_ria_post_cta_nonce'], 'koi_ria_post_cta_nonce_action')) {
+        return;
+    }
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+
+    $cta_type = isset($_POST['koi_ria_cta_type']) ? sanitize_text_field(wp_unslash($_POST['koi_ria_cta_type'])) : '';
+    update_post_meta($post_id, 'cta_type', $cta_type);
+
+    $cta_url = isset($_POST['koi_ria_cta_url_override']) ? esc_url_raw(wp_unslash($_POST['koi_ria_cta_url_override'])) : '';
+    update_post_meta($post_id, 'cta_url_override', $cta_url);
+});
+
+/* --- 投票選択肢 --- */
+function koi_ria_poll_options_metabox_cb(\WP_Post $post): void {
+    wp_nonce_field('koi_ria_poll_options_nonce_action', 'koi_ria_poll_options_nonce');
+
+    $raw = get_post_meta($post->ID, 'options', true);
+    $text = '';
+    if (is_string($raw)) {
+        $text = $raw;
+    } elseif (is_array($raw)) {
+        // 旧repeater形式からテキスト変換
+        $lines = [];
+        foreach ($raw as $opt) {
+            if (is_array($opt) && isset($opt['option_label'])) {
+                $lines[] = $opt['option_label'] . '|' . ($opt['option_votes'] ?? 0);
+            }
+        }
+        $text = implode("\n", $lines);
+    }
+    ?>
+    <p>
+        <label for="koi_ria_poll_options"><strong>選択肢</strong></label>
+    </p>
+    <textarea id="koi_ria_poll_options" name="koi_ria_poll_options" rows="6" style="width: 100%;"><?php echo esc_textarea($text); ?></textarea>
+    <p class="description">1行に1つ。形式: <code>ラベル|投票数</code>（例: <code>りんご|12</code>）。投票数を省略すると0になります。</p>
+    <?php
+}
+
+add_action('save_post_poll', function (int $post_id): void {
+    if (!isset($_POST['koi_ria_poll_options_nonce']) || !wp_verify_nonce($_POST['koi_ria_poll_options_nonce'], 'koi_ria_poll_options_nonce_action')) {
+        return;
+    }
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+
+    $text = isset($_POST['koi_ria_poll_options']) ? sanitize_textarea_field(wp_unslash($_POST['koi_ria_poll_options'])) : '';
+    update_post_meta($post_id, 'options', $text);
+});
+
+/* =========================================================
+ * 以下は ACF がない場合のみのフォールバック
+ * ========================================================= */
+
+// ACF がアクティブなら、以降のネイティブメタボックスは不要
 if (class_exists('ACF')) {
     return;
 }
@@ -124,9 +218,6 @@ function koi_ria_textarea_field(int $post_id, string $key, string $label, string
 add_action('add_meta_boxes', 'koi_ria_register_metaboxes');
 
 function koi_ria_register_metaboxes(): void {
-    // 投稿 (post) — CTA設定
-    add_meta_box('koi_ria_post_cta_meta', 'アフィリエイトCTA設定', 'koi_ria_post_cta_metabox_cb', 'post', 'side', 'default');
-
     // 番組 (show)
     add_meta_box('koi_ria_show_meta', '番組情報', 'koi_ria_show_metabox_cb', 'show', 'normal', 'high');
 
@@ -610,47 +701,4 @@ add_action('save_post_relation', function (int $post_id): void {
     ]);
 });
 
-/* =========================================================
- * 投稿 (post) CTA設定メタボックス
- * ========================================================= */
-
-function koi_ria_post_cta_metabox_cb(\WP_Post $post): void {
-    wp_nonce_field('koi_ria_post_cta_nonce_action', 'koi_ria_post_cta_nonce');
-
-    $cta_type = get_post_meta($post->ID, 'cta_type', true);
-    $cta_url_override = get_post_meta($post->ID, 'cta_url_override', true);
-    ?>
-    <p>
-        <label for="koi_ria_cta_type"><strong>表示するCTA</strong></label><br>
-        <select id="koi_ria_cta_type" name="koi_ria_cta_type" style="width: 100%;">
-            <option value="" <?php selected($cta_type, ''); ?>>なし（CTAを表示しない）</option>
-            <option value="abema" <?php selected($cta_type, 'abema'); ?>>ABEMA</option>
-            <option value="prime" <?php selected($cta_type, 'prime'); ?>>Amazonプライム・ビデオ</option>
-        </select>
-    </p>
-    <p class="description">記事の内容に合わせてCTAを選択してください。</p>
-    <p>
-        <label for="koi_ria_cta_url_override"><strong>URL上書き（任意）</strong></label><br>
-        <input type="url" id="koi_ria_cta_url_override" name="koi_ria_cta_url_override" value="<?php echo esc_attr($cta_url_override); ?>" style="width: 100%;" placeholder="空欄ならデフォルトURLを使用">
-    </p>
-    <p class="description">個別のアフィリエイトURLがある場合のみ入力。</p>
-    <?php
-}
-
-add_action('save_post_post', function (int $post_id): void {
-    if (!isset($_POST['koi_ria_post_cta_nonce']) || !wp_verify_nonce($_POST['koi_ria_post_cta_nonce'], 'koi_ria_post_cta_nonce_action')) {
-        return;
-    }
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-        return;
-    }
-    if (!current_user_can('edit_post', $post_id)) {
-        return;
-    }
-
-    $cta_type = isset($_POST['koi_ria_cta_type']) ? sanitize_text_field(wp_unslash($_POST['koi_ria_cta_type'])) : '';
-    update_post_meta($post_id, 'cta_type', $cta_type);
-
-    $cta_url = isset($_POST['koi_ria_cta_url_override']) ? esc_url_raw(wp_unslash($_POST['koi_ria_cta_url_override'])) : '';
-    update_post_meta($post_id, 'cta_url_override', $cta_url);
-});
+/* CTA・投票メタボックスは koi_ria_register_always_metaboxes() で登録済み */

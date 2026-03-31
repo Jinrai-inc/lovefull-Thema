@@ -154,7 +154,7 @@
 .site-logo__img {
     height: var(--logo-height, 40px);
     width: auto;
-    max-width: 200px;
+    max-width: var(--logo-max-width, 200px);
     object-fit: contain;
 }
 

@@ -106,10 +106,11 @@ add_action('after_setup_theme', function () {
         'unlink-homepage-logo' => false,
     ]);
 
-    // ロゴの高さをCSS変数で出力
+    // ロゴサイズをCSS変数で出力
     add_action('wp_head', function () {
-        $logo_height = intval(get_option('koi_ria_logo_height', 40));
-        echo '<style>:root{--logo-height:' . $logo_height . 'px;}</style>' . "\n";
+        $logo_height    = intval(get_theme_mod('koi_ria_logo_height', 40));
+        $logo_max_width = intval(get_theme_mod('koi_ria_logo_max_width', 200));
+        echo '<style>:root{--logo-height:' . $logo_height . 'px;--logo-max-width:' . $logo_max_width . 'px;}</style>' . "\n";
     }, 5);
 
     // サムネイルサイズ
@@ -415,6 +416,7 @@ $koi_ria_includes = [
     'inc/seo-helpers.php',
     'inc/legal-pages.php',
     'inc/admin-menu.php',
+    'inc/customizer.php',
     'inc/popular-posts.php',
     'inc/block-patterns.php',
 ];

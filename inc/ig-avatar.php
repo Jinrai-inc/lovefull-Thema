@@ -23,9 +23,9 @@ if (!defined('KOI_RIA_AVATAR_CACHE_DAYS')) {
  * キャッシュがなければフォールバック画像を即座に返す。
  * 実際の画像取得はCronまたは手動実行で行う。
  */
-function koi_ria_get_ig_avatar(string $ig_username, int $size = 200): string {
+function koi_ria_get_ig_avatar(?string $ig_username, int $size = 200): string {
     if (empty($ig_username)) {
-        return koi_ria_get_fallback_avatar($ig_username, $size);
+        return koi_ria_get_fallback_avatar($ig_username ?? '', $size);
     }
 
     static $upload_dir_cache = null;
@@ -142,7 +142,7 @@ function koi_ria_download_avatar_image(string $url, string $ig_username) {
 /**
  * フォールバックアバター（名前のイニシャル画像）
  */
-function koi_ria_get_fallback_avatar(string $name = '', int $size = 200): string {
+function koi_ria_get_fallback_avatar(?string $name = '', int $size = 200): string {
     $display = !empty($name) ? $name : '?';
     return 'https://ui-avatars.com/api/?name=' . urlencode($display)
          . '&background=FF3B6F&color=fff&size=' . intval($size)
@@ -183,7 +183,8 @@ add_action('wp_ajax_koi_ria_test_avatar', function () {
 /**
  * テンプレート用ヘルパー: <img>タグを出力
  */
-function koi_ria_ig_avatar(string $ig_username, int $size = 80, string $class = 'ig-avatar'): void {
+function koi_ria_ig_avatar(?string $ig_username, int $size = 80, string $class = 'ig-avatar'): void {
+    $ig_username = $ig_username ?? '';
     $url = koi_ria_get_ig_avatar($ig_username, $size);
     $alt = esc_attr($ig_username);
     $fallback = esc_url(koi_ria_get_fallback_avatar($ig_username, $size));

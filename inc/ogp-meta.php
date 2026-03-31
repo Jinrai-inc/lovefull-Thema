@@ -93,7 +93,8 @@ function koi_ria_ogp_meta(): void {
 
     if (is_front_page()) {
         $type        = 'website';
-        $title       = $site_name . ' - ' . get_bloginfo('description');
+        $custom_seo_title = get_theme_mod('koi_ria_seo_title', '');
+        $title       = $custom_seo_title ?: $site_name . ' | ' . get_bloginfo('description');
         $description = koi_ria_get_page_description();
         $url         = home_url('/');
         $image       = koi_ria_ogp_default_image();

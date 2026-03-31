@@ -34,6 +34,22 @@ add_action('customize_register', function (WP_Customize_Manager $wp_customize) {
     $wp_customize->get_control('blogdescription')->label      = 'キャッチフレーズ';
     $wp_customize->get_control('blogdescription')->description = 'タイトルタグに「サイト名 | キャッチフレーズ」として表示されます。';
 
+    // --- フロントページ SEOタイトル ---
+    $wp_customize->add_setting('koi_ria_seo_title', [
+        'default'           => '',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'postMessage',
+    ]);
+
+    $wp_customize->add_control('koi_ria_seo_title', [
+        'label'       => 'SEOタイトル（トップページ）',
+        'description' => '空の場合「サイト名 | キャッチフレーズ」が使用されます。検索結果に表示されるタイトルを上書きしたい場合に入力（30〜40文字推奨）。',
+        'section'     => 'koi_ria_seo',
+        'type'        => 'text',
+        'priority'    => 2.5,
+        'input_attrs' => ['maxlength' => 60, 'placeholder' => '例: LOVEFUL 恋リアポータル｜恋愛リアリティ番組の出演者・ニュースまとめ'],
+    ]);
+
     // --- フロントページ meta description ---
     $wp_customize->add_setting('koi_ria_meta_description', [
         'default'           => '恋愛リアリティ番組の最新ニュース・出演者情報・番組まとめをお届けするポータルサイト。今日好き、あいのり、バチェラーなど人気番組を網羅。',

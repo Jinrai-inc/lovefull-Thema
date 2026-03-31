@@ -142,25 +142,27 @@ add_action('widgets_init', function () {
  * サイトタイトル・ディスクリプション移行（旧LOVEFULL→恋リアポータル）
  */
 add_action('admin_init', function () {
-    if (get_option('koi_ria_migrated_site_info')) return;
+    if (get_option('koi_ria_migrated_site_info_v2')) return;
 
     $current_name = get_option('blogname', '');
     $current_desc = get_option('blogdescription', '');
 
     // 旧タイトルが残っている場合のみ更新
-    if (strpos($current_name, 'LOVEFULL') !== false || strpos($current_name, 'loveful') !== false) {
-        update_option('blogname', '恋リアポータル');
+    if (strpos($current_name, 'LOVEFULL') !== false || strpos($current_name, 'loveful') !== false || $current_name === '恋リアポータル') {
+        update_option('blogname', 'LOVEFUL 恋リアポータル');
     }
 
     // 旧ディスクリプションが残っている場合のみ更新
     if (strpos($current_desc, '結婚・恋愛メディア') !== false
         || strpos($current_desc, 'LOVEFUL') !== false
         || strpos($current_desc, 'How to') !== false
+        || strpos($current_desc, '恋愛リアリティ番組の最新情報ポータル') !== false
+        || empty($current_desc)
     ) {
-        update_option('blogdescription', '恋愛リアリティ番組の最新情報ポータル');
+        update_option('blogdescription', '恋愛リアリティ番組の出演者・ニュース・番組情報まとめ');
     }
 
-    update_option('koi_ria_migrated_site_info', true);
+    update_option('koi_ria_migrated_site_info_v2', true);
 });
 
 /**

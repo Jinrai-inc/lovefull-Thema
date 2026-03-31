@@ -234,6 +234,19 @@ add_filter('document_title_separator', function (): string {
  * カスタム投稿タイプのタイトル最適化
  */
 add_filter('document_title_parts', function (array $title): array {
+    // フロントページ: SEO強化タイトル
+    if (is_front_page()) {
+        $custom_title = get_theme_mod('koi_ria_seo_title', '');
+        if ($custom_title) {
+            $title['title'] = $custom_title;
+            // カスタムタイトルにセパレータ+サイト名を付けない
+            unset($title['tagline']);
+        } else {
+            $title['title'] = get_bloginfo('name');
+            $title['tagline'] = '恋愛リアリティ番組の出演者・ニュース・番組情報まとめ';
+        }
+    }
+
     if (is_singular('cast')) {
         $display_name = get_field('display_name');
         if ($display_name) {

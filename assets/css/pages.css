@@ -1397,20 +1397,7 @@
     background-color: rgba(232, 97, 154, 0.04);
 }
 
-/* --- エントリーコンテンツ（記事本文） --- */
-.entry-content h2 {
-    margin-top: var(--space-xl);
-    margin-bottom: var(--space-md);
-    padding-bottom: var(--space-sm);
-    border-bottom: 2px solid var(--color-primary);
-    font-size: 1.125rem;
-}
-
-.entry-content h3 {
-    margin-top: var(--space-lg);
-    margin-bottom: var(--space-sm);
-    font-size: 1rem;
-}
+/* --- エントリーコンテンツ見出し（editor-blocks.css のスタイルを継承） --- */
 
 .entry-content ul,
 .entry-content ol {

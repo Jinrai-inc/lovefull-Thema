@@ -1975,7 +1975,7 @@
 .article-sidebar__inner {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
 }
 
 /* PC: 2カラムレイアウト */
@@ -2007,6 +2007,12 @@
     .article-sidebar__inner {
         position: sticky;
         top: 70px;
+        max-height: calc(100vh - 90px);
+        overflow-y: auto;
+        scrollbar-width: none;
+    }
+    .article-sidebar__inner::-webkit-scrollbar {
+        display: none;
     }
 }
 
@@ -2015,7 +2021,11 @@
    ============================================ */
 
 .sidebar-widget {
-    margin-bottom: 0;
+    background: #fff;
+    border-radius: 14px;
+    border: 1.5px solid #FFE4F0;
+    padding: 16px;
+    box-shadow: 0 4px 20px rgba(232, 97, 154, 0.08);
 }
 
 .sidebar-widget__title {
@@ -2052,6 +2062,16 @@
     border: 1.5px solid #FFE4F0;
     padding: 16px;
     box-shadow: 0 4px 20px rgba(232, 97, 154, 0.08);
+}
+
+/* バナー・広告コード・プロフィールは自前で装飾するためカード背景なし */
+.sidebar-widget.widget_koi_ria_banner,
+.sidebar-widget.widget_koi_ria_ad_code,
+.sidebar-widget.widget_koi_ria_profile {
+    background: none;
+    border: none;
+    padding: 0;
+    box-shadow: none;
 }
 
 /* ============================================

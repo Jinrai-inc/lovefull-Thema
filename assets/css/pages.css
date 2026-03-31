@@ -1956,17 +1956,19 @@
    記事ページ 2カラムレイアウト
    ============================================ */
 
+/* モバイル: 1カラム */
 .article-layout {
-    max-width: var(--content-max-width);
     margin: 0 auto;
 }
 
 .article-layout__main {
-    min-width: 0;
+    max-width: var(--content-max-width);
+    margin: 0 auto;
 }
 
-/* モバイル: サイドバーは記事下に表示 */
 .article-sidebar {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
     padding: var(--space-lg) var(--space-md);
 }
 
@@ -1978,26 +1980,27 @@
 
 /* PC: 2カラムレイアウト */
 @media (min-width: 1080px) {
-    .single-post .site-main {
+    /* site-mainの幅制限を解除 */
+    body.single-post .site-main {
         max-width: 1140px;
     }
 
     .article-layout {
-        display: flex;
+        display: grid;
+        grid-template-columns: minmax(0, 768px) 300px;
         gap: 32px;
         max-width: 1140px;
         padding: 0 var(--space-md);
     }
 
     .article-layout__main {
-        flex: 1;
-        min-width: 0;
-        max-width: 768px;
+        max-width: none;
+        margin: 0;
     }
 
     .article-sidebar {
-        width: 300px;
-        flex-shrink: 0;
+        max-width: none;
+        margin: 0;
         padding: var(--space-xl) 0;
     }
 

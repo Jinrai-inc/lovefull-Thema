@@ -278,6 +278,13 @@
     min-height: 100vh;
 }
 
+/* 記事ページ: サイドバー2カラム用に幅を拡張 */
+@media (min-width: 1080px) {
+    body.single-post .site-main {
+        max-width: 1140px;
+    }
+}
+
 /* --- セクション --- */
 .section {
     padding: var(--space-xl) 0;

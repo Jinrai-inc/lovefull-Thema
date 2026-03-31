@@ -178,28 +178,30 @@ class Koi_Ria_Popular_Posts_Widget extends WP_Widget {
     public function widget($args, $instance): void {
         $title = $instance['title'] ?? '人気記事';
         $count = intval($instance['count'] ?? 5);
-        $days  = intval($instance['days'] ?? 30);
 
         echo $args['before_widget'];
         echo $args['before_title'] . esc_html($title) . $args['after_title'];
 
-        $posts = get_posts([
-            'post_type'      => 'post',
-            'posts_per_page' => $count,
-            'meta_key'       => 'koi_ria_views',
-            'orderby'        => 'meta_value_num',
-            'order'          => 'DESC',
-            'date_query'     => [['after' => $days . ' days ago']],
-        ]);
-
-        // PVデータがない場合はコメント数順にフォールバック
-        if (empty($posts)) {
+        // GA連動の人気記事取得関数を使用（GA → AJAXカウンター → 日付フォールバック）
+        if (function_exists('koi_ria_get_popular_posts')) {
+            $posts = koi_ria_get_popular_posts($count);
+        } else {
+            // フォールバック: post_views_count で取得
             $posts = get_posts([
                 'post_type'      => 'post',
                 'posts_per_page' => $count,
-                'orderby'        => 'comment_count',
+                'meta_key'       => 'post_views_count',
+                'orderby'        => 'meta_value_num',
                 'order'          => 'DESC',
             ]);
+            if (empty($posts)) {
+                $posts = get_posts([
+                    'post_type'      => 'post',
+                    'posts_per_page' => $count,
+                    'orderby'        => 'date',
+                    'order'          => 'DESC',
+                ]);
+            }
         }
 
         if ($posts) :
@@ -221,7 +223,15 @@ class Koi_Ria_Popular_Posts_Widget extends WP_Widget {
                         </div>
                         <div class="sw-popular-info">
                             <span class="sw-popular-title"><?php echo esc_html($post->post_title); ?></span>
-                            <time class="sw-popular-date"><?php echo get_the_date('Y.m.d', $post); ?></time>
+                            <div class="sw-popular-meta">
+                                <time class="sw-popular-date"><?php echo get_the_date('Y.m.d', $post); ?></time>
+                                <?php
+                                $pv = (int) get_post_meta($post->ID, 'post_views_count', true);
+                                if ($pv > 0) :
+                                ?>
+                                    <span class="sw-popular-pv"><?php echo number_format($pv); ?> PV</span>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </a>
                 </li>
@@ -238,7 +248,6 @@ class Koi_Ria_Popular_Posts_Widget extends WP_Widget {
     public function form($instance): void {
         $title = $instance['title'] ?? '人気記事';
         $count = $instance['count'] ?? 5;
-        $days  = $instance['days'] ?? 30;
         ?>
         <p>
             <label for="<?php echo esc_attr($this->get_field_id('title')); ?>">タイトル:</label>
@@ -252,12 +261,7 @@ class Koi_Ria_Popular_Posts_Widget extends WP_Widget {
                    name="<?php echo esc_attr($this->get_field_name('count')); ?>"
                    type="number" value="<?php echo esc_attr($count); ?>" min="1" max="20" style="width:60px;">
         </p>
-        <p>
-            <label for="<?php echo esc_attr($this->get_field_id('days')); ?>">集計期間（日）:</label>
-            <input id="<?php echo esc_attr($this->get_field_id('days')); ?>"
-                   name="<?php echo esc_attr($this->get_field_name('days')); ?>"
-                   type="number" value="<?php echo esc_attr($days); ?>" min="1" max="365" style="width:60px;">
-        </p>
+        <p class="description">※ Google Analytics（Site Kit）と連動して実PVデータを取得します。</p>
         <?php
     }
 
@@ -265,7 +269,6 @@ class Koi_Ria_Popular_Posts_Widget extends WP_Widget {
         return [
             'title' => sanitize_text_field($new_instance['title'] ?? '人気記事'),
             'count' => intval($new_instance['count'] ?? 5),
-            'days'  => intval($new_instance['days'] ?? 30),
         ];
     }
 }

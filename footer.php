@@ -9,6 +9,14 @@ defined('ABSPATH') || exit;
 ?>
 </main>
 
+<?php if (is_active_sidebar('footer-banners')) : ?>
+<div class="footer-banners-area">
+    <div class="footer-banners-area__inner">
+        <?php dynamic_sidebar('footer-banners'); ?>
+    </div>
+</div>
+<?php endif; ?>
+
 <footer class="site-footer" role="contentinfo">
     <div class="site-footer__inner">
         <div class="site-footer__logo">

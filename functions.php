@@ -133,6 +133,16 @@ add_action('widgets_init', function () {
         'after_title'   => '</h3>',
     ]);
 
+    register_sidebar([
+        'name'          => 'フッターバナー',
+        'id'            => 'footer-banners',
+        'description'   => 'フッター上部に表示されるバナー・広告エリアです。',
+        'before_widget' => '<div id="%1$s" class="footer-banner-widget %2$s">',
+        'after_widget'  => '</div>',
+        'before_title'  => '<h3 class="footer-banner-widget__title">',
+        'after_title'   => '</h3>',
+    ]);
+
     // カスタムウィジェット登録
     register_widget('Koi_Ria_Banner_Widget');
     register_widget('Koi_Ria_Ad_Code_Widget');

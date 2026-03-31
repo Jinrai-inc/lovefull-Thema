@@ -2002,6 +2002,8 @@
         max-width: none;
         margin: 0;
         padding: var(--space-xl) 0;
+        /* stretch（デフォルト）で記事本文と同じ高さにし、__inner の sticky を有効にする */
+        align-self: stretch;
     }
 
     .article-sidebar__inner {
@@ -2074,6 +2076,21 @@
     box-shadow: none;
 }
 
+/* バナー・広告にタイトルがある場合のスタイル調整 */
+.sidebar-widget.widget_koi_ria_banner .sidebar-widget__title,
+.sidebar-widget.widget_koi_ria_ad_code .sidebar-widget__title {
+    font-size: 0.625rem;
+    color: var(--color-text-sub);
+    border: none;
+    border-image: none;
+    padding: 0 0 4px 0;
+    margin: 0 0 6px;
+}
+.sidebar-widget.widget_koi_ria_banner .sidebar-widget__title::before,
+.sidebar-widget.widget_koi_ria_ad_code .sidebar-widget__title::before {
+    display: none;
+}
+
 /* ============================================
    バナー広告
    ============================================ */
@@ -2089,8 +2106,8 @@
     transform: translateY(-3px);
     box-shadow: 0 8px 28px rgba(232, 97, 154, 0.2);
 }
-.sidebar-banner__link { display: block; }
-.sidebar-banner__img { width: 100%; height: auto; display: block; }
+.sidebar-banner__link { display: block; line-height: 0; }
+.sidebar-banner__img { width: 100%; height: auto; display: block; border-radius: 12px 12px 0 0; }
 .sidebar-banner__label {
     display: block;
     padding: 3px 8px;
@@ -2198,9 +2215,20 @@
     line-height: 1.4;
     color: var(--color-text);
 }
+.sw-popular-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
 .sw-popular-date {
     font-size: 0.625rem;
     color: var(--color-text-sub);
+}
+.sw-popular-pv {
+    font-size: 0.5625rem;
+    color: var(--color-primary);
+    font-weight: 600;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
 }
 
 /* ============================================
@@ -2510,9 +2538,74 @@
     color: var(--color-primary);
 }
 
-/* 旧サイドバー固定バナー（後方互換） */
-.sidebar-banners {
-    display: none;
+/* ============================================
+   フッターバナーエリア
+   ============================================ */
+.footer-banners-area {
+    background: linear-gradient(180deg, #FFF5F9 0%, #FFF0F5 100%);
+    border-top: 1.5px solid #FFE4F0;
+    padding: 24px var(--space-md);
+}
+
+.footer-banners-area__inner {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.footer-banner-widget {
+    flex: 1 1 300px;
+    max-width: 400px;
+}
+
+.footer-banner-widget__title {
+    font-size: 0.625rem;
+    color: var(--color-text-sub);
+    margin: 0 0 4px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+}
+
+.footer-banner-widget .sidebar-banner {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(232, 97, 154, 0.10);
+    border: 1.5px solid #FFE4F0;
+    background: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.footer-banner-widget .sidebar-banner:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(232, 97, 154, 0.18);
+}
+.footer-banner-widget .sidebar-banner__img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+.footer-banner-widget .sidebar-banner__label {
+    display: block;
+    padding: 2px 8px;
+    font-size: 0.625rem;
+    color: var(--color-text-sub);
+    text-align: right;
+}
+
+.footer-banner-widget .sidebar-ad-code {
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    border: 1.5px solid #FFE4F0;
+    box-shadow: 0 4px 16px rgba(232, 97, 154, 0.08);
+}
+
+@media (min-width: 1080px) {
+    .footer-banners-area__inner {
+        max-width: 1140px;
+    }
 }
 
 /* ============================================
